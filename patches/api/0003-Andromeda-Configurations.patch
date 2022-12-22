@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Thu, 22 Dec 2022 20:20:03 +0900
+Subject: [PATCH] Andromeda Configurations
+
+
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index e0f69edf603c2ec99bc92b16b18912272cc41bd9..823a5f760f9a9e7b256ecf12ac5be087536293b1 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -1983,6 +1983,13 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+         }
+         // Purpur end
+ 
++        // Andromeda start
++        @NotNull
++        public org.bukkit.configuration.file.YamlConfiguration getAndromedaConfiguration() {
++            throw new UnsupportedOperationException("Not supported yet.");
++        }
++        // Andromeda end
++
+         /**
+          * Sends the component to the player
+          *
