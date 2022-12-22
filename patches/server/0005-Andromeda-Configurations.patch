@@ -122,20 +122,20 @@ index 082d0516c80cf231dd7ceb454508bb77407c499b..1fbd4dec8fef701d524a7f30ff013721
                          .withRequiredArg()
 diff --git a/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java b/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..42e77cde618a21f44dcc8ba95bb5799d05f4bc41
+index 0000000000000000000000000000000000000000..d4b5efc515ad2018ac93f2b52bd5119457966429
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java
 @@ -0,0 +1,66 @@
 +package team.earendel.andromeda.commands;
 +
 +import net.kyori.adventure.text.Component;
-+import net.kyori.adventure.text.format.TextColor;
 +import net.minecraft.server.MinecraftServer;
 +import net.minecraft.server.level.ServerLevel;
 +import org.bukkit.Location;
 +import org.bukkit.command.Command;
 +import org.bukkit.command.CommandSender;
 +import team.earendel.andromeda.configurations.AndromedaConfiguration;
++import team.earendel.andromeda.constants.AdventureTextColor;
 +
 +import java.io.File;
 +import java.util.Collections;
@@ -166,13 +166,13 @@ index 0000000000000000000000000000000000000000..42e77cde618a21f44dcc8ba95bb5799d
 +        if (!testPermission(sender)) return true;
 +
 +        if (args.length != 1) {
-+            sender.sendMessage(Component.text("Usage: " + usageMessage).color(TextColor.color(0xFF5555)));
++            sender.sendMessage(Component.text("Usage: " + usageMessage).color(AdventureTextColor.RED));
 +            return false;
 +        }
 +
 +        if (args[0].equalsIgnoreCase("reload")) {
-+            Command.broadcastCommandMessage(sender, Component.text("Please note that this command is not supported and may cause issues.").color(TextColor.color(0xFF5555)));
-+            Command.broadcastCommandMessage(sender, Component.text("If you encounter any issues please use the /stop command to restart your server.").color(TextColor.color(0xFF5555)));
++            Command.broadcastCommandMessage(sender, Component.text("Please note that this command is not supported and may cause issues.").color(AdventureTextColor.RED));
++            Command.broadcastCommandMessage(sender, Component.text("If you encounter any issues please use the /stop command to restart your server.").color(AdventureTextColor.RED));
 +
 +            MinecraftServer console = MinecraftServer.getServer();
 +            AndromedaConfiguration.init((File) console.options.valueOf("andromeda-settings"));
@@ -181,7 +181,7 @@ index 0000000000000000000000000000000000000000..42e77cde618a21f44dcc8ba95bb5799d
 +            }
 +            console.server.reloadCount++;
 +
-+            Command.broadcastCommandMessage(sender, Component.text("Successfully reloaded Andromeda configuration.").color(TextColor.color(0x55FF55)));
++            Command.broadcastCommandMessage(sender, Component.text("Successfully reloaded Andromeda configuration.").color(AdventureTextColor.GREEN));
 +        } else if (args[0].equalsIgnoreCase("version")) {
 +            Command verCmd = org.bukkit.Bukkit.getServer().getCommandMap().getCommand("version");
 +            if (verCmd != null) {
@@ -436,4 +436,32 @@ index 0000000000000000000000000000000000000000..035147a3df93b6ba46458bdef2c9a618
 +        final Map<String, Object> value = AndromedaConfiguration.getMap("world-settings." + worldName + "." + path, null);
 +        return value.isEmpty() ? fallback : value;
 +    }
++}
+diff --git a/src/main/java/team/earendel/andromeda/constants/AdventureTextColor.java b/src/main/java/team/earendel/andromeda/constants/AdventureTextColor.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4d2d9a8ad4e46f5a5c09a43f6e0a024c6c9fdb89
+--- /dev/null
++++ b/src/main/java/team/earendel/andromeda/constants/AdventureTextColor.java
+@@ -0,0 +1,22 @@
++package team.earendel.andromeda.constants;
++
++import net.kyori.adventure.text.format.TextColor;
++
++public final class AdventureTextColor {
++    public static final TextColor BLACK = TextColor.color(0x000000);
++    public static final TextColor DARK_BLUE = TextColor.color(0x0000AA);
++    public static final TextColor DARK_GREEN = TextColor.color(0x00AA00);
++    public static final TextColor DARK_AQUA = TextColor.color(0x00AAAA);
++    public static final TextColor DARK_RED = TextColor.color(0xAA0000);
++    public static final TextColor DARK_PURPLE = TextColor.color(0xAA00AA);
++    public static final TextColor GOLD = TextColor.color(0xFFAA00);
++    public static final TextColor GRAY = TextColor.color(0xAAAAAA);
++    public static final TextColor DARK_GRAY = TextColor.color(0x555555);
++    public static final TextColor BLUE = TextColor.color(0x5555FF);
++    public static final TextColor GREEN = TextColor.color(0x55FF55);
++    public static final TextColor AQUA = TextColor.color(0x55FFFF);
++    public static final TextColor RED = TextColor.color(0xFF5555);
++    public static final TextColor LIGHT_PURPLE = TextColor.color(0xFF55FF);
++    public static final TextColor YELLOW = TextColor.color(0xFFFF55);
++    public static final TextColor WHITE = TextColor.color(0xFFFFFF);
 +}

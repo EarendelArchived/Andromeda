@@ -1,0 +1,65 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Thu, 22 Dec 2022 20:52:01 +0900
+Subject: [PATCH] Add option to configure portal size
+
+
+diff --git a/src/main/java/net/minecraft/world/level/portal/PortalShape.java b/src/main/java/net/minecraft/world/level/portal/PortalShape.java
+index e7554ec800f321e4e34c926c53f2375a8c3aa979..94f9c89cdf2b7b4fea7991ed8dc86e5239f202f3 100644
+--- a/src/main/java/net/minecraft/world/level/portal/PortalShape.java
++++ b/src/main/java/net/minecraft/world/level/portal/PortalShape.java
+@@ -100,7 +100,7 @@ public class PortalShape {
+     private int calculateWidth() {
+         int i = this.getDistanceUntilEdgeAboveFrame(this.bottomLeft, this.rightDir);
+ 
+-        return i >= 2 && i <= 21 ? i : 0;
++        return i >= this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMinWidth && (this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMaxWidth == -1 || i <= this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMaxWidth) ? i : 0; // Andromeda
+     }
+ 
+     private int getDistanceUntilEdgeAboveFrame(BlockPos pos, Direction direction) {
+@@ -133,7 +133,7 @@ public class PortalShape {
+         BlockPos.MutableBlockPos blockposition_mutableblockposition = new BlockPos.MutableBlockPos();
+         int i = this.getDistanceUntilTop(blockposition_mutableblockposition);
+ 
+-        return i >= 3 && i <= 21 && this.hasTopFrame(blockposition_mutableblockposition, i) ? i : 0;
++        return i >= this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMinHeight && (this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMaxHeight == -1 || i <= this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMaxHeight) && this.hasTopFrame(blockposition_mutableblockposition, i) ? i : 0; // Andromeda
+     }
+ 
+     private boolean hasTopFrame(BlockPos.MutableBlockPos pos, int height) {
+@@ -187,7 +187,11 @@ public class PortalShape {
+     }
+ 
+     public boolean isValid() {
+-        return this.bottomLeft != null && this.width >= 2 && this.width <= 21 && this.height >= 3 && this.height <= 21;
++        // Andromeda start
++        boolean i = this.width >= this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMinWidth && (this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMaxWidth == -1 || this.width <= this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMaxWidth);
++        boolean j = this.height >= this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMinHeight && (this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMaxHeight == -1 || this.width <= this.level.getMinecraftWorld().andromedaWorldConfiguration.portalMaxHeight);
++        return this.bottomLeft != null && i && j;
++        // Andromeda end
+     }
+ 
+     // CraftBukkit start - return boolean
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+index 035147a3df93b6ba46458bdef2c9a618eb2e59a2..ad4cf28b2eee0bf5e03b02458add31e597fbeaf2 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+@@ -72,4 +72,19 @@ public class AndromedaWorldConfiguration {
+         final Map<String, Object> value = AndromedaConfiguration.getMap("world-settings." + worldName + "." + path, null);
+         return value.isEmpty() ? fallback : value;
+     }
++
++    public int portalMinWidth = 2;
++    public int portalMinHeight = 3;
++    public int portalMaxWidth = 21;
++    public int portalMaxHeight = 21;
++    private void netherPortalSizeSettings() {
++        portalMinWidth = getInt("nether-portal.size.width.min", portalMinWidth);
++        portalMinHeight = getInt("nether-portal.size.height.min", portalMinHeight);
++        portalMaxWidth = getInt("nether-portal.size.width.max", portalMaxWidth);
++        portalMaxHeight = getInt("nether-portal.size.height.max", portalMaxHeight);
++        if (portalMinWidth < 1) portalMinWidth = 1;
++        if (portalMinHeight < 2) portalMinHeight = 2;
++        if (portalMaxWidth < portalMinWidth && !(portalMaxWidth == -1)) portalMaxWidth = 21;
++        if (portalMaxHeight < portalMinHeight && !(portalMaxHeight == -1)) portalMaxHeight = 21;
++    }
+ }
