@@ -14218,7 +14218,7 @@ index b75945807b425609394c343da56c316a769f0a29..ab33a30995d741898cd034fe0fad99ef
  
      @Nullable
 diff --git a/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java b/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java
-index 5d487f1613b1fc5807283c20e5cc23a432d08f42..9ff882352b3fb69d8a8ecaf1908709761b3e9658 100644
+index daa2224b021c966751eb39f269ffbfe6e7f3d426..aba0633361d4d933a3c18049595f3deb1d39da1a 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java
 @@ -67,6 +67,43 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
@@ -15107,7 +15107,7 @@ index 574ebb3a2fcd0e4e426a8a7ee88d722ed3b9c3f5..842b921799111789b37a34b76644c921
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-index e7ef36dac559d03d127cf45373a7e0dc935b80a8..d90ee7058a2362620c51542ecbf29caa219cf929 100644
+index 09a4c0d30898bbdc05e32b6f1d4b0436a5e4af53..ddd2320389d47c3c0fd9186a0cb4de28a30a9be0 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
 @@ -72,6 +72,7 @@ public abstract class AbstractArrow extends Projectile {
@@ -15118,7 +15118,7 @@ index e7ef36dac559d03d127cf45373a7e0dc935b80a8..d90ee7058a2362620c51542ecbf29caa
  
      // Spigot Start
      @Override
-@@ -323,7 +324,7 @@ public abstract class AbstractArrow extends Projectile {
+@@ -312,7 +313,7 @@ public abstract class AbstractArrow extends Projectile {
          Vec3 vec3d = this.getDeltaMovement();
  
          this.setDeltaMovement(vec3d.multiply((double) (this.random.nextFloat() * 0.2F), (double) (this.random.nextFloat() * 0.2F), (double) (this.random.nextFloat() * 0.2F)));
@@ -15127,7 +15127,7 @@ index e7ef36dac559d03d127cf45373a7e0dc935b80a8..d90ee7058a2362620c51542ecbf29caa
      }
  
      @Override
-@@ -623,6 +624,12 @@ public abstract class AbstractArrow extends Projectile {
+@@ -612,6 +613,12 @@ public abstract class AbstractArrow extends Projectile {
          this.knockback = punch;
      }
  
@@ -20594,7 +20594,7 @@ index e43fd3e59fd8c74828ae65965fade27f56beef65..b2f133c8baabba1cffa6e92ea0f85453
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index dd063e8b0df7505a96cd25dc5c797c0c04dfdfd0..2d49774f195c2f72004319b2e35763c7071969f1 100644
+index 6a52ae70b5f7fd9953b6b2605cae722f606e7fec..b65c39645aa437fdb1ac745ec18bba11f63f092d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -545,6 +545,15 @@ public class CraftEventFactory {
