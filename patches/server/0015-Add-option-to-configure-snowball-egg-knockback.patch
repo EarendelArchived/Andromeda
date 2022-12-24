@@ -5,25 +5,19 @@ Subject: [PATCH] Add option to configure snowball & egg knockback
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
-index c7c10c89871a3ee6d21da4bb19407a68759b3ade..525982c9cab877e3c16b8aef5a4c5b5f8e109c90 100644
+index c7c10c89871a3ee6d21da4bb19407a68759b3ade..b425e2160eaea11cd3ff1b971983e2e2ebc7caba 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
-@@ -3,6 +3,7 @@ package net.minecraft.world.entity.projectile;
- import net.minecraft.core.particles.ItemParticleOption;
- import net.minecraft.core.particles.ParticleOptions;
- import net.minecraft.core.particles.ParticleTypes;
-+import net.minecraft.server.level.ServerPlayer;
- import net.minecraft.world.damagesource.DamageSource;
- import net.minecraft.world.entity.Entity;
- import net.minecraft.world.entity.EntityType;
-@@ -54,6 +55,10 @@ public class Snowball extends ThrowableItemProjectile {
+@@ -54,6 +54,12 @@ public class Snowball extends ThrowableItemProjectile {
      protected void onHitEntity(EntityHitResult entityHitResult) {
          super.onHitEntity(entityHitResult);
          Entity entity = entityHitResult.getEntity();
-+        if (!this.level.andromedaWorldConfiguration.snowballKnockbackOnlyPlayers || (entity instanceof ServerPlayer && !((ServerPlayer) entity).getAbilities().invulnerable)) {
++        // Andromeda start
++        if (!this.level.andromedaWorldConfiguration.snowballKnockbackOnlyPlayers || (entity instanceof net.minecraft.server.level.ServerPlayer && !((net.minecraft.server.level.ServerPlayer) entity).getAbilities().invulnerable)) {
 +            entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().normalize().multiply(this.level.andromedaWorldConfiguration.snowballKnockback, this.level.andromedaWorldConfiguration.snowballKnockback, this.level.andromedaWorldConfiguration.snowballKnockback)));
 +            entity.hurtMarked = true;
 +        }
++        // Andromeda end
          int i = entity.level.purpurConfig.snowballDamage >= 0 ? entity.level.purpurConfig.snowballDamage : entity instanceof Blaze ? 3 : 0; // Purpur
          entity.hurt(DamageSource.thrown(this, this.getOwner()), (float)i);
      }

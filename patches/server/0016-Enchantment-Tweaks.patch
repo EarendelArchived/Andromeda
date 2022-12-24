@@ -1,0 +1,97 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 24 Dec 2022 19:48:15 +0900
+Subject: [PATCH] Enchantment Tweaks
+
+
+diff --git a/src/main/java/net/minecraft/world/item/enchantment/DamageEnchantment.java b/src/main/java/net/minecraft/world/item/enchantment/DamageEnchantment.java
+index d6c354856c71d9629828e2ddbe316306bfaf6ea6..98789ea5e03f374e77d23a0de093a55d91859383 100644
+--- a/src/main/java/net/minecraft/world/item/enchantment/DamageEnchantment.java
++++ b/src/main/java/net/minecraft/world/item/enchantment/DamageEnchantment.java
+@@ -47,11 +47,13 @@ public class DamageEnchantment extends Enchantment {
+ 
+     @Override
+     public boolean checkCompatibility(Enchantment other) {
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.mixableWeaponEnchantment) return true; // Andromeda - Enchantment Tweaks
+         return !(other instanceof DamageEnchantment);
+     }
+ 
+     @Override
+     public boolean canEnchant(ItemStack stack) {
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.weaponEnchantmentOnTrident && stack.getItem() instanceof net.minecraft.world.item.TridentItem) return true; // Andromeda - Enchantment Tweaks
+         return stack.getItem() instanceof AxeItem ? true : super.canEnchant(stack);
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java b/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
+index 2381f72a5e980b8659f6253054996bbcad2844fc..a5b2bead3d34552e71ee41778c48f3993b8fdef8 100644
+--- a/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
++++ b/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
+@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EquipmentSlot;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.MobType;
+ import net.minecraft.world.item.ItemStack;
++import net.minecraft.world.level.storage.loot.functions.LootingEnchantFunction;
+ 
+ public abstract class Enchantment {
+     public final EquipmentSlot[] slots;
+@@ -110,6 +111,18 @@ public abstract class Enchantment {
+     }
+ 
+     public boolean canEnchant(ItemStack stack) {
++        // Andromeda start
++        if (this instanceof FireAspectEnchantment) {
++            if (stack.getItem() instanceof net.minecraft.world.item.TridentItem) return team.earendel.andromeda.configurations.AndromedaConfiguration.fireAspectOnTrident;
++            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.AndromedaConfiguration.fireAspectOnAxe;
++        } else if (this instanceof KnockbackEnchantment) {
++            if (stack.getItem() instanceof net.minecraft.world.item.TridentItem) return team.earendel.andromeda.configurations.AndromedaConfiguration.knockbackOnTrident;
++            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.AndromedaConfiguration.knockbackOnAxe;
++        } else if (this instanceof LootBonusEnchantment) {
++            if (stack.getItem() instanceof net.minecraft.world.item.TridentItem) return team.earendel.andromeda.configurations.AndromedaConfiguration.lootingOnTrident;
++            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.AndromedaConfiguration.lootingOnAxe;
++        }
++        // Andromeda end
+         return this.category.canEnchant(stack.getItem());
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/item/enchantment/ProtectionEnchantment.java b/src/main/java/net/minecraft/world/item/enchantment/ProtectionEnchantment.java
+index a38194accb2d0ba204ab2f81b4be6031842faf9c..97551d995554b5678eec92659f396db02af03da0 100644
+--- a/src/main/java/net/minecraft/world/item/enchantment/ProtectionEnchantment.java
++++ b/src/main/java/net/minecraft/world/item/enchantment/ProtectionEnchantment.java
+@@ -51,6 +51,7 @@ public class ProtectionEnchantment extends Enchantment {
+             if (this.type == protectionEnchantment.type) {
+                 return false;
+             } else {
++                if (team.earendel.andromeda.configurations.AndromedaConfiguration.mixableProtectionEnchantment) return true; // Andromeda - Enchantment Tweaks
+                 return this.type == ProtectionEnchantment.Type.FALL || protectionEnchantment.type == ProtectionEnchantment.Type.FALL;
+             }
+         } else {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+index aead10a61a82bfdb7511e8048ed8eb96542cbfc5..96ad664e62a98365a82b268c4c607049828d6061 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+@@ -162,4 +162,25 @@ public class AndromedaConfiguration {
+         offlineWarning = getBoolean("options.ports.rubia.unsupported-settings.server.offline-warning", offlineWarning);
+         allowAnyNickname = getBoolean("options.ports.rubia.unsupported-settings.players.allow-any-nickname", allowAnyNickname);
+     }
++
++    public static boolean mixableWeaponEnchantment = false;
++    public static boolean mixableProtectionEnchantment = false;
++    public static boolean weaponEnchantmentOnTrident = false;
++    public static boolean fireAspectOnTrident = false;
++    public static boolean knockbackOnTrident = false;
++    public static boolean lootingOnTrident = false;
++    public static boolean fireAspectOnAxe = false;
++    public static boolean knockbackOnAxe = false;
++    public static boolean lootingOnAxe = false;
++    private static void enchantmentSettings() {
++        mixableWeaponEnchantment = getBoolean("options.enchantments.mixable-weapon-enchantment", mixableWeaponEnchantment);
++        mixableProtectionEnchantment = getBoolean("options.enchantments.mixable-protection-enchantment", mixableProtectionEnchantment);
++        weaponEnchantmentOnTrident = getBoolean("options.enchantments.trident.allow-weapon-enchantments", weaponEnchantmentOnTrident);
++        fireAspectOnTrident = getBoolean("options.enchantments.trident.allow-fire-aspect", fireAspectOnTrident);
++        knockbackOnTrident = getBoolean("options.enchantments.trident.allow-knockback", knockbackOnTrident);
++        lootingOnTrident = getBoolean("options.enchantments.trident.allow-looting", lootingOnTrident);
++        fireAspectOnAxe = getBoolean("options.enchantments.axe.allow-fire-aspect", fireAspectOnAxe);
++        knockbackOnAxe = getBoolean("options.enchantments.axe.allow-knockback", knockbackOnAxe);
++        lootingOnAxe = getBoolean("options.enchantments.axe.allow-looting", lootingOnAxe);
++    }
+ }
