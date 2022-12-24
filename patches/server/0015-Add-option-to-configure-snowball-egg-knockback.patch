@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 24 Dec 2022 19:03:29 +0900
+Subject: [PATCH] Add option to configure snowball & egg knockback
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
+index c7c10c89871a3ee6d21da4bb19407a68759b3ade..525982c9cab877e3c16b8aef5a4c5b5f8e109c90 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
+@@ -3,6 +3,7 @@ package net.minecraft.world.entity.projectile;
+ import net.minecraft.core.particles.ItemParticleOption;
+ import net.minecraft.core.particles.ParticleOptions;
+ import net.minecraft.core.particles.ParticleTypes;
++import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.world.damagesource.DamageSource;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityType;
+@@ -54,6 +55,10 @@ public class Snowball extends ThrowableItemProjectile {
+     protected void onHitEntity(EntityHitResult entityHitResult) {
+         super.onHitEntity(entityHitResult);
+         Entity entity = entityHitResult.getEntity();
++        if (!this.level.andromedaWorldConfiguration.snowballKnockbackOnlyPlayers || (entity instanceof ServerPlayer && !((ServerPlayer) entity).getAbilities().invulnerable)) {
++            entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().normalize().multiply(this.level.andromedaWorldConfiguration.snowballKnockback, this.level.andromedaWorldConfiguration.snowballKnockback, this.level.andromedaWorldConfiguration.snowballKnockback)));
++            entity.hurtMarked = true;
++        }
+         int i = entity.level.purpurConfig.snowballDamage >= 0 ? entity.level.purpurConfig.snowballDamage : entity instanceof Blaze ? 3 : 0; // Purpur
+         entity.hurt(DamageSource.thrown(this, this.getOwner()), (float)i);
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java b/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
+index bdddec9510d84c8940b6116ede389bcac3680ab1..61acc2b8ba936ecc4276fd793d35c0279dd91588 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
+@@ -46,7 +46,13 @@ public class ThrownEgg extends ThrowableItemProjectile {
+     @Override
+     protected void onHitEntity(EntityHitResult entityHitResult) {
+         super.onHitEntity(entityHitResult);
+-        entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), 0.0F);
++        // Andromeda start
++        if (!this.level.andromedaWorldConfiguration.eggKnockbackOnlyPlayers || (entityHitResult.getEntity() instanceof ServerPlayer && !((ServerPlayer) entityHitResult.getEntity()).getAbilities().invulnerable)) {
++            entityHitResult.getEntity().setDeltaMovement(entityHitResult.getEntity().getDeltaMovement().add(this.getDeltaMovement().normalize().multiply(this.level.andromedaWorldConfiguration.eggKnockback, this.level.andromedaWorldConfiguration.eggKnockback, this.level.andromedaWorldConfiguration.eggKnockback)));
++            entityHitResult.getEntity().hurtMarked = true;
++        }
++        if (!this.level.andromedaWorldConfiguration.eggDamageOnlyPlayers || entityHitResult.getEntity() instanceof ServerPlayer) entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), this.level.andromedaWorldConfiguration.eggDamage);
++        // Andromeda end
+     }
+ 
+     @Override
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+index cef9f9c4b3abfe5fcd2f3235a2e70112714df44e..042e46d72b340e1bf75b2ed295595863ff149242 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+@@ -94,4 +94,22 @@ public class AndromedaWorldConfiguration {
+         breakBoatWhenLand = getBoolean("entity.boat.break-when-land.enabled", breakBoatWhenLand);
+         dropBoatItems = getBoolean("entity.boat.break-when-land.drop-items", dropBoatItems);
+     }
++
++    public float eggKnockback = 0.0f;
++    public float eggDamage = 0.0f;
++    public boolean eggKnockbackOnlyPlayers = false;
++    public boolean eggDamageOnlyPlayers = false;
++    private void eggSettings() {
++        eggKnockback = (float) getDouble("entity.egg.knockback.value", eggKnockback);
++        eggDamage = (float) getDouble("entity.egg.damage.value", eggDamage);
++        eggKnockbackOnlyPlayers = getBoolean("entity.egg.knockback.only-players", eggKnockbackOnlyPlayers);
++        eggDamageOnlyPlayers = getBoolean("entity.egg.damage.only-players", eggDamageOnlyPlayers);
++    }
++
++    public float snowballKnockback = 0.0f;
++    public boolean snowballKnockbackOnlyPlayers = false;
++    private void snowballSettings() {
++        snowballKnockback = (float) getDouble("entity.snowball.knockback.value", snowballKnockback);
++        snowballKnockbackOnlyPlayers = getBoolean("entity.snowball.knockback.only-players", snowballKnockbackOnlyPlayers);
++    }
+ }

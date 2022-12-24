@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 23 Dec 2022 16:39:51 +0900
+Subject: [PATCH] Fix MC-7569
+
+
+diff --git a/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java b/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
+index 986beb0f2400b9f1d2fc3637574ddd01b1f07b8e..0da88060a7ebc5258718783b1d7a2e12d45c213e 100644
+--- a/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
++++ b/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
+@@ -36,7 +36,7 @@ public class RconConsoleSource implements CommandSource {
+ 
+     // CraftBukkit start - Send a String
+     public void sendMessage(String message) {
+-        this.buffer.append(message);
++        this.buffer.append(message + System.lineSeparator()); // Andromeda - Fix MC-7569
+     }
+ 
+     @Override
