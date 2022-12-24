@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 24 Dec 2022 22:37:12 +0900
+Subject: [PATCH] Temporary patch
+
+
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+index 619509538875f2876a53d7d1863f28d979931504..da658ff20b752b2539ad06d5717ca30008e718f5 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+@@ -2570,7 +2570,7 @@ public class PurpurWorldConfig {
+     public double spiderMaxHealth = 16.0D;
+     public boolean spiderTakeDamageFromWater = false;
+     public boolean spiderAlwaysDropExp = false;
+-    public boolean spiderCanClimbWorldBorder = true;
++    // public boolean spiderCanClimbWorldBorder = true; // Andromeda - Temp
+     private void spiderSettings() {
+         spiderRidable = getBoolean("mobs.spider.ridable", spiderRidable);
+         spiderRidableInWater = getBoolean("mobs.spider.ridable-in-water", spiderRidableInWater);
+@@ -2583,7 +2583,7 @@ public class PurpurWorldConfig {
+         spiderMaxHealth = getDouble("mobs.spider.attributes.max_health", spiderMaxHealth);
+         spiderTakeDamageFromWater = getBoolean("mobs.spider.takes-damage-from-water", spiderTakeDamageFromWater);
+         spiderAlwaysDropExp = getBoolean("mobs.spider.always-drop-exp", spiderAlwaysDropExp);
+-        spiderCanClimbWorldBorder = getBoolean("mobs.spider.can-climb-world-border", spiderCanClimbWorldBorder);
++        // spiderCanClimbWorldBorder = getBoolean("mobs.spider.can-climb-world-border", spiderCanClimbWorldBorder); // Andromeda - Temp
+     }
+ 
+     public boolean strayRidable = false;

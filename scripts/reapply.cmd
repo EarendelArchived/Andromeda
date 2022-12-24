@@ -4,4 +4,4 @@ taskkill /f /t /im git.exe >> NUL
 rd /s /q Andromeda-API >> NUL
 rd /s /q Andromeda-Server >> NUL
 rd /s /q .gradle >> NUL
-echo Complete.
+call gradlew.bat applyPatches
