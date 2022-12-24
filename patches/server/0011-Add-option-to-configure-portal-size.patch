@@ -40,11 +40,11 @@ index e7554ec800f321e4e34c926c53f2375a8c3aa979..94f9c89cdf2b7b4fea7991ed8dc86e52
  
      // CraftBukkit start - return boolean
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
-index 035147a3df93b6ba46458bdef2c9a618eb2e59a2..3b9457200c6170db9e3510521174e3ef1c65a63b 100644
+index f08d6191938ed88c3158554f6a2e1333e93e18d8..6c19f68b1380bb769c89267c04b7a6fa2f5388a6 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 @@ -72,4 +72,19 @@ public class AndromedaWorldConfiguration {
-         final Map<String, Object> value = AndromedaConfiguration.getMap("world-settings." + worldName + "." + path, null);
+         final Map<String, Object> value = AndromedaConfiguration.getMap("world-configurations." + worldName + "." + path, null);
          return value.isEmpty() ? fallback : value;
      }
 +

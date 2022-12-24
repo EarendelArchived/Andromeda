@@ -5,7 +5,7 @@ Subject: [PATCH] Andromeda Configurations
 
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 46858fb57f122033a68aeb4ad3943132a677fb46..21e273fe6bd4f1961238b6d3f93733086ed7abb8 100644
+index 46858fb57f122033a68aeb4ad3943132a677fb46..dde1c108f1d8592d5afa9d164cba048a40b2a4e4 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -227,6 +227,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -14,7 +14,7 @@ index 46858fb57f122033a68aeb4ad3943132a677fb46..21e273fe6bd4f1961238b6d3f9373308
          // Purpur end
 +        // Andromeda start
 +        try {
-+            team.earendel.andromeda.configurations.AndromedaConfiguration.init((java.io.File) options.valueOf("andromeda-settings"));
++            team.earendel.andromeda.configurations.AndromedaConfiguration.init((java.io.File) options.valueOf("andromeda-configuration"));
 +        } catch (Exception e) {
 +            DedicatedServer.LOGGER.error("Unable to load Andromeda configurations", e);
 +            return false;
@@ -122,7 +122,7 @@ index 082d0516c80cf231dd7ceb454508bb77407c499b..1fbd4dec8fef701d524a7f30ff013721
                          .withRequiredArg()
 diff --git a/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java b/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d4b5efc515ad2018ac93f2b52bd5119457966429
+index 0000000000000000000000000000000000000000..d1bb4a054dae700de21293da4c406e29da30c885
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java
 @@ -0,0 +1,66 @@
@@ -175,7 +175,7 @@ index 0000000000000000000000000000000000000000..d4b5efc515ad2018ac93f2b52bd51194
 +            Command.broadcastCommandMessage(sender, Component.text("If you encounter any issues please use the /stop command to restart your server.").color(AdventureTextColor.RED));
 +
 +            MinecraftServer console = MinecraftServer.getServer();
-+            AndromedaConfiguration.init((File) console.options.valueOf("andromeda-settings"));
++            AndromedaConfiguration.init((File) console.options.valueOf("andromeda-configuration"));
 +            for (ServerLevel level : console.getAllLevels()) {
 +                level.andromedaWorldConfiguration.init();
 +            }
@@ -194,7 +194,7 @@ index 0000000000000000000000000000000000000000..d4b5efc515ad2018ac93f2b52bd51194
 +}
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..12cec2acfbfc25f21a5f04e2617dd1df7036b7c6
+index 0000000000000000000000000000000000000000..54a533aaaad0c515156e4da8d5fd4bc627742796
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 @@ -0,0 +1,158 @@
@@ -253,8 +253,8 @@ index 0000000000000000000000000000000000000000..12cec2acfbfc25f21a5f04e2617dd1df
 +        commands = new HashMap<>();
 +        commands.put("andromeda", new AndromedaCommand("andromeda"));
 +
-+        version = getInt("config-version", 31);
-+        set("config-version", 31);
++        version = getInt("config-version", 1);
++        set("config-version", 1);
 +
 +        readConfig(AndromedaConfiguration.class, null);
 +
@@ -358,7 +358,7 @@ index 0000000000000000000000000000000000000000..12cec2acfbfc25f21a5f04e2617dd1df
 +}
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..035147a3df93b6ba46458bdef2c9a618eb2e59a2
+index 0000000000000000000000000000000000000000..f08d6191938ed88c3158554f6a2e1333e93e18d8
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 @@ -0,0 +1,75 @@
@@ -383,57 +383,57 @@ index 0000000000000000000000000000000000000000..035147a3df93b6ba46458bdef2c9a618
 +    }
 +
 +    public void init() {
-+        log("-------- World Settings For [" + worldName + "] --------");
++        log("-------- World Configurations For [" + worldName + "] --------");
 +        AndromedaConfiguration.readConfig(AndromedaWorldConfiguration.class, this);
 +    }
 +
 +    private void set(String path, Object val) {
-+        AndromedaConfiguration.configuration.addDefault("world-settings.default." + path, val);
-+        AndromedaConfiguration.configuration.set("world-settings.default." + path, val);
-+        if (AndromedaConfiguration.configuration.get("world-settings." + worldName + "." + path) != null) {
-+            AndromedaConfiguration.configuration.addDefault("world-settings." + worldName + "." + path, val);
-+            AndromedaConfiguration.configuration.set("world-settings." + worldName + "." + path, val);
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, val);
++        AndromedaConfiguration.configuration.set("world-configurations.default." + path, val);
++        if (AndromedaConfiguration.configuration.get("world-configurations." + worldName + "." + path) != null) {
++            AndromedaConfiguration.configuration.addDefault("world-configurations." + worldName + "." + path, val);
++            AndromedaConfiguration.configuration.set("world-configurations." + worldName + "." + path, val);
 +        }
 +    }
 +
 +    private ConfigurationSection getConfigurationSection(String path) {
-+        ConfigurationSection section = AndromedaConfiguration.configuration.getConfigurationSection("world-settings." + worldName + "." + path);
-+        return section != null ? section : AndromedaConfiguration.configuration.getConfigurationSection("world-settings.default." + path);
++        ConfigurationSection section = AndromedaConfiguration.configuration.getConfigurationSection("world-configurations." + worldName + "." + path);
++        return section != null ? section : AndromedaConfiguration.configuration.getConfigurationSection("world-configurations.default." + path);
 +    }
 +
 +    private String getString(String path, String def) {
-+        AndromedaConfiguration.configuration.addDefault("world-settings.default." + path, def);
-+        return AndromedaConfiguration.configuration.getString("world-settings." + worldName + "." + path, AndromedaConfiguration.configuration.getString("world-settings.default." + path));
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getString("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getString("world-configurations.default." + path));
 +    }
 +
 +    private int getInt(String path, int def) {
-+        AndromedaConfiguration.configuration.addDefault("world-settings.default." + path, def);
-+        return AndromedaConfiguration.configuration.getInt("world-settings." + worldName + "." + path, AndromedaConfiguration.configuration.getInt("world-settings.default." + path));
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getInt("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getInt("world-configurations.default." + path));
 +    }
 +
 +    private boolean getBoolean(String path, boolean def) {
-+        AndromedaConfiguration.configuration.addDefault("world-settings.default." + path, def);
-+        return AndromedaConfiguration.configuration.getBoolean("world-settings." + worldName + "." + path, AndromedaConfiguration.configuration.getBoolean("world-settings.default." + path));
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getBoolean("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getBoolean("world-configurations.default." + path));
 +    }
 +
 +    private double getDouble(String path, double def) {
-+        AndromedaConfiguration.configuration.addDefault("world-settings.default." + path, def);
-+        return AndromedaConfiguration.configuration.getDouble("world-settings." + worldName + "." + path, AndromedaConfiguration.configuration.getDouble("world-settings.default." + path));
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getDouble("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getDouble("world-configurations.default." + path));
 +    }
 +
 +    private double getLong(String path, long def) {
-+        AndromedaConfiguration.configuration.addDefault("world-settings.default." + path, def);
-+        return AndromedaConfiguration.configuration.getLong("world-settings." + worldName + "." + path, AndromedaConfiguration.configuration.getLong("world-settings.default." + path));
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getLong("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getLong("world-configurations.default." + path));
 +    }
 +
 +    private <T> List<?> getList(String path, T def) {
-+        AndromedaConfiguration.configuration.addDefault("world-settings.default." + path, def);
-+        return AndromedaConfiguration.configuration.getList("world-settings." + worldName + "." + path, AndromedaConfiguration.configuration.getList("world-settings.default." + path));
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getList("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getList("world-configurations.default." + path));
 +    }
 +
 +    private Map<String, Object> getMap(String path, Map<String, Object> def) {
-+        final Map<String, Object> fallback = AndromedaConfiguration.getMap("world-settings.default." + path, def);
-+        final Map<String, Object> value = AndromedaConfiguration.getMap("world-settings." + worldName + "." + path, null);
++        final Map<String, Object> fallback = AndromedaConfiguration.getMap("world-configurations.default." + path, def);
++        final Map<String, Object> value = AndromedaConfiguration.getMap("world-configurations." + worldName + "." + path, null);
 +        return value.isEmpty() ? fallback : value;
 +    }
 +}
