@@ -54,7 +54,7 @@ index de573098c76725f1bfd88fb3f42bbd9411e52db1..e8f1775c90e5556ba4788a9af8b68434
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index fba5dbdb7bcbb55400ef18342c9b54612972a718..9105be6d4000b6ba1ea89be8556e9a7be8f88523 100644
+index fba5dbdb7bcbb55400ef18342c9b54612972a718..abd9b2bb9b2079b1eef20e3b1ab1c5c24cc91e65 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
@@ -94,13 +94,18 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..9105be6d4000b6ba1ea89be8556e9a7b
          //int distance; // Purpur - use field
          try {
              int jenkinsBuild = Integer.parseInt(versionInfo);
-@@ -81,8 +82,12 @@ public class PaperVersionFetcher implements VersionFetcher {
-                                         .hoverEvent(Component.text("Click to open", NamedTextColor.WHITE))
-                                         .clickEvent(ClickEvent.openUrl(DOWNLOAD_PAGE))));
+@@ -65,6 +66,9 @@ public class PaperVersionFetcher implements VersionFetcher {
+             versionInfo = versionInfo.replace("\"", "");
+             distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
          }
-+         */ // Andromeda - Disalbe CI Checking
-+         versionInfo = versionInfo.replace("\"", ""); // Andromeda
-+         distance = fetchDistanceFromGitHub(repo, branch, versionInfo); // Andromeda
++         */ // Andromeda - Disable CI Checking
++        versionInfo = versionInfo.replace("\"", ""); // Andromeda
++        distance = fetchDistanceFromGitHub(repo, branch, versionInfo); // Andromeda
+ 
+         switch (distance) {
+             case -1:
+@@ -83,6 +87,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+         }
      }
  
 +    /* // Andromeda - Disalbe CI Checking
