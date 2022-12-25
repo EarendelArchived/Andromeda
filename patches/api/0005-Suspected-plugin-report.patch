@@ -1,0 +1,250 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sun, 25 Dec 2022 21:51:32 +0900
+Subject: [PATCH] Suspected plugin report
+
+
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index 75be5cdfeb30732975bbc38dc7aab52a0cdead9c..758f83b14ecdbcd4f0b20aa62ef21354ca574e30 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -632,7 +632,11 @@ public final class SimplePluginManager implements PluginManager {
+     // Paper start
+     private void handlePluginException(String msg, Throwable ex, Plugin plugin) {
+         gg.pufferfish.pufferfish.sentry.SentryContext.setPluginContext(plugin); // Pufferfish
+-        server.getLogger().log(Level.SEVERE, msg, ex);
++        // Andromeda start - suspected plugins report
++        server.getLogger().severe(msg);
++        team.earendel.andromeda.internal.StacktraceUtils.print(ex, _msg -> server.getLogger().severe(_msg));
++        server.getLogger().log(Level.SEVERE, team.earendel.andromeda.internal.StacktraceUtils.EXCEPTION_DETAILS_BELOW, ex);
++        // Andromeda end
+         gg.pufferfish.pufferfish.sentry.SentryContext.removePluginContext(); // Pufferfish
+         callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerPluginEnableDisableException(msg, ex, plugin)));
+     }
+@@ -695,7 +699,11 @@ public final class SimplePluginManager implements PluginManager {
+                 gg.pufferfish.pufferfish.sentry.SentryContext.setEventContext(event, registration); // Pufferfish
+                 // Paper start - error reporting
+                 String msg = "Could not pass event " + event.getEventName() + " to " + registration.getPlugin().getDescription().getFullName();
+-                server.getLogger().log(Level.SEVERE, msg, ex);
++                // Andromeda start
++                server.getLogger().severe(msg);
++                team.earendel.andromeda.internal.StacktraceUtils.print(ex, _msg -> server.getLogger().severe(_msg));
++                server.getLogger().log(Level.SEVERE, team.earendel.andromeda.internal.StacktraceUtils.EXCEPTION_DETAILS_BELOW, ex);
++                // Andromeda end
+                 gg.pufferfish.pufferfish.sentry.SentryContext.removeEventContext(); // Pufferfish
+                 if (!(event instanceof com.destroystokyo.paper.event.server.ServerExceptionEvent)) { // We don't want to cause an endless event loop
+                     callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerEventException(msg, ex, registration.getPlugin(), registration.getListener(), event)));
+@@ -986,4 +994,10 @@ public final class SimplePluginManager implements PluginManager {
+     }
+     // Paper end
+ 
++    // Andromeda start - Accessor
++    public Collection<PluginLoader> getPluginLoaders() {
++        return new HashSet<>(fileAssociations.values());
++    }
++    // Andromeda end
++
+ }
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+index 3bea5dd67ad0393160ccede4ac99a3c7baa1803b..9012350665f05c232341492392f59466d10e1ca7 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+@@ -112,7 +112,7 @@ public abstract class JavaPlugin extends PluginBase {
+      * @return File containing this plugin
+      */
+     @NotNull
+-    protected File getFile() {
++    public File getFile() { // Andromeda - protected -> public
+         return file;
+     }
+ 
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+index d7ac5d5bb6180f97706be9c5ef25956f244bc376..5ac280b1be921b926b39dd2dbdc92ab1d1f17781 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+@@ -372,7 +372,12 @@ public final class JavaPluginLoader implements PluginLoader {
+                 jPlugin.setEnabled(true);
+             } catch (Throwable ex) {
+                 gg.pufferfish.pufferfish.sentry.SentryContext.setPluginContext(plugin); // Pufferfish
+-                server.getLogger().log(Level.SEVERE, "Error occurred while enabling " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
++                // Andromeda start
++                String msg = "Error occurred while enabling " + plugin.getDescription().getFullName() + " (Is it up to date?)";
++                server.getLogger().severe(msg);
++                team.earendel.andromeda.internal.StacktraceUtils.print(ex, _msg -> server.getLogger().severe(_msg));
++                server.getLogger().log(Level.SEVERE, team.earendel.andromeda.internal.StacktraceUtils.EXCEPTION_DETAILS_BELOW, ex);
++                // Andromeda end
+                 gg.pufferfish.pufferfish.sentry.SentryContext.removePluginContext(); // Pufferfish
+                 // Paper start - Disable plugins that fail to load
+                 this.server.getPluginManager().disablePlugin(jPlugin);
+@@ -420,10 +425,19 @@ public final class JavaPluginLoader implements PluginLoader {
+                 try {
+                     loader.close();
+                 } catch (IOException ex) {
+-                    //
+                     this.server.getLogger().log(Level.WARNING, "Error closing the PluginClassLoader for '" + plugin.getDescription().getFullName() + "'", ex); // Paper - log exception
++                    // Andromeda start - Detailed report
++                    team.earendel.andromeda.internal.StacktraceUtils.print(ex, _msg -> server.getLogger().warning(_msg));
++                    server.getLogger().log(Level.WARNING, team.earendel.andromeda.internal.StacktraceUtils.EXCEPTION_DETAILS_BELOW, ex);
++                    // Andromeda end
+                 }
+             }
+         }
+     }
++
++    // Andromeda start - Accessor
++    public List<PluginClassLoader> getClassLoaders() {
++        return java.util.Collections.unmodifiableList(loaders);
++    }
++    // Andromeda end
+ }
+diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+index 6fb179c4d420eac3a6399fbff104b5af6ba448ba..9f4bf6deb440bee4ecc69e2d22427e2105babd78 100644
+--- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+@@ -20,6 +20,8 @@ import java.util.jar.JarEntry;
+ import java.util.jar.JarFile;
+ import java.util.jar.Manifest;
+ import java.util.logging.Level;
++import java.util.stream.Collectors;
++
+ import org.bukkit.plugin.InvalidPluginException;
+ import org.bukkit.plugin.PluginDescriptionFile;
+ import org.bukkit.plugin.SimplePluginManager;
+@@ -278,4 +280,14 @@ public final class PluginClassLoader extends URLClassLoader { // Spigot
+                    '}';
+     }
+     // Paper end
++
++    // Andromeda start - Accessor
++    public java.util.Collection<Class<?>> getLoadedClasses() {
++        return java.util.Collections.unmodifiableCollection(
++                new java.util.HashSet<>(classes.values()).stream()
++                        .filter(clazz -> clazz.getClassLoader() == this)
++                        .collect(java.util.stream.Collectors.toSet())
++        );
++    }
++    // Andromeda end
+ }
+diff --git a/src/main/java/team/earendel/andromeda/internal/StacktraceUtils.java b/src/main/java/team/earendel/andromeda/internal/StacktraceUtils.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..608380c21cfddb8c069659344a1b2e9c8d7008e6
+--- /dev/null
++++ b/src/main/java/team/earendel/andromeda/internal/StacktraceUtils.java
+@@ -0,0 +1,105 @@
++package team.earendel.andromeda.internal;
++
++import com.google.common.base.Suppliers;
++import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
++import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
++import org.bukkit.Bukkit;
++import org.bukkit.plugin.Plugin;
++import org.bukkit.plugin.PluginLoader;
++import org.bukkit.plugin.SimplePluginManager;
++import org.bukkit.plugin.java.JavaPlugin;
++import org.bukkit.plugin.java.JavaPluginLoader;
++import org.bukkit.plugin.java.PluginClassLoader;
++
++import java.util.Arrays;
++import java.util.Collection;
++import java.util.Collections;
++import java.util.HashSet;
++import java.util.List;
++import java.util.Map;
++import java.util.Set;
++import java.util.concurrent.TimeUnit;
++import java.util.function.Consumer;
++import java.util.function.Supplier;
++import java.util.stream.Collectors;
++
++public class StacktraceUtils {
++
++    public static final String EXCEPTION_DETAILS_BELOW = "Exception details below: ";
++
++    private static final Supplier<Map<Plugin, Set<Class<?>>>> loadedClassesSupplier = Suppliers.memoizeWithExpiration(StacktraceUtils::scanForPluginClasses, 5, TimeUnit.SECONDS);
++
++    public static void print(StackTraceElement[] stackTrace, Consumer<String> out) {
++        Set<Plugin> suspectedPlugins = getSuspectedPluginsFromStackTrace(stackTrace);
++
++        printSuspectedPlugins(out, suspectedPlugins);
++    }
++
++    public static void print(Throwable t, Consumer<String> out) {
++        Set<Plugin> suspectedPlugins = getSuspectedPluginsFromStackTrace(getStackTracesFromThrowable(t).toArray(new StackTraceElement[0]));
++
++        printSuspectedPlugins(out, suspectedPlugins);
++    }
++
++    private static Set<StackTraceElement> getStackTracesFromThrowable(Throwable t) {
++        if(t == null) return Collections.emptySet();
++        Set<StackTraceElement> elements = new ObjectOpenHashSet<>();
++        elements.addAll(getStackTracesFromThrowable(t.getCause()));
++        elements.addAll(Arrays.stream(t.getSuppressed()).flatMap(throwable -> getStackTracesFromThrowable(throwable).stream()).collect(Collectors.toSet()));
++        elements.addAll(Arrays.asList(t.getStackTrace()));
++        return elements;
++    }
++
++    private static void printSuspectedPlugins(Consumer<String> out, Set<Plugin> suspectedPlugins) {
++        if (!suspectedPlugins.isEmpty()) {
++            out.accept("Suspected Plugins: ");
++            for (Plugin plugin : suspectedPlugins) {
++                StringBuilder builder = new StringBuilder("\t");
++                builder.append(plugin.getName())
++                        .append("{")
++                        .append(plugin.isEnabled() ? "enabled" : "disabled")
++                        .append(",").append("ver=").append(plugin.getDescription().getVersion());
++                if (!plugin.isNaggable())
++                    builder.append(",").append("nag");
++                if (plugin instanceof JavaPlugin)
++                    builder.append(",").append("path=").append(((JavaPlugin) plugin).getFile());
++
++                builder.append("}");
++                out.accept(builder.toString());
++            }
++        } else {
++            out.accept("Suspected Plugins: None");
++        }
++    }
++
++    private static Set<Plugin> getSuspectedPluginsFromStackTrace(StackTraceElement[] stackTrace) {
++        Map<Plugin, Set<Class<?>>> loadedClasses = loadedClassesSupplier.get();
++        Set<Plugin> suspectedPlugins = new HashSet<>();
++        for (StackTraceElement stackTraceElement : stackTrace) {
++            for (Map.Entry<Plugin, Set<Class<?>>> pluginSetEntry : loadedClasses.entrySet()) {
++                if (pluginSetEntry.getValue().stream().anyMatch(clazz -> clazz.getName().equals(stackTraceElement.getClassName())))
++                    suspectedPlugins.add(pluginSetEntry.getKey());
++            }
++        }
++        return suspectedPlugins;
++    }
++
++    private static Map<Plugin, Set<Class<?>>> scanForPluginClasses() {
++        Map<Plugin, Set<Class<?>>> loadedClasses = new Object2ObjectOpenHashMap<>();
++        if (Bukkit.getPluginManager() instanceof SimplePluginManager) {
++            final SimplePluginManager pluginManager = (SimplePluginManager) Bukkit.getPluginManager();
++            final Collection<PluginLoader> pluginLoaders = pluginManager.getPluginLoaders();
++            for (PluginLoader pluginLoader : pluginLoaders) {
++                if (pluginLoader instanceof JavaPluginLoader) {
++                    JavaPluginLoader javaPluginLoader = (JavaPluginLoader) pluginLoader;
++                    final List<PluginClassLoader> classLoaders = javaPluginLoader.getClassLoaders();
++                    for (PluginClassLoader classLoader : classLoaders) {
++                        loadedClasses.put(classLoader.getPlugin(), new ObjectOpenHashSet<>(classLoader.getLoadedClasses()));
++                    }
++                }
++            }
++        }
++        return loadedClasses;
++    }
++
++}
+diff --git a/src/test/java/org/bukkit/AnnotationTest.java b/src/test/java/org/bukkit/AnnotationTest.java
+index 7769e19a5a86b5c76094058d31269fc6cc9f0ac3..1a9bb7656971dfea61158af18125aa1c696f97c2 100644
+--- a/src/test/java/org/bukkit/AnnotationTest.java
++++ b/src/test/java/org/bukkit/AnnotationTest.java
+@@ -63,6 +63,7 @@ public class AnnotationTest {
+         "co/aikar/timings/TimingHistory$4",
+         "co/aikar/timings/TimingHistoryEntry$1"
+         // Paper end
++        ,"team/earendel/andromeda/internal/StacktraceUtils" // Andromeda
+     };
+ 
+     @Test
