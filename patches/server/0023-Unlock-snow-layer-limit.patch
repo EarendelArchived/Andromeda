@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Mon, 26 Dec 2022 00:11:11 +0900
+Subject: [PATCH] Unlock snow layer limit
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index b396a329e753f42b3878736b6b14bafda02d3744..0ad3d1a3ef2b165625d472a817adc04878fc0eeb 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -926,11 +926,13 @@ public class ServerLevel extends Level implements WorldGenLevel {
+                     iblockdata = this.getBlockState(blockposition);
+                     if (iblockdata.is(Blocks.SNOW)) {
+                         l = (Integer) iblockdata.getValue(SnowLayerBlock.LAYERS);
+-                        if (l < Math.min(i1, 8)) {
++                        if (l < i1) { // Andromeda - unlock snow layer limit
++                            if (l < 8) { // Andromeda
+                             BlockState iblockdata1 = (BlockState) iblockdata.setValue(SnowLayerBlock.LAYERS, l + 1);
+ 
+                             Block.pushEntitiesUp(iblockdata, iblockdata1, this, blockposition);
+                             org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this, blockposition, iblockdata1, null); // CraftBukkit
++                            } else this.setBlock(blockposition, Blocks.SNOW_BLOCK.defaultBlockState(), 3); // Andromeda
+                         }
+                     } else {
+                         org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this, blockposition, Blocks.SNOW.defaultBlockState(), null); // CraftBukkit

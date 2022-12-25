@@ -155,6 +155,31 @@ index b5b6657e52e4f7a630229bd3ba433438af293e22..703b2cb51940ff8625d022e884258ff4
          // Purpur end
          stringbuilder.append("// ");
          stringbuilder.append(CrashReport.getErrorComment());
+diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
+index 31faf2d6492696f7d0c99a48edbc0d6f15db1209..c5175ba257b51170a5cff984ccb65df73443e1df 100644
+--- a/src/main/java/net/minecraft/server/Main.java
++++ b/src/main/java/net/minecraft/server/Main.java
+@@ -76,6 +76,20 @@ public class Main {
+ 
+     @DontObfuscate
+     public static void main(final OptionSet optionset) { // CraftBukkit - replaces main(String[] astring)
++        // Andromeda start - Branding
++        LOGGER.warn("ANDROMEDA IS VERY UNSTABLE, SO DO NOT USE IT IN PRODUCTION SERVER!");
++        System.out.println("""
++                
++                  /$$$$$$  /$$   /$$ /$$$$$$$  /$$$$$$$   /$$$$$$  /$$      /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$\s
++                 /$$__  $$| $$$ | $$| $$__  $$| $$__  $$ /$$__  $$| $$$    /$$$| $$_____/| $$__  $$ /$$__  $$
++                | $$  \\ $$| $$$$| $$| $$  \\ $$| $$  \\ $$| $$  \\ $$| $$$$  /$$$$| $$      | $$  \\ $$| $$  \\ $$
++                | $$$$$$$$| $$ $$ $$| $$  | $$| $$$$$$$/| $$  | $$| $$ $$/$$ $$| $$$$$   | $$  | $$| $$$$$$$$
++                | $$__  $$| $$  $$$$| $$  | $$| $$__  $$| $$  | $$| $$  $$$| $$| $$__/   | $$  | $$| $$__  $$
++                | $$  | $$| $$\\  $$$| $$  | $$| $$  \\ $$| $$  | $$| $$\\  $ | $$| $$      | $$  | $$| $$  | $$
++                | $$  | $$| $$ \\  $$| $$$$$$$/| $$  | $$|  $$$$$$/| $$ \\/  | $$| $$$$$$$$| $$$$$$$/| $$  | $$
++                |__/  |__/|__/  \\__/|_______/ |__/  |__/ \\______/ |__/     |__/|________/|_______/ |__/  |__/
++                """);
++        // Andromeda end
+         SharedConstants.tryDetectVersion();
+         /* CraftBukkit start - Replace everything
+         OptionParser optionparser = new OptionParser();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
 index cea4447aad2d64db56a76e4ba180dc7326d2e13b..3325e688c6bf1bfc14569cbf9e6b1981d46cb42d 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
