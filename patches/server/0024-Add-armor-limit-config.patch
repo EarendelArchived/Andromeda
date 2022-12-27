@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Tue, 27 Dec 2022 21:43:14 +0900
+Subject: [PATCH] Add armor limit config
+
+
+diff --git a/src/main/java/net/minecraft/world/damagesource/CombatRules.java b/src/main/java/net/minecraft/world/damagesource/CombatRules.java
+index ccbfcef3e83b1bef364447657bfd08a92d615cf6..7f8e084e9c7113e46b26a6eac13401cf43f91896 100644
+--- a/src/main/java/net/minecraft/world/damagesource/CombatRules.java
++++ b/src/main/java/net/minecraft/world/damagesource/CombatRules.java
+@@ -11,12 +11,12 @@ public class CombatRules {
+ 
+     public static float getDamageAfterAbsorb(float damage, float armor, float armorToughness) {
+         float f = 2.0F + armorToughness / 4.0F;
+-        float g = Mth.clamp(armor - damage / f, armor * 0.2F, 20.0F);
++        float g = Mth.clamp(armor - damage / f, armor * 0.2F, team.earendel.andromeda.configurations.AndromedaConfiguration.armorAttributeLimit);
+         return damage * (1.0F - g / 25.0F);
+     }
+ 
+     public static float getDamageAfterMagicAbsorb(float damageDealt, float protection) {
+-        float f = Mth.clamp(protection, 0.0F, 20.0F);
++        float f = Mth.clamp(protection, 0.0F, team.earendel.andromeda.configurations.AndromedaConfiguration.armorAttributeLimit);
+         return damageDealt * (1.0F - f / 25.0F);
+     }
+ }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+index 45f48e26594f3312da94e70cc7ee94fb1ca501ba..42edeb98ae832739a83c9083f5b27659a05a7c9b 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+@@ -183,4 +183,9 @@ public class AndromedaConfiguration {
+         knockbackOnAxe = getBoolean("options.enchantments.axe.allow-knockback", knockbackOnAxe);
+         lootingOnAxe = getBoolean("options.enchantments.axe.allow-looting", lootingOnAxe);
+     }
++
++    public static float armorAttributeLimit = 20.0F;
++    private static void attributeSettings() {
++        armorAttributeLimit = (float) getDouble("options.attributes.armor-limit", armorAttributeLimit);
++    }
+ }
