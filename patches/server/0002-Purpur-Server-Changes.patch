@@ -2812,7 +2812,7 @@ index 877498729c66de9aa6a27c9148f7494d7895615c..acd7468ee3c86d3456e96e4ec3d7e6a4
              Util.logAndPauseIfInIde("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + pos + ", status: " + this.generatingStatus + (this.currentlyGenerating == null ? "" : ", currently generating: " + (String) this.currentlyGenerating.get()));
              hasSetFarWarned = true;
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd1851135835 100644
+index c89e430cfddb431ee1d20e59f8bd60e3a3a952b9..be44d43ee9b5fec44f1b3cb27e7180ba370f6de7 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -259,6 +259,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -3101,7 +3101,7 @@ index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd18
          player.getBukkitEntity().setResourcePackStatus(packStatus);
          this.cserver.getPluginManager().callEvent(new PlayerResourcePackStatusEvent(this.getCraftPlayer(), packStatus)); // CraftBukkit
          // Paper end
-@@ -2357,7 +2447,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2359,7 +2449,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
          do {
              instant1 = (Instant) this.lastChatTimeStamp.get();
              if (timestamp.isBefore(instant1)) {
@@ -3110,7 +3110,7 @@ index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd18
              }
          } while (!this.lastChatTimeStamp.compareAndSet(instant1, timestamp));
  
-@@ -2494,7 +2584,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2496,7 +2586,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
              }
          }
          // Paper End
@@ -3119,7 +3119,7 @@ index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd18
          if ( org.spigotmc.SpigotConfig.logCommands ) // Spigot
          this.LOGGER.info(this.player.getScoreboardName() + " issued server command: " + s);
  
-@@ -2504,7 +2594,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2506,7 +2596,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
          this.cserver.getPluginManager().callEvent(event);
  
          if (event.isCancelled()) {
@@ -3128,7 +3128,7 @@ index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd18
              return;
          }
  
-@@ -2517,7 +2607,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2519,7 +2609,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
              java.util.logging.Logger.getLogger(ServerGamePacketListenerImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
              return;
          } finally {
@@ -3137,7 +3137,7 @@ index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd18
          }
      }
      // CraftBukkit end
-@@ -2757,6 +2847,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2759,6 +2849,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
              }
  
              if (entity.distanceToSqr(this.player.getEyePosition()) < ServerGamePacketListenerImpl.MAX_INTERACTION_DISTANCE) {
@@ -3145,7 +3145,7 @@ index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd18
                  packet.dispatch(new ServerboundInteractPacket.Handler() {
                      private void performInteraction(InteractionHand enumhand, ServerGamePacketListenerImpl.EntityInteraction playerconnection_a, PlayerInteractEntityEvent event) { // CraftBukkit
                          ItemStack itemstack = ServerGamePacketListenerImpl.this.player.getItemInHand(enumhand);
-@@ -2770,6 +2861,8 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2772,6 +2863,8 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
  
                              ServerGamePacketListenerImpl.this.cserver.getPluginManager().callEvent(event);
  
@@ -3154,7 +3154,7 @@ index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd18
                              // Entity in bucket - SPIGOT-4048 and SPIGOT-6859a
                              if ((entity instanceof Bucketable && entity instanceof LivingEntity && origItem != null && origItem.asItem() == Items.WATER_BUCKET) && (event.isCancelled() || ServerGamePacketListenerImpl.this.player.getInventory().getSelected() == null || ServerGamePacketListenerImpl.this.player.getInventory().getSelected().getItem() != origItem)) {
                                  entity.getEntityData().resendPossiblyDesyncedEntity(player); // Paper - The entire mob gets deleted, so resend it.
-@@ -3427,11 +3520,17 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3429,11 +3522,17 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
              for (int i = 0; i < signText.size(); ++i) {
                  FilteredText filteredtext = (FilteredText) signText.get(i);
  
@@ -3175,7 +3175,7 @@ index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd18
              }
              SignChangeEvent event = new SignChangeEvent((org.bukkit.craftbukkit.block.CraftBlock) player.getWorld().getBlockAt(x, y, z), this.player.getBukkitEntity(), lines);
              this.cserver.getPluginManager().callEvent(event);
-@@ -3453,6 +3552,16 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3455,6 +3554,16 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
  
      @Override
      public void handleKeepAlive(ServerboundKeepAlivePacket packet) {
@@ -3192,7 +3192,7 @@ index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd18
          //PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel()); // CraftBukkit // Paper - This shouldn't be on the main thread
          if (this.keepAlivePending && packet.getId() == this.keepAliveChallenge) {
              int i = (int) (Util.getMillis() - this.keepAliveTime);
-@@ -3503,6 +3612,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3505,6 +3614,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
      private static final ResourceLocation CUSTOM_UNREGISTER = new ResourceLocation("unregister");
  
      private static final ResourceLocation MINECRAFT_BRAND = new ResourceLocation("brand"); // Paper - Brand support
@@ -3200,7 +3200,7 @@ index 34540b4ebad2ec430fa12e1e5d9d6e4a79df91de..a37849179a34d0ba5997f7d83c10bd18
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
-@@ -3527,6 +3637,13 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -3529,6 +3639,13 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                  ServerGamePacketListenerImpl.LOGGER.error("Couldn\'t unregister custom payload", ex);
                  this.disconnect("Invalid payload UNREGISTER!", org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PAYLOAD); // Paper - kick event cause
              }
@@ -3269,7 +3269,7 @@ index 9ddbfcf80d9a381dace78a62880f85a4d767e0eb..7383c7d3820dce06108eaafd236a7c6c
      }
  
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index c0b599b1835d28ddda3690b29f29bd8c6f03e215..7d5ba99a674855967256b74fd9fd21749dcde8a3 100644
+index f381bf9064be548a4a603e0042886d8a5e70ba5b..c38acf2f364ed64b8ab1f4a8ef3b270c49e9fbdb 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -449,6 +449,7 @@ public abstract class PlayerList {
@@ -19934,7 +19934,7 @@ index f8d321e925bf2708e51590542325c1bdc67d5964..804f81c478c09a5b6d0b10a78dc2b7ae
      public PersistentDataContainer getPersistentDataContainer() {
          return this.persistentDataContainer;
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 119d9bb5e41038704654e248bf168d22af246b7f..082d0516c80cf231dd7ceb454508bb77407c499b 100644
+index 190e17eb28d166aedee06e9578561ba402d1b6d2..576cd8e20982bb20d10213b6c7a229428eec1c2f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -166,6 +166,20 @@ public class Main {

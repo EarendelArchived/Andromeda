@@ -2513,7 +2513,7 @@ index 54c2b7fba83d6f06dba95b1bb5b487a02048d6e6..53198ebfa30273c5ddc1bb4324f5174f
              this.getRandomBlockPosition(j, 0, k, 15, blockposition);
              int normalY = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, blockposition.getX() & 15, blockposition.getZ() & 15) + 1;
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 08cb3db28f13c352a162009deeb28ee637e98d2a..34540b4ebad2ec430fa12e1e5d9d6e4a79df91de 100644
+index 50d8d16b1856c0c875ccabbcfc240379a7669559..c89e430cfddb431ee1d20e59f8bd60e3a3a952b9 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1204,6 +1204,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -2524,7 +2524,7 @@ index 08cb3db28f13c352a162009deeb28ee637e98d2a..34540b4ebad2ec430fa12e1e5d9d6e4a
          // Paper start
          if (!this.cserver.isPrimaryThread()) {
              List<String> pageList = packet.getPages();
-@@ -2350,6 +2351,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2352,6 +2353,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
      }
  
      private boolean updateChatOrder(Instant timestamp) {
