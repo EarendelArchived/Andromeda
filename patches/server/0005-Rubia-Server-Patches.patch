@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 21e273fe6bd4f1961238b6d3f93733086ed7abb8..cd344a6b6ee1ceed9cde3d9cb37f46e27cad4203 100644
+index dde1c108f1d8592d5afa9d164cba048a40b2a4e4..ff5b8dd3dc9c6649189f31db1dd3e74a73ef1638 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -318,7 +318,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -54,7 +54,7 @@ index f7f085a2dc5dc8d09bc665a371afac04b0e118fc..01e0b400f4cc144c5eb8c573d86ffcfe
          // Paper start - validate usernames
          if (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode() && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.performUsernameValidation) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 12cec2acfbfc25f21a5f04e2617dd1df7036b7c6..aead10a61a82bfdb7511e8048ed8eb96542cbfc5 100644
+index 54a533aaaad0c515156e4da8d5fd4bc627742796..8ba84372436e0df4888344d656272c9bb13ed48c 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 @@ -155,4 +155,11 @@ public class AndromedaConfiguration {

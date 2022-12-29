@@ -750,10 +750,10 @@ index 0f9a3a6c05fee59c29764f0c0d7a6cb8a2a861b1..dd6a43522054a26fce1fa2793df31e15
  
              set.clear();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 88bfcfa843017bfcb18e859ce192bd864a52aa32..ab3f9057a768723f899157761485aefa95b69d1d 100644
+index 094afd5636590608c8ec31c9fec97614dfef60db..1397b5a0f9a95682a6b09db10a53bbbda29d7f86 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -1027,20 +1027,20 @@ public abstract class LivingEntity extends Entity {
+@@ -1026,20 +1026,20 @@ public abstract class LivingEntity extends Entity {
          }
  
          if (entity != null) {

@@ -110,7 +110,7 @@ index a9fb2d5e95d5caa71b794eda0f2749ff795ed4e7..92b238c32b622cd1614cd2f6613320f1
      public void openCustomInventoryScreen(Player player) {
          player.openMenu(this);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
-index 3b9457200c6170db9e3510521174e3ef1c65a63b..cef9f9c4b3abfe5fcd2f3235a2e70112714df44e 100644
+index 6c19f68b1380bb769c89267c04b7a6fa2f5388a6..04349f42130221f39e8a29e8376008afdf3bb3a7 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 @@ -87,4 +87,11 @@ public class AndromedaWorldConfiguration {

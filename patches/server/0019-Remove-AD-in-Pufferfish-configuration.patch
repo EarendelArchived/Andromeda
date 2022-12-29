@@ -5,10 +5,10 @@ Subject: [PATCH] Remove AD in Pufferfish configuration
 
 
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-index c0f44f0593aab16d5ceab493f4075772f454732e..80c0505534e8c4abaf4584fd7de029a8cda2c057 100644
+index f3593297929842b52e4467ed4386ab12586b1b70..ec95c80659e8045ad0135b186f10d28234139293 100644
 --- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-@@ -72,7 +72,7 @@ public class PufferfishConfig {
+@@ -64,7 +64,7 @@ public class PufferfishConfig {
  		getString("info.version", "1.0");
  		setComment("info",
  				"Pufferfish Configuration",

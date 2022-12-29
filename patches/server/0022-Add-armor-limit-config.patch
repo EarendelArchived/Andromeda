@@ -5,21 +5,21 @@ Subject: [PATCH] Add armor limit config
 
 
 diff --git a/src/main/java/net/minecraft/world/damagesource/CombatRules.java b/src/main/java/net/minecraft/world/damagesource/CombatRules.java
-index ccbfcef3e83b1bef364447657bfd08a92d615cf6..7f8e084e9c7113e46b26a6eac13401cf43f91896 100644
+index aa2331c6df4e79d4bb0add071a0b11d2a3a08b88..38c88b2784e6999c59cf599020b4b0c7354cd1cb 100644
 --- a/src/main/java/net/minecraft/world/damagesource/CombatRules.java
 +++ b/src/main/java/net/minecraft/world/damagesource/CombatRules.java
 @@ -11,12 +11,12 @@ public class CombatRules {
  
      public static float getDamageAfterAbsorb(float damage, float armor, float armorToughness) {
          float f = 2.0F + armorToughness / 4.0F;
--        float g = Mth.clamp(armor - damage / f, armor * 0.2F, 20.0F);
-+        float g = Mth.clamp(armor - damage / f, armor * 0.2F, team.earendel.andromeda.configurations.AndromedaConfiguration.armorAttributeLimit);
+-        float g = Mth.clamp(armor - damage / f, armor * 0.2F, org.purpurmc.purpur.PurpurConfig.limitArmor ? 20F : Float.MAX_VALUE); // Purpur
++        float g = Mth.clamp(armor - damage / f, armor * 0.2F, org.purpurmc.purpur.PurpurConfig.limitArmor ? 20F : team.earendel.andromeda.configurations.AndromedaConfiguration.armorAttributeLimit); // Purpur // Andromeda
          return damage * (1.0F - g / 25.0F);
      }
  
      public static float getDamageAfterMagicAbsorb(float damageDealt, float protection) {
--        float f = Mth.clamp(protection, 0.0F, 20.0F);
-+        float f = Mth.clamp(protection, 0.0F, team.earendel.andromeda.configurations.AndromedaConfiguration.armorAttributeLimit);
+-        float f = Mth.clamp(protection, 0.0F, org.purpurmc.purpur.PurpurConfig.limitArmor ? 20F : Float.MAX_VALUE); // Purpur
++        float f = Mth.clamp(protection, 0.0F, org.purpurmc.purpur.PurpurConfig.limitArmor ? 20F : team.earendel.andromeda.configurations.AndromedaConfiguration.armorAttributeLimit); // Purpur // Andromeda
          return damageDealt * (1.0F - f / 25.0F);
      }
  }

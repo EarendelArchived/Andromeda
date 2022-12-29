@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index f51650608adcc962a02f2d921ab457892c61b224..804e415b192b88a9503b9a480ddd930ea1933f1d 100644
+index d5b7458f6b79addf1a12eb82443ba5bdbe2ea5d3..42f5a43ed9356cea7fa5fc9e8e790544c7747c3c 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -7,7 +7,7 @@ plugins {
@@ -17,7 +17,7 @@ index f51650608adcc962a02f2d921ab457892c61b224..804e415b192b88a9503b9a480ddd930e
      // Pufferfish start
      implementation("io.papermc.paper:paper-mojangapi:1.19.3-R0.1-SNAPSHOT") {
          exclude("io.papermc.paper", "paper-api")
-@@ -84,7 +84,7 @@ tasks.jar {
+@@ -83,7 +83,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
@@ -27,27 +27,22 @@ index f51650608adcc962a02f2d921ab457892c61b224..804e415b192b88a9503b9a480ddd930e
              "Specification-Title" to "Bukkit",
              "Specification-Version" to project.version,
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index de573098c76725f1bfd88fb3f42bbd9411e52db1..e8f1775c90e5556ba4788a9af8b68434a5d557b1 100644
+index 9713263c3bd34ab8a3bfc0a8797ba0b1b88ed733..9d9c9bcbd9bd86915e084f2438eae2a732eadd33 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
 @@ -593,7 +593,7 @@ public class Metrics {
              boolean logFailedRequests = config.getBoolean("logFailedRequests", false);
              // Only start Metrics, if it's enabled in the config
              if (config.getBoolean("enabled", true)) {
--                Metrics metrics = new Metrics("Purpur", serverUUID, logFailedRequests, Bukkit.getLogger()); // Pufferfish // Purpur
-+                Metrics metrics = new Metrics("Andromeda", serverUUID, logFailedRequests, Bukkit.getLogger()); // Pufferfish // Purpur // Andromeda
+-                Metrics metrics = new Metrics("Purpur", serverUUID, logFailedRequests, Bukkit.getLogger()); // Purpur
++                Metrics metrics = new Metrics("Andromeda", serverUUID, logFailedRequests, Bukkit.getLogger()); // Purpur // Andromeda
  
                  metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
                      String minecraftVersion = Bukkit.getVersion();
-@@ -607,11 +607,11 @@ public class Metrics {
-                 final String implVersion = org.bukkit.craftbukkit.Main.class.getPackage().getImplementationVersion();
-                 if (implVersion != null) {
-                     final String buildOrHash = implVersion.substring(implVersion.lastIndexOf('-') + 1);
--                    paperVersion = "git-Purpur-%s-%s".formatted(Bukkit.getServer().getMinecraftVersion(), buildOrHash); // Pufferfish // Purpur
-+                    paperVersion = "git-Andromeda-%s-%s".formatted(Bukkit.getServer().getMinecraftVersion(), buildOrHash); // Pufferfish // Purpur // Andromeda
-                 } else {
-                     paperVersion = "unknown";
-                 }
+@@ -603,7 +603,7 @@ public class Metrics {
+ 
+                 metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> Bukkit.getOnlinePlayers().size()));
+                 metrics.addCustomChart(new Metrics.SimplePie("online_mode", () -> Bukkit.getOnlineMode() ? "online" : (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode() ? "bungee" : "offline"))); // Purpur
 -                metrics.addCustomChart(new Metrics.SimplePie("purpur_version", () -> (org.bukkit.craftbukkit.Main.class.getPackage().getImplementationVersion() != null) ? org.bukkit.craftbukkit.Main.class.getPackage().getImplementationVersion() : "unknown")); // Purpur
 +                metrics.addCustomChart(new Metrics.SimplePie("andromeda_version", () -> (org.bukkit.craftbukkit.Main.class.getPackage().getImplementationVersion() != null) ? org.bukkit.craftbukkit.Main.class.getPackage().getImplementationVersion() : "unknown")); // Purpur // Andromeda
  
@@ -281,11 +276,11 @@ index fb87620c742ff7912f5e8ccd2a7930dd605576d9..dddea464dcae91def0ac56c8ff0477f5
          }
  
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 76cbfb7e900bf2698776f54cfe498f4b42965221..37a0cd49f64b92a7dc7ef89979e741bc87256ab8 100644
+index c7c0ed8dfe58c841faf684a1fe228eeda6cd57b7..c27036fd4df69e5d0257d48a2a6efda8c609c81f 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -244,7 +244,7 @@ public class PurpurConfig {
-         if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
+@@ -227,7 +227,7 @@ public class PurpurConfig {
+         deathMessageOnlyBroadcastToAffectedPlayer = getBoolean("settings.broadcasts.death.only-broadcast-to-affected-player", deathMessageOnlyBroadcastToAffectedPlayer);
      }
  
 -    public static String serverModName = "Purpur";

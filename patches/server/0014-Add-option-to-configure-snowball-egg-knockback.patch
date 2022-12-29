@@ -41,7 +41,7 @@ index bdddec9510d84c8940b6116ede389bcac3680ab1..61acc2b8ba936ecc4276fd793d35c027
  
      @Override
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
-index cef9f9c4b3abfe5fcd2f3235a2e70112714df44e..042e46d72b340e1bf75b2ed295595863ff149242 100644
+index 04349f42130221f39e8a29e8376008afdf3bb3a7..2dad18c781b84dd8f823515641f60e1f920b6778 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 @@ -94,4 +94,22 @@ public class AndromedaWorldConfiguration {
