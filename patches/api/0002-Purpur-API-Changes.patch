@@ -1260,7 +1260,7 @@ index bc84b892cae5fe7019a3ad481e9da79956efa1fe..48eb5b00c460cccde29d327cef1d63fc
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index de960716478477ce199526b8f860cfafa1541ee9..17c517571b953a5d3743211f5617640f21072498 100644
+index de960716478477ce199526b8f860cfafa1541ee9..f65a860d09d9f1d5045b2af63a80109e7c1c4ddf 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -2428,6 +2428,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
@@ -1278,7 +1278,7 @@ index de960716478477ce199526b8f860cfafa1541ee9..17c517571b953a5d3743211f5617640f
      /**
       * Gets whether the player has the "Allow Server Listings" setting enabled.
       *
-@@ -2920,4 +2928,153 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2920,4 +2928,139 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      @Override
      Spigot spigot();
      // Spigot end
@@ -1330,20 +1330,6 @@ index de960716478477ce199526b8f860cfafa1541ee9..17c517571b953a5d3743211f5617640f
 +     * @param invulnerableTicks Invulnerable ticks remaining
 +     */
 +    void setSpawnInvulnerableTicks(int invulnerableTicks);
-+
-+    /**
-+     * Allows you to enable fall damage while {@link #getAllowFlight()} is {@code true}
-+     *
-+     * @param flyingFallDamage Enables fall damage when {@link #getAllowFlight()} is true
-+     */
-+    public void setFlyingFallDamage(boolean flyingFallDamage);
-+
-+    /**
-+     * Allows you get if fall damage is enabled while {@link #getAllowFlight()} is {@code true}
-+     *
-+     * @return True if fall damage is enabled when {@link #getAllowFlight()} is true
-+     */
-+    public boolean hasFlyingFallDamage();
 +
 +    /**
 +     * Creates debug block highlight on specified block location and show it to this player.
