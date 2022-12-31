@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: "github-actions[bot]"
  <41898282+github-actions[bot]@users.noreply.github.com>
-Date: Fri, 30 Dec 2022 08:55:14 +0000
+Date: Sat, 31 Dec 2022 02:08:51 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -11035,7 +11035,7 @@ index d980b906d9206560741576fa4153c57212f307a0..0ac5264a16c9121c0f6233e83c426199
      public boolean doHurtTarget(Entity target) {
          if (super.doHurtTarget(target)) {
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Creeper.java b/src/main/java/net/minecraft/world/entity/monster/Creeper.java
-index 338161d2eb15d9264027961b71678b8d2f020fd8..e7a6eedad374e4cfb91a531126af58e3c3b42a44 100644
+index 338161d2eb15d9264027961b71678b8d2f020fd8..84e172508ec4591c57a2668d11fac84be6e75f0a 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Creeper.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Creeper.java
 @@ -59,21 +59,130 @@ public class Creeper extends Monster implements PowerableMob {
@@ -11169,7 +11169,7 @@ index 338161d2eb15d9264027961b71678b8d2f020fd8..e7a6eedad374e4cfb91a531126af58e3
          this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
          this.targetSelector.addGoal(2, new HurtByTargetGoal(this, new Class[0]));
      }
-@@ -265,11 +374,13 @@ public class Creeper extends Monster implements PowerableMob {
+@@ -265,15 +374,17 @@ public class Creeper extends Monster implements PowerableMob {
      }
  
      public void explodeCreeper() {
@@ -11184,6 +11184,11 @@ index 338161d2eb15d9264027961b71678b8d2f020fd8..e7a6eedad374e4cfb91a531126af58e3
              this.level.getCraftServer().getPluginManager().callEvent(event);
              if (!event.isCancelled()) {
                  this.dead = true;
+-                this.level.explode(this, this.getX(), this.getY(), this.getZ(), event.getRadius(), event.getFire(), Level.ExplosionInteraction.MOB);
++                this.level.explode(this, this.getX(), this.getY(), this.getZ(), event.getRadius(), event.getFire(), this.level.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING) && level.purpurConfig.creeperAllowGriefing ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE); // Purpur
+                 this.discard();
+                 this.spawnLingeringCloud();
+             } else {
 @@ -282,7 +393,7 @@ public class Creeper extends Monster implements PowerableMob {
              }
              // CraftBukkit end
