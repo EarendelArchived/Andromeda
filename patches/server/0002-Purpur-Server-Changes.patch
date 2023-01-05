@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: "github-actions[bot]"
  <41898282+github-actions[bot]@users.noreply.github.com>
-Date: Sat, 31 Dec 2022 02:08:51 +0000
+Date: Thu, 5 Jan 2023 11:38:03 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -3275,7 +3275,7 @@ index 9ddbfcf80d9a381dace78a62880f85a4d767e0eb..7383c7d3820dce06108eaafd236a7c6c
      }
  
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index f381bf9064be548a4a603e0042886d8a5e70ba5b..c38acf2f364ed64b8ab1f4a8ef3b270c49e9fbdb 100644
+index 8961310c0789c4dd95a729ecc0b8dbf8d701ffc4..974f6b0f1ee2d2ff8ad589d1f91e3b3a9cc4de3b 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -449,6 +449,7 @@ public abstract class PlayerList {
@@ -16959,10 +16959,10 @@ index 3b959f42d958bf0f426853aee56753d6c455fcdb..d17abb283ea818244df0379d6b57fc63
                  if (range < 0.0D || d < range * range) {
                      return true;
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index f16593a99ca4089151c2247f6028b823614c78e4..e71368734923c4dfed6cfad6571114b87d8fa6dc 100644
+index a213f4098859858a73ddd601bbe8c7511972e0d5..c0d39afe5b80159ed9aaca4ddd4763d707882f2e 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -362,7 +362,7 @@ public class Explosion {
+@@ -360,7 +360,7 @@ public class Explosion {
                  if (!iblockdata.isAir() && iblockdata.isDestroyable()) { // Paper
                      BlockPos blockposition1 = blockposition.immutable();
  
@@ -16971,7 +16971,7 @@ index f16593a99ca4089151c2247f6028b823614c78e4..e71368734923c4dfed6cfad6571114b8
                      if (block.dropFromExplosion(this)) {
                          Level world = this.level;
  
-@@ -384,7 +384,7 @@ public class Explosion {
+@@ -382,7 +382,7 @@ public class Explosion {
  
                      this.level.setBlock(blockposition, Blocks.AIR.defaultBlockState(), 3);
                      block.wasExploded(this.level, blockposition, this);
@@ -26833,7 +26833,7 @@ index 0000000000000000000000000000000000000000..b7586f494528f30eb0da82420d3bcf5b
 +    }
 +}
 diff --git a/src/main/java/org/spigotmc/ActivationRange.java b/src/main/java/org/spigotmc/ActivationRange.java
-index b87756d9a7b04ea2613208984b2583eca3f32af6..fe830a419c81811f0a72add63a3f09a94392e4a7 100644
+index 76b0e05d448208a50a62c0b5e029430da34faf32..e126789cb1e04835b0e6a0668884334c87c2c4b2 100644
 --- a/src/main/java/org/spigotmc/ActivationRange.java
 +++ b/src/main/java/org/spigotmc/ActivationRange.java
 @@ -15,6 +15,7 @@ import net.minecraft.world.entity.ambient.AmbientCreature;

@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: "github-actions[bot]"
  <41898282+github-actions[bot]@users.noreply.github.com>
-Date: Sat, 31 Dec 2022 02:07:01 +0000
+Date: Thu, 5 Jan 2023 11:34:46 +0000
 Subject: [PATCH] Pufferfish Server Changes
 
 Original: Kevin Raneri <kevin.raneri@gmail.com>
@@ -2664,7 +2664,7 @@ index 66476b33cede1e44db5ec166a0cea81f82ffe47a..5ccd7dc0a093277d3ea09c0fe8be03c0
          if (entity != null) {
              this.ownerUUID = entity.getUUID();
 diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
-index b8fb7b5a347298ada16bc8b818edf1863e3f6040..43b4c4f9630bfa451d135139236ac6fce034ec15 100644
+index cc74eeb45913fab03e85969957215d2811252a83..086feb19f11a6c646b5a1a06aef4df05a4beae8b 100644
 --- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
 +++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
 @@ -27,7 +27,10 @@ import org.bukkit.inventory.InventoryHolder;
@@ -3608,7 +3608,7 @@ index 774556a62eb240da42e84db4502e2ed43495be17..80553face9c70c2a3d897681e7761df8
  
          if (stream != null) {
 diff --git a/src/main/java/org/spigotmc/ActivationRange.java b/src/main/java/org/spigotmc/ActivationRange.java
-index 1b42c98956342832c37f0aa266f85271daa4ba5b..b87756d9a7b04ea2613208984b2583eca3f32af6 100644
+index e9b33072dc4def4b985d39995da15251354fac29..76b0e05d448208a50a62c0b5e029430da34faf32 100644
 --- a/src/main/java/org/spigotmc/ActivationRange.java
 +++ b/src/main/java/org/spigotmc/ActivationRange.java
 @@ -38,6 +38,10 @@ import co.aikar.timings.MinecraftTimings;
