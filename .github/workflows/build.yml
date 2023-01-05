@@ -1,11 +1,11 @@
-name: Build Template # EDIT HERE
+name: Build Andromeda
 on:
   push:
   workflow_dispatch:
 
 env:
   version: 1.19.3
-  branch: ver/1.19.3
+  branch: master
   debug: 'false'
 
 jobs:
