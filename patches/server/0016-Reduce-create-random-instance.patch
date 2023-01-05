@@ -101,7 +101,7 @@ index 02f5dd214cdb59685cb4129bf143904d4cb83011..022d820a7692c380a4a3e63ea6462003
          this.costs = new int[3];
          this.enchantClue = new int[]{-1, -1, -1};
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index e71368734923c4dfed6cfad6571114b87d8fa6dc..bc062184d24cd8a3f7cfffa40dc6dfa07efb26f4 100644
+index c0d39afe5b80159ed9aaca4ddd4763d707882f2e..83dde93586b0051fbfdff8051490b0dd46cd9913 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -81,7 +81,7 @@ public class Explosion {

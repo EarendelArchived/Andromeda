@@ -82,7 +82,7 @@ index 231c71939982ba4ce9305bc8eb6174ed45102c9f..8bc66f31d745d9f88bfa7e19d861b387
                      }
                      } // CraftBukkit end
 diff --git a/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java b/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java
-index a9fb2d5e95d5caa71b794eda0f2749ff795ed4e7..92b238c32b622cd1614cd2f6613320f17e9a56a8 100644
+index a99e2586962952332dd9904ef5bb50a0d3083266..7f4edffdf079da2258bb11deda62a3ae8833b04d 100644
 --- a/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java
 +++ b/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java
 @@ -96,6 +96,23 @@ public class ChestBoat extends Boat implements HasCustomInventoryScreen, Contain
