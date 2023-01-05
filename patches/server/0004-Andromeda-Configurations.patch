@@ -5,10 +5,10 @@ Subject: [PATCH] Andromeda Configurations
 
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 46858fb57f122033a68aeb4ad3943132a677fb46..dde1c108f1d8592d5afa9d164cba048a40b2a4e4 100644
+index 46858fb57f122033a68aeb4ad3943132a677fb46..554e092c39c6ac2a6b7ee7ecb5552b46d5486f69 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -227,6 +227,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -227,6 +227,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          }
          org.purpurmc.purpur.PurpurConfig.registerCommands();
          // Purpur end
@@ -19,6 +19,7 @@ index 46858fb57f122033a68aeb4ad3943132a677fb46..dde1c108f1d8592d5afa9d164cba048a
 +            DedicatedServer.LOGGER.error("Unable to load Andromeda configurations", e);
 +            return false;
 +        }
++        team.earendel.andromeda.configurations.AndromedaConfiguration.registerCommands();
 +        // Andromeda end
          com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider

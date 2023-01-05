@@ -20,10 +20,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index dde1c108f1d8592d5afa9d164cba048a40b2a4e4..ff5b8dd3dc9c6649189f31db1dd3e74a73ef1638 100644
+index 554e092c39c6ac2a6b7ee7ecb5552b46d5486f69..500cbe5e1ccd7b7159a691166c89d35a6bcbd134 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -318,7 +318,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -319,7 +319,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
          // CraftBukkit end
  
@@ -32,7 +32,7 @@ index dde1c108f1d8592d5afa9d164cba048a40b2a4e4..ff5b8dd3dc9c6649189f31db1dd3e74a
              DedicatedServer.LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
              DedicatedServer.LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
              // Spigot start
-@@ -330,7 +330,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -331,7 +331,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
                  DedicatedServer.LOGGER.warn("You will not be offered any support as long as the server allows offline-mode players to join."); // Purpur
              }
              // Spigot end
