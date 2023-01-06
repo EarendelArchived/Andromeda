@@ -22,7 +22,7 @@ index d1d2fc0c57523c1abf1e8bfec913c78927c3dafc..a19e2902778106d4cfa163e24dae63d6
 +    // Andromeda end
  }
 diff --git a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatSessionUpdatePacket.java b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatSessionUpdatePacket.java
-index 9d6db4a378036559efab91c8b7dcf2a6b0c2cce6..f96d892b9862228025f3cfc130f6c5aa510c8cbc 100644
+index 9d6db4a378036559efab91c8b7dcf2a6b0c2cce6..bedfd2870cf474934c160e99f57a16be22c4adb5 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatSessionUpdatePacket.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatSessionUpdatePacket.java
 @@ -16,6 +16,16 @@ public record ServerboundChatSessionUpdatePacket(RemoteChatSession.Data chatSess
@@ -34,7 +34,7 @@ index 9d6db4a378036559efab91c8b7dcf2a6b0c2cce6..f96d892b9862228025f3cfc130f6c5aa
 +            var impl = (net.minecraft.server.network.ServerGamePacketListenerImpl) listener;
 +            if (!impl.getPlayer().getServer().isSingleplayerOwner(impl.getPlayer().getGameProfile())) {
 +                if (team.earendel.andromeda.configurations.AndromedaConfiguration.NCRDemandOnClient) {
-+                    impl.disconnect(net.minecraft.network.chat.Component.literal(team.earendel.andromeda.configurations.AndromedaConfiguration.NCRDemandOnClientMessage));
++                    impl.disconnect(net.minecraft.network.chat.Component.literal(team.earendel.andromeda.configurations.AndromedaConfiguration.NCRDemandOnClientMessage), org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED);
 +                }
 +            }
 +        }
