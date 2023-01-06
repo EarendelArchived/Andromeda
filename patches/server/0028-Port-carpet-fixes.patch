@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 6 Jan 2023 17:46:20 +0900
+Subject: [PATCH] Port carpet-fixes
+
+
+diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
+index 2f712bfc1f717ba410bf34669d7b0a919ca218cc..a9bf6312807ba5cb858dad36133c4b066d660494 100644
+--- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
++++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
+@@ -103,6 +103,23 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+     }
+ 
+     public <C extends Container, T extends Recipe<C>> Optional<T> getRecipeFor(RecipeType<T> type, C inventory, Level world) {
++        // Andromeda start - Port carpet-fixes
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.useFasterRecipeManager) {
++            int slots = 0;
++            int count;
++
++            for (int slot = 0; slot <inventory.getContainerSize(); slot++) if (!inventory.getItem(slot).isEmpty()) slots++;
++            for (Recipe<C> recipe : this.byType(type).values()) {
++                count = 0;
++                if (recipe instanceof CustomRecipe) if (recipe.matches(inventory, world)) return (Optional<T>) Optional.of(recipe);
++                else {
++                    for (Ingredient ingredient : recipe.getIngredients()) if (ingredient != Ingredient.EMPTY) count++;
++                    if (count == slots) return (Optional<T>) Optional.of(recipe);
++                }
++            }
++            return Optional.empty();
++        } else {
++        // Andromeda end
+         // CraftBukkit start
+         Optional<T> recipe = this.byType(type).values().stream().filter((irecipe) -> {
+             return irecipe.matches(inventory, world);
+@@ -110,6 +127,7 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+         inventory.setCurrentRecipe(recipe.orElse(null)); // CraftBukkit - Clear recipe when no recipe is found
+         // CraftBukkit end
+         return recipe;
++        } // Andromeda - Port carpet-fixes
+     }
+ 
+     public <C extends Container, T extends Recipe<C>> Optional<Pair<ResourceLocation, T>> getRecipeFor(RecipeType<T> type, C inventory, Level world, @Nullable ResourceLocation id) {
+@@ -131,7 +149,8 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+     }
+ 
+     public <C extends Container, T extends Recipe<C>> List<T> getAllRecipesFor(RecipeType<T> type) {
+-        return List.copyOf(this.byType(type).values());
++        return new java.util.ArrayList<>(this.byType(type).values()); // Andromeda - Port carpet-fixes
++        //return List.copyOf(this.byType(type).values()); // Andromeda - Port carpet-fixes
+     }
+ 
+     public <C extends Container, T extends Recipe<C>> List<T> getRecipesFor(RecipeType<T> type, C inventory, Level world) {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+index 65b4ea38f254580c38a79349548573ce3322de12..7aa8cc209b7b6912492777ae8078715c69b46f11 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+@@ -203,4 +203,9 @@ public class AndromedaConfiguration {
+         NCRDemandOnClient = getBoolean("options.ports.no-chat-reports.demand-on-client", NCRDemandOnClient);
+         NCRDemandOnClientMessage = getString("options.ports.no-chat-reports.demand-on-client-message", NCRDemandOnClientMessage);
+     }
++
++    public static boolean useFasterRecipeManager = true;
++    private static void carpetFixes() {
++        useFasterRecipeManager = getBoolean("options.ports.carpet-fixes.use-faster-recipe-manager", useFasterRecipeManager);
++    }
+ }

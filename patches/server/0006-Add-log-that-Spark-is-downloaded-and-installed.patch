@@ -5,14 +5,14 @@ Subject: [PATCH] Add log that Spark is downloaded and installed
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 42e4ccbeabb4295f5583c3458734f1d04ca7f535..a91fbee55db5322f20d76e5304c2539740cae38f 100644
+index 42e4ccbeabb4295f5583c3458734f1d04ca7f535..b193679f160e0f1881e3eaaf7a494f82eb6c6cbf 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -473,6 +473,7 @@ public final class CraftServer implements Server {
                      }
  
                      extraJars.add(file);
-+                    getLogger().info("Purpur: Spark has been downloaded and installed. If you really don't want to use Spark, add \"-DPurpur.IReallyDontWantSpart=true\" to your server startup flags, BETWEEN the \"-jar\" and <server file name>"); // Andromeda
++                    getLogger().info("Purpur: Spark has been downloaded and installed. If you really don't want to use Spark, add \"-DPurpur.IReallyDontWantSpart=true\" to your server startup flags, IN FRONT OF the \"-jar\""); // Andromeda
                  } catch (Exception e) {
                      getLogger().severe("Purpur: Failed to download and install spark plugin");
                      e.printStackTrace();

@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@outlook.com>
 Date: Fri, 6 Jan 2023 16:17:45 +0900
-Subject: [PATCH] Add SkinSIMDJavaVersionCheck System Properties
+Subject: [PATCH] Add SkipSIMDJavaVersionCheck System Properties
 
 
 diff --git a/src/main/java/gg/pufferfish/pufferfish/simd/SIMDChecker.java b/src/main/java/gg/pufferfish/pufferfish/simd/SIMDChecker.java
