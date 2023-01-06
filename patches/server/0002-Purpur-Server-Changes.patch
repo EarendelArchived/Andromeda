@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: "github-actions[bot]"
  <41898282+github-actions[bot]@users.noreply.github.com>
-Date: Thu, 5 Jan 2023 11:38:03 +0000
+Date: Fri, 6 Jan 2023 17:10:08 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -18493,10 +18493,10 @@ index 14e00c7feb1c051d56a3d27cd00dcef072dd771a..4952fb1aaaafb55baa0fddb389f966a1
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/block/SpawnerBlock.java b/src/main/java/net/minecraft/world/level/block/SpawnerBlock.java
-index 5af520104f25d597917e99ac09aa9d68c4864e44..5ab00db14e697085eb96c3c6db9b67ea85918506 100644
+index 5af520104f25d597917e99ac09aa9d68c4864e44..c4e5ff55a629ec57889175a0082abf95b8183069 100644
 --- a/src/main/java/net/minecraft/world/level/block/SpawnerBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/SpawnerBlock.java
-@@ -40,6 +40,55 @@ public class SpawnerBlock extends BaseEntityBlock {
+@@ -40,6 +40,58 @@ public class SpawnerBlock extends BaseEntityBlock {
          return createTickerHelper(type, BlockEntityType.MOB_SPAWNER, world.isClientSide ? SpawnerBlockEntity::clientTick : SpawnerBlockEntity::serverTick);
      }
  
@@ -18505,41 +18505,44 @@ index 5af520104f25d597917e99ac09aa9d68c4864e44..5ab00db14e697085eb96c3c6db9b67ea
 +    public void playerDestroy(Level level, net.minecraft.world.entity.player.Player player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack stack) {
 +        if (level.purpurConfig.silkTouchEnabled && player.getBukkitEntity().hasPermission("purpur.drop.spawners") && isSilkTouch(level, stack)) {
 +            Optional<net.minecraft.world.entity.EntityType<?>> type = net.minecraft.world.entity.EntityType.by(((SpawnerBlockEntity) blockEntity).getSpawner().nextSpawnData.getEntityToSpawn());
-+            if (type.isPresent()) {
-+                final net.kyori.adventure.text.Component mobName = io.papermc.paper.adventure.PaperAdventure.asAdventure(type.get().getDescription());
-+                CompoundTag display = new CompoundTag();
-+                CompoundTag tag = new CompoundTag();
 +
-+                String name = level.purpurConfig.silkTouchSpawnerName;
-+                if (name != null && !name.isEmpty() && !name.equals("Spawner")) {
-+                    net.kyori.adventure.text.Component displayName = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(name, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component("mob", mobName));
-+                    if (name.startsWith("<reset>")) {
-+                        displayName = displayName.decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
-+                    }
-+                    display.put("Name", net.minecraft.nbt.StringTag.valueOf(io.papermc.paper.adventure.PaperAdventure.asJsonString(displayName, java.util.Locale.ROOT)));
-+                    tag.put("display", display);
++            net.minecraft.world.entity.EntityType<?> entityType = type.orElse(null);
++            final net.kyori.adventure.text.Component mobName = io.papermc.paper.adventure.PaperAdventure.asAdventure(entityType == null ? Component.empty() : entityType.getDescription());
++            CompoundTag display = new CompoundTag();
++            CompoundTag tag = new CompoundTag();
++
++            String name = level.purpurConfig.silkTouchSpawnerName;
++            if (name != null && !name.isEmpty() && !name.equals("Monster Spawner")) {
++                net.kyori.adventure.text.Component displayName = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(name, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component("mob", mobName));
++                if (name.startsWith("<reset>")) {
++                    displayName = displayName.decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
 +                }
-+
-+                List<String> lore = level.purpurConfig.silkTouchSpawnerLore;
-+                if (lore != null && !lore.isEmpty()) {
-+                    net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
-+                    for (String line : lore) {
-+                        net.kyori.adventure.text.Component lineComponent = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(line, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component("mob", mobName));
-+                        if (line.startsWith("<reset>")) {
-+                            lineComponent = lineComponent.decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
-+                        }
-+                        list.add(net.minecraft.nbt.StringTag.valueOf(io.papermc.paper.adventure.PaperAdventure.asJsonString(lineComponent, java.util.Locale.ROOT)));
-+                    }
-+                    display.put("Lore", list);
-+                    tag.put("display", display);
-+                }
-+
-+                ItemStack item = new ItemStack(Blocks.SPAWNER.asItem());
-+                tag.putString("Purpur.mob_type", type.get().getName());
-+                item.setTag(tag);
-+
-+                popResource(level, pos, item);
++                display.put("Name", net.minecraft.nbt.StringTag.valueOf(io.papermc.paper.adventure.PaperAdventure.asJsonString(displayName, java.util.Locale.ROOT)));
++                tag.put("display", display);
 +            }
++
++            List<String> lore = level.purpurConfig.silkTouchSpawnerLore;
++            if (lore != null && !lore.isEmpty()) {
++                net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
++                for (String line : lore) {
++                    net.kyori.adventure.text.Component lineComponent = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(line, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component("mob", mobName));
++                    if (line.startsWith("<reset>")) {
++                        lineComponent = lineComponent.decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
++                    }
++                    list.add(net.minecraft.nbt.StringTag.valueOf(io.papermc.paper.adventure.PaperAdventure.asJsonString(lineComponent, java.util.Locale.ROOT)));
++                }
++                display.put("Lore", list);
++                tag.put("display", display);
++            }
++
++            ItemStack item = new ItemStack(Blocks.SPAWNER.asItem());
++            if (entityType != null) {
++                tag.putString("Purpur.mob_type", entityType.getName());
++                tag.putDouble("HideFlags", 32); // hides the "Interact with Spawn Egg" tooltip
++                item.setTag(tag);
++            }
++
++            popResource(level, pos, item);
 +        }
 +        super.playerDestroy(level, player, pos, state, blockEntity, stack);
 +    }
@@ -18552,7 +18555,7 @@ index 5af520104f25d597917e99ac09aa9d68c4864e44..5ab00db14e697085eb96c3c6db9b67ea
      @Override
      public void spawnAfterBreak(BlockState state, ServerLevel world, BlockPos pos, ItemStack stack, boolean dropExperience) {
          super.spawnAfterBreak(state, world, pos, stack, dropExperience);
-@@ -48,6 +97,7 @@ public class SpawnerBlock extends BaseEntityBlock {
+@@ -48,6 +100,7 @@ public class SpawnerBlock extends BaseEntityBlock {
  
      @Override
      public int getExpDrop(BlockState iblockdata, ServerLevel worldserver, BlockPos blockposition, ItemStack itemstack, boolean flag) {
@@ -21637,7 +21640,7 @@ index 0000000000000000000000000000000000000000..c7c0ed8dfe58c841faf684a1fe228eed
 +}
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a3f9df384e5723d51177c78722e405a172bb385b
+index 0000000000000000000000000000000000000000..de2f5ebfc48b4ea20fa8e194c1c7766d89c287de
 --- /dev/null
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -0,0 +1,3150 @@
@@ -22182,7 +22185,7 @@ index 0000000000000000000000000000000000000000..a3f9df384e5723d51177c78722e405a1
 +    }
 +
 +    public boolean silkTouchEnabled = false;
-+    public String silkTouchSpawnerName = "<reset><white>Spawner";
++    public String silkTouchSpawnerName = "<reset><white>Monster Spawner";
 +    public List<String> silkTouchSpawnerLore = new ArrayList<>();
 +    public List<Item> silkTouchTools = new ArrayList<>();
 +    public int minimumSilkTouchSpawnerRequire = 1;
