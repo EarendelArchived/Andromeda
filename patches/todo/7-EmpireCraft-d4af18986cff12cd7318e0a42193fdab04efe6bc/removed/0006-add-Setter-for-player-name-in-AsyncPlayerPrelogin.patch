@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Wed, 28 Jan 2015 00:41:03 -0500
+Subject: [PATCH] add Setter for player name in AsyncPlayerPrelogin
+
+This is so we can change the players name early in login process
+
+diff --git a/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java b/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
+index 356d1154b0732e2daf242d60fa715dba9f2dc9db..4e981cffa80d625dc28f28f1cf5335cbfa3bc185 100644
+--- a/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
++++ b/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
+@@ -249,6 +249,13 @@ public class AsyncPlayerPreLoginEvent extends Event {
+     public String getName() {
+         return profile.getName(); // Paper
+     }
++    // EMC start
++    public void setName(@NotNull String name) {
++        PlayerProfile newProfile = Bukkit.createProfile(this.profile.getId(), name);
++        newProfile.setProperties(profile.getProperties());
++        this.profile = newProfile;
++    }
++    // EMC end
+ 
+     /**
+      * Gets the player IP address.

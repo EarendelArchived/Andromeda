@@ -1,0 +1,79 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Wed, 27 Apr 2016 02:14:00 -0400
+Subject: [PATCH] Rework Spigot Deprecations
+
+Deprecate Inventory.getContents because md5 likes to make stupid changes
+Undeprecate (get/set)MaxHealth
+
+diff --git a/src/main/java/org/bukkit/entity/Damageable.java b/src/main/java/org/bukkit/entity/Damageable.java
+index fc4d3bcd9b16097086fef7975274d825b65adb10..13e8ce4d7a4477988b69269acb893f746c7835d1 100644
+--- a/src/main/java/org/bukkit/entity/Damageable.java
++++ b/src/main/java/org/bukkit/entity/Damageable.java
+@@ -60,9 +60,7 @@ public interface Damageable extends Entity {
+      * Gets the maximum health this entity has.
+      *
+      * @return Maximum health
+-     * @deprecated use {@link Attribute#GENERIC_MAX_HEALTH}.
+      */
+-    @Deprecated
+     double getMaxHealth();
+ 
+     /**
+@@ -75,9 +73,7 @@ public interface Damageable extends Entity {
+      * {@link Wither}, etc...} will have their bar scaled accordingly.
+      *
+      * @param health amount of health to set the maximum to
+-     * @deprecated use {@link Attribute#GENERIC_MAX_HEALTH}.
+      */
+-    @Deprecated
+     void setMaxHealth(double health);
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
+index 6241f31e7326954b2e704da46bf0115adbcf8671..3945beac677d0f83ac702980c3b8cb836b2a5f4c 100644
+--- a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
++++ b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
+@@ -206,12 +206,11 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+     /**
+      * An enum to specify the types of modifier
+      *
+-     * @deprecated This API is responsible for a large number of implementation
++     * This API is responsible for a large number of implementation
+      * problems and is in general unsustainable to maintain. It is likely to be
+      * removed very soon in a subsequent release. Please see
+      * https://www.spigotmc.org/threads/194446/ for more information.
+      */
+-    @Deprecated
+     public enum DamageModifier {
+         /**
+          * This represents the amount of damage being done, also known as the
+diff --git a/src/main/java/org/bukkit/inventory/Inventory.java b/src/main/java/org/bukkit/inventory/Inventory.java
+index c574bb94b21eb27974b40c839fce52c6ac4b54b4..42ed1c8fea265545b4226f2c973942477c15db5a 100644
+--- a/src/main/java/org/bukkit/inventory/Inventory.java
++++ b/src/main/java/org/bukkit/inventory/Inventory.java
+@@ -159,19 +159,23 @@ public interface Inventory extends Iterable<ItemStack> {
+     /**
+      * Returns all ItemStacks from the inventory
+      *
+-     * @return An array of ItemStacks from the inventory. Individual items may be null.
++     * @deprecated because people love breaking API's for no reason. you probally want @{see {@link #getStorageContents()}}
++     * @return An array of ItemStacks from the inventory.
+      */
++    @Deprecated
+     public @Nullable ItemStack @NotNull [] getContents(); // Paper - make array elements nullable instead array
+ 
+     /**
+      * Completely replaces the inventory's contents. Removes all existing
+      * contents and replaces it with the ItemStacks given in the array.
+      *
++     * @deprecated because people love breaking API's for no reason. you probally want @{see {@link #setStorageContents(ItemStack[])}}
+      * @param items A complete replacement for the contents; the length must
+      *     be less than or equal to {@link #getSize()}.
+      * @throws IllegalArgumentException If the array has more items than the
+      *     inventory.
+      */
++    @Deprecated
+     public void setContents(@Nullable ItemStack @NotNull [] items) throws IllegalArgumentException; // Paper - make array elements nullable instead array
+ 
+     /**

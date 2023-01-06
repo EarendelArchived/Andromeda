@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: chickeneer <emcchickeneer@gmail.com>
+Date: Sun, 26 Jan 2020 23:28:04 -0600
+Subject: [PATCH] Use lenient json to component to resolve old WE schematic
+ issue
+
+
+diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
+index d1a59c2af0557a816c094983ec60097fb4de060c..cb062621012c9afaefb0b77d578d80d7a7963e00 100644
+--- a/src/main/java/io/papermc/paper/util/MCUtil.java
++++ b/src/main/java/io/papermc/paper/util/MCUtil.java
+@@ -538,7 +538,7 @@ public final class MCUtil {
+         }
+         String string = compound.getString(key);
+         try {
+-            return Component.Serializer.fromJson(string);
++            return Component.Serializer.fromJsonLenient(string); // EMC
+         } catch (com.google.gson.JsonParseException e) {
+             org.bukkit.Bukkit.getLogger().warning("Unable to parse " + key + " from " + compound +": " + e.getMessage());
+         }

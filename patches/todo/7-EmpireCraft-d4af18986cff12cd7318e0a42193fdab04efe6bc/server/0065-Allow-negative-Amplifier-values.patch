@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Sun, 17 Jun 2018 22:16:25 -0400
+Subject: [PATCH] Allow negative Amplifier values
+
+
+diff --git a/src/main/java/net/minecraft/world/effect/MobEffectInstance.java b/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
+index 038ba61e4845a4a71bb78ba388ed249d19529b78..50714bea2ca0836f177edaef4e43013b485d56e3 100644
+--- a/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
++++ b/src/main/java/net/minecraft/world/effect/MobEffectInstance.java
+@@ -289,7 +289,7 @@ public class MobEffectInstance implements Comparable<MobEffectInstance> {
+             optional = Optional.empty();
+         }
+ 
+-        return new MobEffectInstance(type, j, Math.max(i, 0), bl, bl2, bl3, mobEffectInstance, optional);
++        return new MobEffectInstance(type, j, i, bl, bl2, bl3, mobEffectInstance, optional); // EMC - always use Amplifier, dont check >0
+     }
+ 
+     @Override

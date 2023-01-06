@@ -1,0 +1,105 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Thu, 18 Dec 2014 22:48:46 -0500
+Subject: [PATCH] Add BlockBreakNaturally Event
+
+To give reliable control over all blocks dropping to world to restore custom item meta
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index d8ad42b39897d42a395a347b69e03c2d61b7fbdb..19430975f69f2d7913613ee8b39b16ea6ca81277 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -1513,6 +1513,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             if (entity instanceof net.minecraft.world.entity.item.ItemEntity itemEntity && itemEntity.getItem().isEmpty()) return false; // Paper - Prevent empty items from being added
+             // Paper start - capture all item additions to the world
+             if (captureDrops != null && entity instanceof net.minecraft.world.entity.item.ItemEntity) {
++                ((net.minecraft.world.entity.item.ItemEntity) entity).droppedPosition = new BlockPos(entity.getX(), entity.getY(), entity.getZ()); // EMC
+                 captureDrops.add((net.minecraft.world.entity.item.ItemEntity) entity);
+                 return true;
+             }
+diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+index a36a4132003e4052e1d0abd13bee3034086418e5..74bc21fda1fada6f840cd9b2d6b13d0cdad667c7 100644
+--- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+@@ -44,6 +44,7 @@ public class ItemEntity extends Entity {
+     private static final int INFINITE_LIFETIME = -32768;
+     public int age;
+     public boolean canDespawn = true; // EMC
++    public BlockPos droppedPosition; // EMC
+     public int pickupDelay;
+     public int health;
+     @Nullable
+diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
+index 7b71073027f4cf79736546500ededdfbb83d968e..0d3917680ac70716d8c1869c97b9275f1ce2c39b 100644
+--- a/src/main/java/net/minecraft/world/level/block/Block.java
++++ b/src/main/java/net/minecraft/world/level/block/Block.java
+@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
+ import com.google.common.cache.LoadingCache;
+ import com.google.common.collect.ImmutableMap;
+ import com.mojang.logging.LogUtils;
++import io.papermc.paper.util.MCUtil;
+ import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
+ import java.util.Iterator;
+ import java.util.List;
+@@ -369,7 +370,7 @@ public class Block extends BlockBehaviour implements ItemLike {
+ 
+         Block.popResource(world, () -> {
+             return new ItemEntity(world, d0, d1, d2, stack);
+-        }, stack);
++        }, stack, pos);
+     }
+ 
+     public static void popResourceFromFace(Level world, BlockPos pos, Direction direction, ItemStack stack) {
+@@ -389,18 +390,20 @@ public class Block extends BlockBehaviour implements ItemLike {
+ 
+         Block.popResource(world, () -> {
+             return new ItemEntity(world, d0, d1, d2, stack, d3, d4, d5);
+-        }, stack);
++        }, stack, pos);
+     }
+ 
+-    private static void popResource(Level world, Supplier<ItemEntity> itemEntitySupplier, ItemStack stack) {
++    private static void popResource(Level world, Supplier<ItemEntity> itemEntitySupplier, ItemStack stack, BlockPos blockPos) { // EMC - add blockPos
+         if (!world.isClientSide && !stack.isEmpty() && world.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+             ItemEntity entityitem = (ItemEntity) itemEntitySupplier.get();
+ 
+             entityitem.setDefaultPickUpDelay();
+             // CraftBukkit start
+             if (world.captureDrops != null) {
++                entityitem.droppedPosition = blockPos.immutable(); // EMC
+                 world.captureDrops.add(entityitem);
+             } else {
++                new com.empireminecraft.customevents.BlockBreakNaturallyEvent(MCUtil.toLocation(world, blockPos), (org.bukkit.entity.Item) entityitem.getBukkitEntity()).callEvent(); // EMC
+                 world.addFreshEntity(entityitem);
+             }
+             // CraftBukkit end
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index e3ed76c4aaf978e0dab1fdbbfbd23edcfa26bf2f..79b16d872e84389c711880682286460dbe6d5f21 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -12,6 +12,8 @@ import java.util.List;
+ import java.util.Map;
+ import java.util.stream.Collectors;
+ import javax.annotation.Nullable;
++
++import io.papermc.paper.util.MCUtil;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
+@@ -410,6 +412,16 @@ public class CraftEventFactory {
+         Bukkit.getPluginManager().callEvent(event);
+ 
+         if (!event.isCancelled()) {
++            // EMC start
++            com.google.common.collect.Multimap<org.bukkit.Location, org.bukkit.entity.Item> drops = com.google.common.collect.ArrayListMultimap.create();
++            for (Item item : list) {
++                ItemEntity entityItem = (ItemEntity) ((CraftEntity) item).getHandle();
++                drops.put(MCUtil.toLocation(entityItem.level, entityItem.droppedPosition), (org.bukkit.entity.Item) entityItem.getBukkitEntity());
++            }
++            for (org.bukkit.Location location : drops.keySet()) {
++                new com.empireminecraft.customevents.BlockBreakNaturallyEvent(location, drops.get(location)).callEvent();
++            }
++            // EMC end
+             // Paper start
+             for (Item bukkit : list) {
+                 if (!bukkit.isValid()) {

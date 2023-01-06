@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Tue, 5 May 2015 00:34:04 -0400
+Subject: [PATCH] Share handlerlist for PlayerInteractEntityEvent and
+ PlayerInteractAtEntityEvent
+
+---
+ .../org/bukkit/event/player/PlayerInteractAtEntityEvent.java    | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/main/java/org/bukkit/event/player/PlayerInteractAtEntityEvent.java b/src/main/java/org/bukkit/event/player/PlayerInteractAtEntityEvent.java
+index 3f24d302e28170f7f6e5885b5b9abb22cbbb7d66..0d23ec943cffdf2150da661e682a4393c7057d48 100644
+--- a/src/main/java/org/bukkit/event/player/PlayerInteractAtEntityEvent.java
++++ b/src/main/java/org/bukkit/event/player/PlayerInteractAtEntityEvent.java
+@@ -35,6 +35,7 @@ public class PlayerInteractAtEntityEvent extends PlayerInteractEntityEvent {
+         return position.clone();
+     }
+ 
++    /* // EMC start
+     @NotNull
+     @Override
+     public HandlerList getHandlers() {
+@@ -45,4 +46,5 @@ public class PlayerInteractAtEntityEvent extends PlayerInteractEntityEvent {
+     public static HandlerList getHandlerList() {
+         return handlers;
+     }
++    */ // EMC end
+ }

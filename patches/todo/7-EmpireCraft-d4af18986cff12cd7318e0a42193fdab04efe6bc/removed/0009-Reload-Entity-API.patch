@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Sun, 13 Dec 2015 01:19:27 -0500
+Subject: [PATCH] Reload Entity API
+
+
+diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
+index c2c45a93887f99466a8ac4275355ac75c7f901c4..420175a09baf7ee130392db80438c761025fcf20 100644
+--- a/src/main/java/org/bukkit/entity/Entity.java
++++ b/src/main/java/org/bukkit/entity/Entity.java
+@@ -697,6 +697,13 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+     Spigot spigot();
+     // Spigot end
+ 
++    /**
++     * Reattach the internal hooks if an entity with the same id is still in the world.
++     *
++     * @return True if the reload is successful.
++     */
++    public boolean reloadEntity(); // EMC
++
+     // Paper start
+     /**
+      * Gets the entity's display name formatted with their team prefix/suffix and

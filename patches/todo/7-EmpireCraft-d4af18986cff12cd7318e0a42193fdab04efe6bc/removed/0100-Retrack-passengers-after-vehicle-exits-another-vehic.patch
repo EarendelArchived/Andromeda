@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: chickeneer <emcchickeneer@gmail.com>
+Date: Mon, 21 Dec 2020 23:25:23 -0600
+Subject: [PATCH] Retrack passengers after vehicle exits another vehicle
+
+Fixes an issue where vehicles in vehicles can cause player desyncs
+
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 294021e8511a7f4362437a20fa1a4a47d042a2d1..99f88556c8b534c7332a32e7594d0acd1aa2a6df 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -2514,6 +2514,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, n
+             }
+ 
+             entity.boardingCooldown = 60;
++            if (!entity.passengers.isEmpty()) { CraftEntity.retrackVehicle(entity); } // Paper
+         }
+         return true; // CraftBukkit
+     }

@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Sun, 19 Oct 2014 02:32:26 -0400
+Subject: [PATCH] Exterminate the chickeneer - EMC-610
+
+Wipe out chickens when the Jockey is killed.
+
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Chicken.java b/src/main/java/net/minecraft/world/entity/animal/Chicken.java
+index 3e6aaf22f5f2891901c91fea988a97a25eade531..0c44946f08966a37371be06fc9afa3e1b666d140 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Chicken.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Chicken.java
+@@ -166,6 +166,12 @@ public class Chicken extends Animal {
+         }
+ 
+     }
++    // EMC start
++    @Override
++    public boolean save(CompoundTag nbt) {
++        return (isVehicle() || !isChickenJockey()) && super.save(nbt);
++    }
++    // EMC end
+ 
+     @Override
+     public void addAdditionalSaveData(CompoundTag nbt) {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Zombie.java b/src/main/java/net/minecraft/world/entity/monster/Zombie.java
+index 35fe73f9d69f552dcd345477b15839c4e421e537..142f7fd37ae6ff8572db06252237d177d2ed80ec 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Zombie.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Zombie.java
+@@ -600,6 +600,7 @@ public class Zombie extends Monster {
+         super.dropCustomDeathLoot(source, lootingMultiplier, allowDrops);
+         Entity entity = source.getEntity();
+ 
++        if (getVehicle() instanceof Chicken) {((LivingEntity) getVehicle()).die(source);} // EMC
+         if (entity instanceof Creeper) {
+             Creeper entitycreeper = (Creeper) entity;
+ 

@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Thu, 30 Jun 2016 22:31:06 -0400
+Subject: [PATCH] Don't use Players scoreboard team for pets
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/TamableAnimal.java b/src/main/java/net/minecraft/world/entity/TamableAnimal.java
+index 49f52baa02db18af6d8626754423ff157eb9c09c..ad9aa8c36a062857afb14c593477186f8fec45ef 100644
+--- a/src/main/java/net/minecraft/world/entity/TamableAnimal.java
++++ b/src/main/java/net/minecraft/world/entity/TamableAnimal.java
+@@ -183,6 +183,8 @@ public abstract class TamableAnimal extends Animal implements OwnableEntity {
+         return true;
+     }
+ 
++    // EMC start - don't link to owners team
++    /*
+     @Override
+     public Team getTeam() {
+         if (this.isTame()) {
+@@ -193,7 +195,8 @@ public abstract class TamableAnimal extends Animal implements OwnableEntity {
+         }
+ 
+         return super.getTeam();
+-    }
++    }*/
++    // EMC end
+ 
+     @Override
+     public boolean isAlliedTo(Entity other) {

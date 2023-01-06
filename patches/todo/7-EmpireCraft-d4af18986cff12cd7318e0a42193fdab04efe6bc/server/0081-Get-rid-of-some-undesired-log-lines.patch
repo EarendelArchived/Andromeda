@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Sun, 15 Mar 2020 17:01:43 -0400
+Subject: [PATCH] Get rid of some undesired log lines
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
+index a5e67913daa2eec5122a99c74b4b52b67f8a55f2..404c6c11f44a6744b093666641c072dba02e7307 100644
+--- a/src/main/java/net/minecraft/server/PlayerAdvancements.java
++++ b/src/main/java/net/minecraft/server/PlayerAdvancements.java
+@@ -185,7 +185,7 @@ public class PlayerAdvancements {
+                         if (advancement == null) {
+                             // CraftBukkit start
+                             if (entry.getKey().getNamespace().equals("minecraft")) {
+-                                PlayerAdvancements.LOGGER.warn("Ignored advancement '{}' in progress file {} - it doesn't exist anymore?", entry.getKey(), this.file);
++                                //PlayerAdvancements.LOGGER.warn("Ignored advancement '{}' in progress file {} - it doesn't exist anymore?", entry.getKey(), this.file); // EMC
+                             }
+                             // CraftBukkit end
+                         } else {
+diff --git a/src/main/java/net/minecraft/stats/ServerRecipeBook.java b/src/main/java/net/minecraft/stats/ServerRecipeBook.java
+index d13ed3069e944d138442ea440ac3eaf8d44c18d3..5e37685e8e0e251638dae6e47d934685fdd9c2b0 100644
+--- a/src/main/java/net/minecraft/stats/ServerRecipeBook.java
++++ b/src/main/java/net/minecraft/stats/ServerRecipeBook.java
+@@ -122,7 +122,7 @@ public class ServerRecipeBook extends RecipeBook {
+                 Optional<? extends Recipe<?>> optional = recipeManager.byKey(minecraftkey);
+ 
+                 if (!optional.isPresent()) {
+-                    ServerRecipeBook.LOGGER.error("Tried to load unrecognized recipe: {} removed now.", minecraftkey);
++                    //ServerRecipeBook.LOGGER.error("Tried to load unrecognized recipe: {} removed now.", minecraftkey); // EMC
+                 } else {
+                     handler.accept((Recipe) optional.get());
+                 }

@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: chickeneer <emcchickeneer@gmail.com>
+Date: Mon, 14 Mar 2022 10:10:03 -0500
+Subject: [PATCH] Adjust maximum horse speed modifiers
+
+This change is for EMC-specific motivation
+
+diff --git a/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java b/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
+index 72d660cd2ade39335024897cffb8b8a151a7cb71..2b3217c1f013a7175aea202b70f03774c9160924 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
++++ b/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
+@@ -1047,7 +1047,7 @@ public abstract class AbstractHorse extends Animal implements ContainerListener,
+     }
+ 
+     protected double generateRandomSpeed(RandomSource random) {
+-        return (0.44999998807907104D + random.nextDouble() * 0.3D + random.nextDouble() * 0.3D + random.nextDouble() * 0.3D) * 0.25D;
++        return (0.44999998807907104D + random.nextDouble() * 0.315D + random.nextDouble() * 0.315D + random.nextDouble() * 0.315D) * 0.25D; // EMC - increase factor multiplier by 0.015
+     }
+ 
+     @Override
