@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
 
 env:
+  ORG_NAME: TeamEarendel
+
   version: 1.19.3
   branch: ver/1.19.3
   debug: 'false'
@@ -48,6 +50,14 @@ jobs:
 
       - name: Create Mojmap Jar
         run: ./gradlew createMojmapPaperclipJar --stacktrace
+      
+      - name: Publish Packages
+        run: |
+          echo "GITHUB_USERNAME=${{ env.ORG_NAME }}" >> $GITHUB_ENV
+          echo "GITHUB_TOKEN=${{ secrets.GH_PAT }}" >> $GITHUB_ENV
+          export GITHUB_USERNAME=${{ env.ORG_NAME }}
+          export GITHUB_TOKEN=${{ secrets.GH_PAT }}
+          ./gradlew publish --stacktrace
         
       - name: Upload Artifacts
         if: env.debug == 'true' || github.ref_name != env.branch
