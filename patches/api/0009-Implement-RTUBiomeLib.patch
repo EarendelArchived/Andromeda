@@ -20,10 +20,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/src/main/java/org/bukkit/RegionAccessor.java b/src/main/java/org/bukkit/RegionAccessor.java
-index 39fa4c65e0f61450901662ff5c08d54a5d9841b2..aed02fa1d28862efdbe13c2511966a0c04c4c6ea 100644
+index 39fa4c65e0f61450901662ff5c08d54a5d9841b2..0d10121d0f9cd90e94a82031fc76fffc8f4be7b5 100644
 --- a/src/main/java/org/bukkit/RegionAccessor.java
 +++ b/src/main/java/org/bukkit/RegionAccessor.java
-@@ -43,6 +43,18 @@ public interface RegionAccessor extends Keyed { // Paper
+@@ -43,6 +43,19 @@ public interface RegionAccessor extends Keyed { // Paper
      @NotNull
      Biome getBiome(int x, int y, int z);
  
@@ -36,6 +36,7 @@ index 39fa4c65e0f61450901662ff5c08d54a5d9841b2..aed02fa1d28862efdbe13c2511966a0c
 +     * @param z Z-coordinate of the block
 +     * @return Name of Biome at the given coordinates
 +     */
++    @NotNull
 +    String getBiomeName(int x, int y, int z);
 +    // Andromeda end
 +
@@ -43,10 +44,10 @@ index 39fa4c65e0f61450901662ff5c08d54a5d9841b2..aed02fa1d28862efdbe13c2511966a0c
      /**
       * Gets the computed {@link Biome} at the given coordinates.
 diff --git a/src/main/java/org/bukkit/block/Block.java b/src/main/java/org/bukkit/block/Block.java
-index aba40431c5a1ae43106a678445483e0653e130d1..191dcfbba046e1160ef02d4831f32b25ae6560a4 100644
+index aba40431c5a1ae43106a678445483e0653e130d1..bf9948e336f410f1b0af546b6a4b2d91958a903c 100644
 --- a/src/main/java/org/bukkit/block/Block.java
 +++ b/src/main/java/org/bukkit/block/Block.java
-@@ -375,6 +375,16 @@ public interface Block extends Metadatable, net.kyori.adventure.translation.Tran
+@@ -375,6 +375,17 @@ public interface Block extends Metadatable, net.kyori.adventure.translation.Tran
      @NotNull
      Biome getBiome();
  
@@ -57,6 +58,7 @@ index aba40431c5a1ae43106a678445483e0653e130d1..191dcfbba046e1160ef02d4831f32b25
 +     * @return Biome name string containing this block
 +     * @see #getBiome()
 +     */
++    @NotNull
 +    String getBiomeName();
 +    // Andromeda end
 +
@@ -64,10 +66,10 @@ index aba40431c5a1ae43106a678445483e0653e130d1..191dcfbba046e1160ef02d4831f32b25
      /**
       * Gets the computed biome at the location of this Block.
 diff --git a/src/main/java/org/bukkit/generator/BiomeProvider.java b/src/main/java/org/bukkit/generator/BiomeProvider.java
-index 9f6d75af207d2546ac82081582f4342d9b8310e5..04279e1f29381bc704cd5ef42a9c0b8b727eeefc 100644
+index 9f6d75af207d2546ac82081582f4342d9b8310e5..956cb369822b4b0a6d8b4cb60c02ffcf9a6f9073 100644
 --- a/src/main/java/org/bukkit/generator/BiomeProvider.java
 +++ b/src/main/java/org/bukkit/generator/BiomeProvider.java
-@@ -49,4 +49,13 @@ public abstract class BiomeProvider {
+@@ -49,4 +49,14 @@ public abstract class BiomeProvider {
       */
      @NotNull
      public abstract List<Biome> getBiomes(@NotNull WorldInfo worldInfo);
@@ -78,6 +80,7 @@ index 9f6d75af207d2546ac82081582f4342d9b8310e5..04279e1f29381bc704cd5ef42a9c0b8b
 +     *
 +     * @return A list with every biome's name
 +     */
++    @NotNull
 +    public abstract List<String> getBiomesNames(@NotNull WorldInfo worldInfo);
 +    // Andromeda end
  }
