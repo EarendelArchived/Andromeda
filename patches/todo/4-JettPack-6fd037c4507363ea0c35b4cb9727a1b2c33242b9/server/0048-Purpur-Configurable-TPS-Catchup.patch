@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: William Blake Galbreath <blake.galbreath@gmail.com>
+Date: Thu, 26 Mar 2020 19:06:22 -0500
+Subject: [PATCH] (Purpur) Configurable TPS Catchup
+
+Patch was originally created under the MIT license for the Purpur project: https://github.com/PurpurMC/Purpur
+
+diff --git a/src/main/java/me/titaniumtown/JettPackConfig.java b/src/main/java/me/titaniumtown/JettPackConfig.java
+index 56e9e776750ad569de0d69a3f96994fc4e64d555..008d2181e1f436427ed71914d7970883dfc4d35d 100644
+--- a/src/main/java/me/titaniumtown/JettPackConfig.java
++++ b/src/main/java/me/titaniumtown/JettPackConfig.java
+@@ -117,8 +117,10 @@ public class JettPackConfig {
+ 
+     public static boolean logPlayerLoginLoc = true;
+     public static double fishingRodLength = 1024.0D;
++    public static boolean tpsCatchup = true;
+     private static void general() {
+         logPlayerLoginLoc = getBoolean("settings.log-player-login-location", logPlayerLoginLoc);
+         fishingRodLength = getDouble("settings.fishing-rod-length", fishingRodLength);
++        tpsCatchup = getBoolean("settings.tps-catchup", tpsCatchup);
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index bbd0c2a0e6da30a5c8e0ae4a4743a89acd397653..95015b4e19ede65f021103cc3b32b1d7d26cefff 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1268,7 +1268,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<Runnab
+                     this.tickServer(this::haveTime);
+                     this.profiler.popPush("nextTickWait");
+                     this.mayHaveDelayedTasks = true;
+-                    this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 50L, this.nextTickTime);
++                    // Purpur start - tps catchup
++                    if (me.titaniumtown.JettPackConfig.tpsCatchup) {
++                        this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 50L, this.nextTickTime);
++                    } else {
++                        this.delayedTasksMaxNextTickTime = this.nextTickTime = curTime / 1000000L + 50L;
++                    }
++                    // Purpur end - tps catchup
+                     this.waitUntilNextTick();
+                     this.profiler.pop();
+                     this.endMetricsRecordingTick();

@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: nostalgic853 <yuu8583@proton.me>
+Date: Wed, 21 Dec 2022 17:21:04 +0800
+Subject: [PATCH] Fast item merging raytracing
+
+
+diff --git a/src/main/java/cc/keyimc/keyi/config/KGlobalConfig.java b/src/main/java/cc/keyimc/keyi/config/KGlobalConfig.java
+index 9f6a8841390b6982efb3ebb21ced137c780e5d1d..0e3db3ab79b3712704350aefbbf07f966a3fb083 100644
+--- a/src/main/java/cc/keyimc/keyi/config/KGlobalConfig.java
++++ b/src/main/java/cc/keyimc/keyi/config/KGlobalConfig.java
+@@ -61,6 +61,7 @@ public class KGlobalConfig {
+     // Performance settings
+     public boolean spigotDropsMergingMechanism = true;
+     public boolean lowActivePoiFindingForEntitiesInVehicle = true;
++    public boolean useFastItemMergingRaytracing = true;
+ 
+     // Bug-fixes settings
+     public boolean fixTripwireDuping = true;
+@@ -77,6 +78,7 @@ public class KGlobalConfig {
+         // Performance settings
+         spigotDropsMergingMechanism = get("performance.use-spigot-drops-merging-mechanism", spigotDropsMergingMechanism);
+         lowActivePoiFindingForEntitiesInVehicle = get("performance.low-active-poi-finding-for-entities-in-vehicle", lowActivePoiFindingForEntitiesInVehicle);
++        useFastItemMergingRaytracing = get("performance.use-fast-item-merge-raytracing", useFastItemMergingRaytracing);
+ 
+         // Bug-fixes settings
+         fixTripwireDuping = get("bug-fixes.fix-tripwire-duping", fixTripwireDuping);
+@@ -96,6 +98,7 @@ public class KGlobalConfig {
+         // Performance settings
+         fileConfig.setComment("performance.use-spigot-drops-merging-mechanism", " Should large drops stack should be merged into smaller drops stack?");
+         fileConfig.setComment("performance.low-active-poi-finding-for-entities-in-vehicle", " Should the server wait more 10s to do POI finding of entities stuck in a vehicle?");
++        fileConfig.setComment("performance.use-fast-item-merge-raytracing", " Skip some allocations to make some operations faster.");
+ 
+         // Bug-fixes settings
+         fileConfig.setComment("bug-fixes.fix-tripwire-duping", " Should Paper's tripwire duping fix be enabled? By disabling this you are able to duping tripwires!");
+diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+index cf2b1232ab704e485695cb33ce8be05a3fcc678e..fbde463c789d728150f7963ab1598a811c2522c1 100644
+--- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+@@ -263,12 +263,12 @@ public class ItemEntity extends Entity {
+                     // Paper Start - Fix items merging through walls
+                         if (this.level.paperConfig().fixes.fixItemsMergingThroughWalls) {
+                             // Pufferfish start - skip the allocations
+-                            /*
+-                            net.minecraft.world.level.ClipContext rayTrace = new net.minecraft.world.level.ClipContext(this.position(), entityitem.position(),
+-                                net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, this);
+-                            net.minecraft.world.phys.BlockHitResult rayTraceResult = level.clip(rayTrace);
+-                            if (rayTraceResult.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) continue;
+-                             */
++                            if (!KGlobalConfig.getInstance().useFastItemMergingRaytracing) {
++                                net.minecraft.world.level.ClipContext rayTrace = new net.minecraft.world.level.ClipContext(this.position(), entityitem.position(),
++                                        net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, this);
++                                net.minecraft.world.phys.BlockHitResult rayTraceResult = level.clip(rayTrace);
++                                if (rayTraceResult.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) continue;
++                            }
+                             if (level.rayTraceDirect(this.position(), entityitem.position(), net.minecraft.world.phys.shapes.CollisionContext.of(this)) ==
+                                 net.minecraft.world.phys.HitResult.Type.BLOCK) continue;
+                             // Pufferfish end

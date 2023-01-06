@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Simon Gardling <titaniumtown@gmail.com>
+Date: Mon, 6 Dec 2021 10:30:56 -0500
+Subject: [PATCH] tweak default config options
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+index d7dcf36c8c972e30320c56e447822cf26f6d5fb3..c0123755a61fa62b81c476e0f75f75789bb8ee19 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+@@ -485,7 +485,7 @@ public class PaperWorldConfig {
+         fixedInhabitedTime = getInt("fixed-chunk-inhabited-time", -1);
+     }
+ 
+-    public int grassUpdateRate = 1;
++    public int grassUpdateRate = 3; // JettPack - tweak defaults
+     private void grassUpdateRate() {
+         grassUpdateRate = Math.max(0, getInt("grass-spread-tick-rate", grassUpdateRate));
+         log("Grass Spread Tick Rate: " + grassUpdateRate);
+@@ -707,8 +707,8 @@ public class PaperWorldConfig {
+     }
+ 
+     public boolean cooldownHopperWhenFull = true;
+-    public boolean disableHopperMoveEvents = false;
+-    public boolean hoppersIgnoreOccludingBlocks = false;
++    public boolean disableHopperMoveEvents = true; // JettPack - tweak defaults
++    public boolean hoppersIgnoreOccludingBlocks = true; // JettPack - tweak defaults
+     private void hopperOptimizations() {
+         cooldownHopperWhenFull = getBoolean("hopper.cooldown-when-full", cooldownHopperWhenFull);
+         log("Cooldown Hoppers when Full: " + (cooldownHopperWhenFull ? "enabled" : "disabled"));
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+index 0d71d5c4af27f96e5a642bdb4fdb71e3f1b81b99..e5b12b38a6a1ef08747b2e173e4db574366c6f65 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+@@ -92,14 +92,14 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+         this.allowNether = this.get("allow-nether", true);
+         this.spawnMonsters = this.get("spawn-monsters", true);
+         this.useNativeTransport = this.get("use-native-transport", true);
+-        this.enableCommandBlock = this.get("enable-command-block", false);
+-        this.spawnProtection = this.get("spawn-protection", 16);
++        this.enableCommandBlock = this.get("enable-command-block", true); // JettPack - tweak defaults
++        this.spawnProtection = this.get("spawn-protection", 0); // JettPack - tweak defaults
+         this.opPermissionLevel = this.get("op-permission-level", 4);
+         this.functionPermissionLevel = this.get("function-permission-level", 2);
+         this.maxTickTime = this.get("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
+         this.rateLimitPacketsPerSecond = this.get("rate-limit", 0);
+         this.viewDistance = this.get("view-distance", 10);
+-        this.simulationDistance = this.get("simulation-distance", 10);
++        this.simulationDistance = this.get("simulation-distance", 6); // JettPack - tweak defaults
+         this.maxPlayers = this.get("max-players", 20);
+         this.networkCompressionThreshold = this.get("network-compression-threshold", 256);
+         this.broadcastRconToOps = this.get("broadcast-rcon-to-ops", true);

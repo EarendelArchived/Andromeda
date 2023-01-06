@@ -3,8 +3,10 @@ From: AlphaKR93 <alphakr93@outlook.com>
 Date: Thu, 22 Dec 2022 20:14:27 +0900
 Subject: [PATCH] Rubia Server Patches
 
+SHA: 43a96ce87b8caf649f0fb73bc672b13886b82e58
+
 Original: Irochi <me@irochi.moe>
-Copyright (C) 2022 Irochi Moe
+Copyright (C) 2023 Irochi Moe
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,6 +20,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+[PORTED PATCHES]
+0007 - Toggleable offline mode warning
+0008 - Allow any characters in username
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 index 554e092c39c6ac2a6b7ee7ecb5552b46d5486f69..500cbe5e1ccd7b7159a691166c89d35a6bcbd134 100644

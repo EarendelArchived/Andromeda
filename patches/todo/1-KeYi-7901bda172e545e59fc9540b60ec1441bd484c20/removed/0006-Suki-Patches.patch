@@ -1,0 +1,301 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MartijnMuijsers <martijnmuijsers@live.nl>
+Date: Thu, 13 Oct 2022 18:09:28 +0200
+Subject: [PATCH] Suki Patches
+
+Original code by SuCraft, licensed under GPL-3.0.
+You can find the original code on https://github.com/SuCraft/Suki
+0012-Only-refresh-lootables-for-players.patch
+0013-Optimize-harmless-explosions.patch
+0016-Send-more-packets-immediately.patch
+0017-Flush-after-more-packets.patch
+0018-Do-not-relocate-corrupted-chunks.patch
+0015-Multithreading environment variables.patch
+
+diff --git a/src/main/java/cc/keyimc/keyi/KeyiConfig.java b/src/main/java/cc/keyimc/keyi/KeyiConfig.java
+index bc9403d002ef24e71be67a962d099f5d73db9540..8b9a2f06b0a61cfdd493eeddde512f0abd17f49e 100644
+--- a/src/main/java/cc/keyimc/keyi/KeyiConfig.java
++++ b/src/main/java/cc/keyimc/keyi/KeyiConfig.java
+@@ -132,4 +132,22 @@ public final class KeyiConfig {
+     public static void reload() {
+         KeyiConfig.init((File) MinecraftServer.getServer().options.valueOf("keyi-settings"));
+     }
++
++    // Suki start - only refresh lootables for players
++
++    public static boolean onlyRefreshForPlayers = false;
++    private static void lootables() {
++        onlyRefreshForPlayers = getBoolean("suki.onlyRefreshForPlayers", onlyRefreshForPlayers);
++    }
++
++    // Suki end - only refresh lootables for players
++
++    // Suki start - do not relocate corrupted chunks
++
++    public static boolean RelocateCorruptedChunks = true;
++    private static void RelocateCorruptedChunks() {
++        RelocateCorruptedChunks = getBoolean("suki.RelocateCorruptedChunks", RelocateCorruptedChunks);
++    }
++
++    // Suki end - do not relocated corrupted chunks
+ }
+\ No newline at end of file
+diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
+index c8f7aa9e0794713724e1053581c220aa95f1bc90..f24193a13563bbfbe0f0677ec8f645b122937996 100644
+--- a/src/main/java/io/papermc/paper/util/MCUtil.java
++++ b/src/main/java/io/papermc/paper/util/MCUtil.java
+@@ -56,8 +56,8 @@ import java.util.function.Supplier;
+ 
+ public final class MCUtil {
+     public static final ThreadPoolExecutor asyncExecutor = new ThreadPoolExecutor(
+-        0, 2, 60L, TimeUnit.SECONDS,
+-        new LinkedBlockingQueue<>(),
++        Integer.getInteger("suki.threads.asyncexecutor", 4), Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, // JettPack // Suki - multithreading environment variables
++		new LinkedBlockingQueue<>(),
+         new ThreadFactoryBuilder()
+             .setNameFormat("Paper Async Task Handler Thread - %1$d")
+             .setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(MinecraftServer.LOGGER))
+diff --git a/src/main/java/net/minecraft/Util.java b/src/main/java/net/minecraft/Util.java
+index b2860114d52c52360e1e559d0c2c5ee4789dee97..8c09bdc0bd0af7ab9c5b3cad4067e1e0067c5502 100644
+--- a/src/main/java/net/minecraft/Util.java
++++ b/src/main/java/net/minecraft/Util.java
+@@ -27,7 +27,6 @@ import java.net.URL;
+ import java.nio.file.Files;
+ import java.nio.file.Path;
+ import java.nio.file.spi.FileSystemProvider;
+-import java.security.AccessController;
+ import java.security.PrivilegedActionException;
+ import java.security.PrivilegedExceptionAction;
+ import java.time.Duration;
+@@ -151,9 +150,15 @@ public class Util {
+     }
+ 
+     private static ExecutorService makeExecutor(String s, int priorityModifier) { // Paper - add priority
++        // Suki start - multithreading environment variables
++        return makeExecutor(s, priorityModifier, -1);
++    }
++
++    public static ExecutorService makeExecutor(String s, int priorityModifier, int specificThreads) {
++        // Suki end - multithreading environment variables
+         // Paper start - use simpler thread pool that allows 1 thread
+         // Paper start - also try to avoid suffocating the system with the worldgen workers
+-        int cpus = Runtime.getRuntime().availableProcessors() / 2;
++        int cpus = Integer.getInteger("suki.systemcpus.forexecutors", Runtime.getRuntime().availableProcessors() / 2); // Suki - multithreading environment variables
+         int i;
+         if (cpus <= 4) {
+             i = cpus <= 2 ? 1 : 2;
+@@ -166,6 +171,11 @@ public class Util {
+         i = Math.min(8, i);
+         // Paper end - also try to avoid suffocating the system with the worldgen workers
+         i = Integer.getInteger("Paper.WorkerThreadCount", i);
++        // Suki start - multithreading environment variables
++        if (specificThreads > 0) {
++            i = specificThreads;
++        }
++        // Suki end - multithreading environment variables
+         ExecutorService executorService;
+ 
+         if (i <= 0) {
+@@ -174,7 +184,7 @@ public class Util {
+ 
+             //executorService = new java.util.concurrent.ThreadPoolExecutor(i, i,0L, TimeUnit.MILLISECONDS, new java.util.concurrent.LinkedBlockingQueue<Runnable>(), target -> new net.minecraft.server.ServerWorkerThread(target, s, priorityModifier)); // JettPack
+             // JettPack start
+-            executorService = Integer.getInteger("Paper.WorkerThreadCount", i) <= 0 ? MoreExecutors.newDirectExecutorService() : new AbstractExecutorService(){
++            executorService = new AbstractExecutorService(){ // Suki - multithreading environment variables
+                 private volatile boolean shutdown = false;
+ 
+                 @Override
+diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
+index 2a71c8e6901944af90c4ad4dfa39dba7fafc0126..2e79bc8218454d1714dc878b6f07d3ed289fed68 100644
+--- a/src/main/java/net/minecraft/network/Connection.java
++++ b/src/main/java/net/minecraft/network/Connection.java
+@@ -356,7 +356,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+                 packet instanceof net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket ||
+                 packet instanceof net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket ||
+                 packet instanceof net.minecraft.network.protocol.game.ClientboundClearTitlesPacket ||
+-                packet instanceof net.minecraft.network.protocol.game.ClientboundBossEventPacket;
++                // Suki start - send more packets immediately
++                packet instanceof net.minecraft.network.protocol.game.ClientboundBossEventPacket ||
++                packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket ||
++                packet instanceof net.minecraft.network.protocol.game.ClientboundMapItemDataPacket;
++            // Suki end - send more packets immediately
+         }
+         // Paper end
+     }
+@@ -407,7 +411,15 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     private void sendPacket(Packet<?> packet, @Nullable PacketSendListener callbacks, Boolean flushConditional) {
+         this.packetWrites.getAndIncrement(); // must be befeore using canFlush
+         boolean effectiveFlush = flushConditional == null ? this.canFlush : flushConditional.booleanValue();
+-        final boolean flush = effectiveFlush || packet instanceof net.minecraft.network.protocol.game.ClientboundKeepAlivePacket || packet instanceof ClientboundDisconnectPacket; // no delay for certain packets
++        // Suki start - flush after more packets
++        final boolean flush = effectiveFlush ||
++            packet instanceof net.minecraft.network.protocol.game.ClientboundKeepAlivePacket ||
++            packet instanceof ClientboundDisconnectPacket ||
++            packet instanceof net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket ||
++            packet instanceof net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket ||
++            packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket ||
++            packet instanceof net.minecraft.network.protocol.game.ClientboundMapItemDataPacket; // no delay for certain packets
++        // Suki end - flush after more packets
+         // Paper end - add flush parameter
+         ConnectionProtocol enumprotocol = ConnectionProtocol.getProtocolForPacket(packet);
+         ConnectionProtocol enumprotocol1 = this.getCurrentProtocol();
+diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
+index 0066b1abc008d245825abf1d256cb87fa9c2d877..5efe002efcfa43b2cdd90f2dc127fee89b25b82b 100644
+--- a/src/main/java/net/minecraft/server/Main.java
++++ b/src/main/java/net/minecraft/server/Main.java
+@@ -330,7 +330,7 @@ public class Main {
+     // Paper start - fix and optimise world upgrading
+     public static void convertWorldButItWorks(net.minecraft.resources.ResourceKey<net.minecraft.world.level.dimension.LevelStem> dimensionType, net.minecraft.world.level.storage.LevelStorageSource.LevelStorageAccess worldSession,
+                                               DataFixer dataFixer, Optional<net.minecraft.resources.ResourceKey<com.mojang.serialization.Codec<? extends net.minecraft.world.level.chunk.ChunkGenerator>>> generatorKey, boolean removeCaches) {
+-        int threads = Runtime.getRuntime().availableProcessors() * 3 / 8;
++        int threads = Integer.getInteger("suki.threads.upgradeworld", Integer.getInteger("suki.systemcpus.forupgradeworld", Runtime.getRuntime().availableProcessors()) * 3 / 8); // Suki - multithreading environment variables
+         final ThreadedWorldUpgrader worldUpgrader = new ThreadedWorldUpgrader(dimensionType, worldSession.getLevelId(), worldSession.levelDirectory.path().toFile(), threads, dataFixer, generatorKey, removeCaches);
+         worldUpgrader.convert();
+     }
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 795c631bb5edc696a4e52703b1819fcddfb800e2..cb2fc1a77d8170772ec4595642d317b04652b293 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -313,8 +313,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         thread.setUncaughtExceptionHandler((thread1, throwable) -> {
+             MinecraftServer.LOGGER.error("Uncaught exception in server thread", throwable);
+         });
+-        if (Runtime.getRuntime().availableProcessors() > 4) {
+-            thread.setPriority(8);
++        // Suki start - multithreading environment variables
++        if (Integer.getInteger("suki.mainthreadpriority", -1) != -1 || Runtime.getRuntime().availableProcessors() > 4) {
++            thread.setPriority(Integer.getInteger("suki.mainthreadpriority", 8));
++            // Suki end - multithreading environment variables
+         }
+ 
+         S s0 = serverFactory.apply(thread); // CraftBukkit - decompile error
+diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
+index c9def2202d7c2a523858ec124df2beaf994d9888..3a7bcee2e4b1c4ef2ba303b0200ae846357c5982 100644
+--- a/src/main/java/net/minecraft/world/level/Explosion.java
++++ b/src/main/java/net/minecraft/world/level/Explosion.java
+@@ -152,6 +152,7 @@ public class Explosion {
+         int i;
+         int j;
+ 
++        if (this.fire || this.blockInteraction != BlockInteraction.NONE) { // Suki - optimize explosions - don't run block processing if neither flag is set
+         for (int k = 0; k < 16; ++k) {
+             for (i = 0; i < 16; ++i) {
+                 for (j = 0; j < 16; ++j) {
+@@ -191,8 +192,8 @@ public class Explosion {
+                                 if (!io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowHeadlessPistons && iblockdata.getBlock() == Blocks.MOVING_PISTON) {
+                                     BlockEntity extension = this.level.getBlockEntity(blockposition);
+                                     if (extension instanceof net.minecraft.world.level.block.piston.PistonMovingBlockEntity blockEntity && blockEntity.isSourcePiston()) {
+-                                       net.minecraft.core.Direction direction = iblockdata.getValue(net.minecraft.world.level.block.piston.PistonHeadBlock.FACING);
+-                                       set.add(blockposition.relative(direction.getOpposite()));
++                                        net.minecraft.core.Direction direction = iblockdata.getValue(net.minecraft.world.level.block.piston.PistonHeadBlock.FACING);
++                                        set.add(blockposition.relative(direction.getOpposite()));
+                                     }
+                                 }
+                                 // Paper end
+@@ -206,6 +207,7 @@ public class Explosion {
+                 }
+             }
+         }
++        } // Suki - optimize explosions - don't run block processing if neither flag is set
+ 
+         this.toBlow.addAll(set);
+         float f2 = this.radius * 2.0F;
+@@ -296,7 +298,7 @@ public class Explosion {
+         boolean flag1 = this.blockInteraction != Explosion.BlockInteraction.NONE;
+ 
+         if (particles) {
+-            if (this.radius >= 2.0F && flag1) {
++            if (this.radius >= 2.0F) {
+                 this.level.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
+             } else {
+                 this.level.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity.java
+index 13e749a3c40f0b2cc002f13675a9a56eedbefdac..2995d5f80dd2e9b4b8fbbafe3567a6f2847a1187 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity.java
+@@ -1,6 +1,8 @@
+ package net.minecraft.world.level.block.entity;
+ 
+ import javax.annotation.Nullable;
++
++import cc.keyimc.keyi.KeyiConfig;
+ import net.minecraft.advancements.CriteriaTriggers;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.NonNullList;
+@@ -69,6 +71,15 @@ public abstract class RandomizableContainerBlockEntity extends BaseContainerBloc
+     }
+ 
+     public void unpackLootTable(@Nullable Player player) {
++        // Suki start - only refresh lootables for players
++        if (this.level.getServer() != null) {
++            if (KeyiConfig.onlyRefreshForPlayers) {
++                if (player == null) {
++                    return;
++                }
++            }
++        }
++        // Suki end - only refresh lootables for players
+         if (this.lootableData.shouldReplenish(player) && this.level.getServer() != null) { // Paper
+             LootTable lootTable = this.level.getServer().getLootTables().get(this.lootTable);
+             if (player instanceof ServerPlayer) {
+diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
+index 577eefd0990b0d6ae237dd685976975d3532d7fa..1ef21e74e353f178d9031ef253765593147263bb 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
++++ b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.world.level.chunk.storage;
+ 
++import cc.keyimc.keyi.KeyiConfig;
+ import com.google.common.collect.Maps;
+ import com.mojang.logging.LogUtils;
+ import com.mojang.serialization.Codec;
+@@ -30,6 +31,7 @@ import net.minecraft.nbt.NbtOps;
+ import net.minecraft.nbt.ShortTag;
+ import net.minecraft.nbt.Tag;
+ import net.minecraft.resources.ResourceLocation;
++import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.level.ServerChunkCache;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ThreadedLevelLightEngine;
+@@ -157,7 +159,14 @@ public class ChunkSerializer {
+         ChunkPos chunkcoordintpair1 = new ChunkPos(nbt.getInt("xPos"), nbt.getInt("zPos")); // Paper - diff on change, see ChunkSerializer#getChunkCoordinate
+ 
+         if (!Objects.equals(chunkPos, chunkcoordintpair1)) {
+-            ChunkSerializer.LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", new Object[]{chunkPos, chunkPos, chunkcoordintpair1});
++            // Suki start - do not relocate corrupted chunks
++            if (KeyiConfig.RelocateCorruptedChunks) {
++                ChunkSerializer.LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", new Object[]{chunkPos, chunkPos, chunkcoordintpair1});
++            } else {
++                ChunkSerializer.LOGGER.error("Chunk file at {} is in the wrong location; stopping the server. (Expected {}, got {})", new Object[]{chunkPos, chunkPos, chunkcoordintpair1});
++                MinecraftServer.getServer().stopServer();
++            }
++            // Suki end - do not relocate corrupted chunks
+         }
+ 
+         UpgradeData chunkconverter = nbt.contains("UpgradeData", 10) ? new UpgradeData(nbt.getCompound("UpgradeData"), world) : UpgradeData.EMPTY;
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 3a67aaa39daf1fb86938f53e129aadfb686583b0..a57d633c439f66cb27209f56abf391e84bbb52c5 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -242,6 +242,7 @@ import org.jetbrains.annotations.NotNull;
+ import org.yaml.snakeyaml.Yaml;
+ import org.yaml.snakeyaml.constructor.SafeConstructor;
+ import org.yaml.snakeyaml.error.MarkedYAMLException;
++import net.minecraft.Util; // KeYi
+ 
+ import net.md_5.bungee.api.chat.BaseComponent; // Spigot
+ 
+@@ -1295,9 +1296,11 @@ public final class CraftServer implements Server {
+             worldKey = ResourceKey.create(net.minecraft.core.Registry.DIMENSION_REGISTRY, new net.minecraft.resources.ResourceLocation(creator.key().getNamespace().toLowerCase(java.util.Locale.ENGLISH), creator.key().getKey().toLowerCase(java.util.Locale.ENGLISH))); // Paper
+         }
+ 
+-        ServerLevel internal = (ServerLevel) new ServerLevel(this.console, console.executor, worldSession, worlddata, worldKey, worlddimension, this.getServer().progressListenerFactory.create(11),
++        // Suki start - multithreading environment variables
++        int levelExecutorThreads = Integer.getInteger("suki.threads.levelexecutor", -1);
++        ServerLevel internal = (ServerLevel) new ServerLevel(this.console, levelExecutorThreads > 0 ? Util.makeExecutor(name, -1, levelExecutorThreads) : console.executor, worldSession, worlddata, worldKey, worlddimension, this.getServer().progressListenerFactory.create(11),
+                 worlddata.worldGenSettings().isDebug(), j, creator.environment() == Environment.NORMAL ? list : ImmutableList.of(), true, creator.environment(), generator, biomeProvider);
+-
++        // Suki end - multithreading environment variables
+         if (!(this.worlds.containsKey(name.toLowerCase(java.util.Locale.ENGLISH)))) {
+             return null;
+         }

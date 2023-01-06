@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Simon Gardling <titaniumtown@gmail.com>
+Date: Thu, 8 Jul 2021 12:44:19 -0400
+Subject: [PATCH] add config to uncap chunk loading
+
+
+diff --git a/src/main/java/com/tuinity/tuinity/config/TuinityConfig.java b/src/main/java/com/tuinity/tuinity/config/TuinityConfig.java
+index bca56d612451a70b55ed37817df7cf4453311477..996953ce15866f838a169bf1a3f42775d5f4db10 100644
+--- a/src/main/java/com/tuinity/tuinity/config/TuinityConfig.java
++++ b/src/main/java/com/tuinity/tuinity/config/TuinityConfig.java
+@@ -121,6 +121,7 @@ public final class TuinityConfig {
+     public static boolean enableMC162253Workaround;
+     public static double playerTargetChunkSendRate;
+     public static boolean playerFrustumPrioritisation;
++    public static boolean ucapChunks;
+ 
+     private static void newPlayerChunkManagement() {
+         playerMinChunkLoadRadius = TuinityConfig.getInt("player-chunks.min-load-radius", 2);
+@@ -131,6 +132,12 @@ public final class TuinityConfig {
+         enableMC162253Workaround = TuinityConfig.getBoolean("player-chunks.enable-mc162253-workaround", true);
+         playerTargetChunkSendRate = TuinityConfig.getDouble("player-chunks.target-chunk-send-rate", -35.0);
+         playerFrustumPrioritisation = TuinityConfig.getBoolean("player-chunks.enable-frustum-priority", false);
++        ucapChunks = TuinityConfig.getBoolean("player-chunks.uncap-chunk-loading", false);
++        if (ucapChunks) {
++            playerTargetChunkSendRate = -1000000000000000.0D;
++            playerMaxConcurrentChunkSends = 1073741824.0D;
++            playerMaxConcurrentChunkLoads = 1073741824.0D;
++        }
+     }
+ 
+     public static final class PacketLimit {

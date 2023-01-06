@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Simon Gardling <titaniumtown@gmail.com>
+Date: Sun, 2 Jan 2022 16:32:20 -0500
+Subject: [PATCH] cache bukkitVersion
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index 8e83789d9335d988828366db19b51dd3bd04f213..ec43a790fdd0c25a69e5fd7259cb77fbcde6a363 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -8,8 +8,10 @@ import java.util.logging.Logger;
+ import org.bukkit.Bukkit;
+ 
+ public final class Versioning {
+-    public static String getBukkitVersion() {
+-        String result = "Unknown-Version";
++    // JettPack start - cache getBukkitVersion
++    public static String bukkitVersion;
++    static {
++        bukkitVersion = "Unknown-Version";
+ 
+         InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/me.titaniumtown.jettpack/jettpack-api/pom.properties");
+         Properties properties = new Properties();
+@@ -18,12 +20,15 @@ public final class Versioning {
+             try {
+                 properties.load(stream);
+ 
+-                result = properties.getProperty("version");
++                bukkitVersion = properties.getProperty("version");
+             } catch (IOException ex) {
+                 Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Bukkit version!", ex);
+             }
+         }
++    }
++    // JettPack end
+ 
+-        return result;
++    public static String getBukkitVersion() {
++        return bukkitVersion; // JettPack
+     }
+ }

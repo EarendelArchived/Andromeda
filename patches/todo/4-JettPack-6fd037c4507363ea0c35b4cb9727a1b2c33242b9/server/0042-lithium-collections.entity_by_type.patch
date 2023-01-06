@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 2No2Name <2No2Name@web.de>
+Date: Mon, 10 Jan 2022 10:18:50 -0500
+Subject: [PATCH] lithium: collections.entity_by_type
+
+Original code licensed under GNU Lesser General Public License v3.0 and created for the lithium project: https://github.com/CaffeineMC/lithium-fabric/
+
+diff --git a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+index da725ee77c9e3fd7d9ee89763792ecd31c773037..f6489a136fd66eaccf10dd85b6968381db84e7fa 100644
+--- a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
++++ b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+@@ -12,9 +12,10 @@ import java.util.List;
+ import java.util.Map;
+ import java.util.Map.Entry;
+ import java.util.stream.Collectors;
++import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap; // JettPack
+ 
+ public class ClassInstanceMultiMap<T> extends AbstractCollection<T> {
+-    private final Map<Class<?>, List<T>> byClass = Maps.newHashMap();
++    private final Map<Class<?>, List<T>> byClass = new Reference2ReferenceOpenHashMap<>(); // JettPack - lithium: collections.entity_by_type
+     private final Class<T> baseClass;
+     private final List<T> allInstances = Lists.newArrayList();
+ 
+@@ -59,7 +60,7 @@ public class ClassInstanceMultiMap<T> extends AbstractCollection<T> {
+         if (!this.baseClass.isAssignableFrom(type)) {
+             throw new IllegalArgumentException("Don't know how to search for " + type);
+         } else {
+-            List<? extends T> list = this.byClass.computeIfAbsent(type, (typeClass) -> {
++            List list = this.byClass.computeIfAbsent(type, (typeClass) -> { // JettPack - decomp fix
+                 return this.allInstances.stream().filter(typeClass::isInstance).collect(Collectors.toList());
+             });
+             return Collections.unmodifiableCollection(list);

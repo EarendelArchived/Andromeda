@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: nostalgic853 <yuu8583@proton.me>
+Date: Mon, 24 Oct 2022 10:28:54 +0800
+Subject: [PATCH] Disable arrow despawn counter by default
+
+
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+index 856024f31ca1eeab6e4d4ee7f547509bc9581bf8..d73914f406012af602232ca47e7ed0e627b564c6 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+@@ -116,7 +116,7 @@ public class PurpurWorldConfig {
+         armorstandPlaceWithArms = getBoolean("gameplay-mechanics.armorstand.place-with-arms-visible", armorstandPlaceWithArms);
+     }
+ 
+-    public boolean arrowMovementResetsDespawnCounter = true;
++    public boolean arrowMovementResetsDespawnCounter = false; // KeYi - disable arrow despawn counter by default
+     private void arrowSettings() {
+         arrowMovementResetsDespawnCounter = getBoolean("gameplay-mechanics.arrow.movement-resets-despawn-counter", arrowMovementResetsDespawnCounter);
+     }

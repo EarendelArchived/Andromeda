@@ -3,6 +3,28 @@ From: AlphaKR93 <alphakr93@outlook.com>
 Date: Sun, 25 Dec 2022 22:37:03 +0900
 Subject: [PATCH] Akarin Tweaks
 
+SHA: 5b03eb1aa436438f7fd1a7f880e310642df9743f
+
+Original: Akarin Project
+Copyright (C) 2023 Akarin Project
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+[PORTED PATCHES]
+0007 - Avoid double I/O operation on load player file
+0008 - Don't trigger Lootable Refresh for non player interaction
+0011 - Swaps the predicate order of collision
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
 index 1ae7ef3d94d4d3d8413a5419eeb9fadad89d2f8d..0ec4cb1c721b85b25ba0f4eac48e8d13113441f0 100644

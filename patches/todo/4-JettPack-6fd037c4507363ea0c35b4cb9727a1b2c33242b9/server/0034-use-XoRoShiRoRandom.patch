@@ -1,0 +1,483 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Simon Gardling <titaniumtown@gmail.com>
+Date: Wed, 5 Jan 2022 12:25:37 -0500
+Subject: [PATCH] use XoRoShiRoRandom
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/loottable/PaperLootableInventoryData.java b/src/main/java/com/destroystokyo/paper/loottable/PaperLootableInventoryData.java
+index 20cfe7b9b7127ddeb97aa91d759fc17b4a548eaf..be669ec0be96816ada803aff28710941325761e5 100644
+--- a/src/main/java/com/destroystokyo/paper/loottable/PaperLootableInventoryData.java
++++ b/src/main/java/com/destroystokyo/paper/loottable/PaperLootableInventoryData.java
+@@ -13,7 +13,7 @@ import java.util.UUID;
+ 
+ public class PaperLootableInventoryData {
+ 
+-    private static final Random RANDOM = new Random();
++    private static final Random RANDOM = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+ 
+     private long lastFill = -1;
+     private long nextRefill = -1;
+diff --git a/src/main/java/me/titaniumtown/util/rand/SplitMixRandom.java b/src/main/java/me/titaniumtown/util/rand/SplitMixRandom.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..02c5d6365a94da0bfa34bc8fac845ca2a5f14635
+--- /dev/null
++++ b/src/main/java/me/titaniumtown/util/rand/SplitMixRandom.java
+@@ -0,0 +1,38 @@
++package me.titaniumtown.util.rand;
++
++import it.unimi.dsi.fastutil.HashCommon;
++
++// Note, this implementation was taken from sodium under the LGPLv3 License: https://github.com/CaffeineMC/sodium-fabric/blob/6390562feee9537461a7822b43d2f87691378e55/src/main/java/me/jellysquid/mods/sodium/client/util/rand/XoRoShiRoRandom.java
++
++// SplitMixRandom implementation from DSI Utilities, adopted in a minimal implementation to not
++// import Apache Commons.
++//
++// http://xoshiro.di.unimi.it/
++public class SplitMixRandom {
++    private static final long PHI = 0x9E3779B97F4A7C15L;
++
++    private long x;
++
++    public SplitMixRandom(final long seed) {
++        this.setSeed(seed);
++    }
++
++    private static long staffordMix13(long z) {
++        z = (z ^ (z >>> 30)) * 0xBF58476D1CE4E5B9L;
++        z = (z ^ (z >>> 27)) * 0x94D049BB133111EBL;
++
++        return z ^ (z >>> 31);
++    }
++
++    public long nextLong() {
++        return staffordMix13(this.x += PHI);
++    }
++
++    public void setSeed(final long seed) {
++        this.x = HashCommon.murmurHash3(seed);
++    }
++
++    public void setState(final long state) {
++        this.x = state;
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/me/titaniumtown/util/rand/XoRoShiRoRandom.java b/src/main/java/me/titaniumtown/util/rand/XoRoShiRoRandom.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee637622cc2ce1303f4a8254ee8e559b579c4c7b
+--- /dev/null
++++ b/src/main/java/me/titaniumtown/util/rand/XoRoShiRoRandom.java
+@@ -0,0 +1,153 @@
++package me.titaniumtown.util.rand;
++
++import java.util.Random;
++
++// Note, this implementation was taken from sodium under the LGPLv3 License: https://github.com/CaffeineMC/sodium-fabric/blob/6390562feee9537461a7822b43d2f87691378e55/src/main/java/me/jellysquid/mods/sodium/client/util/rand/XoRoShiRoRandom.java
++
++// XoRoShiRo128** implementation from DSI Utilities, adopted in a minimal implementation to not
++// import Apache Commons.
++//
++// http://xoshiro.di.unimi.it/
++public class XoRoShiRoRandom extends Random {
++    private static final long serialVersionUID = 1L;
++
++    private SplitMixRandom mixer;
++    private long seed = Long.MIN_VALUE;
++    private long p0, p1; // The initialization words for the current seed
++    private long s0, s1; // The current random words
++    private boolean hasSavedState; // True if we can be quickly reseed by using resetting the words
++
++    private static final SplitMixRandom seedUniquifier = new SplitMixRandom(System.nanoTime());
++
++    public static long randomSeed() {
++        final long x;
++
++        synchronized (XoRoShiRoRandom.seedUniquifier) {
++            x = XoRoShiRoRandom.seedUniquifier.nextLong();
++        }
++
++        return x ^ System.nanoTime();
++    }
++
++    public XoRoShiRoRandom() {
++        this(XoRoShiRoRandom.randomSeed());
++    }
++
++    public XoRoShiRoRandom(final long seed) {
++        this.setSeed(seed);
++    }
++
++    @Override
++    public long nextLong() {
++        final long s0 = this.s0;
++
++        long s1 = this.s1;
++
++        final long result = s0 + s1;
++
++        s1 ^= s0;
++
++        this.s0 = Long.rotateLeft(s0, 24) ^ s1 ^ s1 << 16;
++        this.s1 = Long.rotateLeft(s1, 37);
++
++        return result;
++    }
++
++    @Override
++    public int nextInt() {
++        return (int) this.nextLong();
++    }
++
++    @Override
++    public int nextInt(final int n) {
++        return (int) this.nextLong(n);
++    }
++
++    @Override
++    public long nextLong(final long n) {
++        if (n <= 0) {
++            throw new IllegalArgumentException("illegal bound " + n + " (must be positive)");
++        }
++
++        long t = this.nextLong();
++
++        final long nMinus1 = n - 1;
++
++        // Shortcut for powers of two--high bits
++        if ((n & nMinus1) == 0) {
++            return (t >>> Long.numberOfLeadingZeros(nMinus1)) & nMinus1;
++        }
++
++        // Rejection-based algorithm to get uniform integers in the general case
++        long u = t >>> 1;
++
++        while (u + nMinus1 - (t = u % n) < 0) {
++            u = this.nextLong() >>> 1;
++        }
++
++        return t;
++
++    }
++
++    @Override
++    public double nextDouble() {
++        return Double.longBitsToDouble(0x3FFL << 52 | this.nextLong() >>> 12) - 1.0;
++    }
++
++    @Override
++    public float nextFloat() {
++        return (this.nextLong() >>> 40) * 0x1.0p-24f;
++    }
++
++    @Override
++    public boolean nextBoolean() {
++        return this.nextLong() < 0;
++    }
++
++    @Override
++    public void nextBytes(final byte[] bytes) {
++        int i = bytes.length, n;
++
++        while (i != 0) {
++            n = Math.min(i, 8);
++
++            for (long bits = this.nextLong(); n-- != 0; bits >>= 8) {
++                bytes[--i] = (byte) bits;
++            }
++        }
++    }
++
++    @Override
++    public void setSeed(final long seed) {
++        // Restore the previous initial state if the seed hasn't changed
++        // Setting and mixing the seed is expensive, so this saves some CPU cycles
++        if (this.hasSavedState && this.seed == seed) {
++            this.s0 = this.p0;
++            this.s1 = this.p1;
++        } else {
++            SplitMixRandom mixer = this.mixer;
++
++            // Avoid allocations of SplitMixRandom
++            if (mixer == null) {
++                mixer = this.mixer = new SplitMixRandom(seed);
++            } else {
++                mixer.setSeed(seed);
++            }
++
++            this.s0 = mixer.nextLong();
++            this.s1 = mixer.nextLong();
++
++            this.p0 = this.s0;
++            this.p1 = this.s1;
++
++            this.seed = seed;
++            this.hasSavedState = true;
++        }
++    }
++
++    public XoRoShiRoRandom setSeedAndReturn(final long seed) {
++        this.setSeed(seed);
++
++        return this;
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index e652b5c8229a819b0c0a12cc245842ac40c97cc2..83303c69321ebd1208cd31b2891645ba6b50c4e2 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -416,7 +416,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<Runnab
+         this.onMetricsRecordingFinished = (path) -> {
+         };
+         this.status = new ServerStatus();
+-        this.random = new Random();
++        this.random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+         this.port = -1;
+         this.levels = Maps.newLinkedHashMap(); // CraftBukkit - keep order, k+v already use identity methods
+         this.running = true;
+diff --git a/src/main/java/net/minecraft/server/commands/SpreadPlayersCommand.java b/src/main/java/net/minecraft/server/commands/SpreadPlayersCommand.java
+index 62f26f5d3ef5546f26424185e378fea64c08ce2f..558c70a8f6ae40cd2901db513f376b5f8524980a 100644
+--- a/src/main/java/net/minecraft/server/commands/SpreadPlayersCommand.java
++++ b/src/main/java/net/minecraft/server/commands/SpreadPlayersCommand.java
+@@ -55,7 +55,7 @@ public class SpreadPlayersCommand {
+     }
+ 
+     private static int spreadPlayers(CommandSourceStack source, Vec2 center, float spreadDistance, float maxRange, int maxY, boolean respectTeams, Collection<? extends Entity> players) throws CommandSyntaxException {
+-        Random random = new Random();
++        Random random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+         double d0 = (double) (center.x - maxRange);
+         double d1 = (double) (center.y - maxRange);
+         double d2 = (double) (center.x + maxRange);
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 470dbed47830e2f580c090bc762a7be5cf389ce5..f705dab8858757a7dbd2a9da5639648427397d6d 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -368,7 +368,7 @@ public class ServerPlayer extends Player {
+             long l = k * k;
+             int i1 = l > 2147483647L ? Integer.MAX_VALUE : (int) l;
+             int j1 = this.getCoprime(i1);
+-            int k1 = (new Random()).nextInt(i1);
++            int k1 = (new me.titaniumtown.util.rand.XoRoShiRoRandom()).nextInt(i1); // JettPack - use XoRoShiRoRandom
+ 
+             for (int l1 = 0; l1 < i1; ++l1) {
+                 int i2 = (k1 + j1 * l1) % i1;
+@@ -405,7 +405,7 @@ public class ServerPlayer extends Player {
+             long l = k * k;
+             int i1 = l > 2147483647L ? Integer.MAX_VALUE : (int) l;
+             int j1 = this.getCoprime(i1);
+-            int k1 = (new Random()).nextInt(i1);
++            int k1 = (new me.titaniumtown.util.rand.XoRoShiRoRandom()).nextInt(i1); // JettPack - use XoRoShiRoRandom
+ 
+             for (int l1 = 0; l1 < i1; ++l1) {
+                 int i2 = (k1 + j1 * l1) % i1;
+diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+index d3efa187fefdd9b46754ff581f3cdda321386bc1..91325746f25d8695c5b5a4fee11c0d197c52e248 100644
+--- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -52,7 +52,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+     private static final AtomicInteger UNIQUE_THREAD_ID = new AtomicInteger(0);
+     static final Logger LOGGER = LogManager.getLogger();
+     private static final int MAX_TICKS_BEFORE_LOGIN = 600;
+-    private static final Random RANDOM = new Random();
++    private static final Random RANDOM = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+     private final byte[] nonce = new byte[4];
+     final MinecraftServer server;
+     public final Connection connection;
+diff --git a/src/main/java/net/minecraft/server/rcon/thread/QueryThreadGs4.java b/src/main/java/net/minecraft/server/rcon/thread/QueryThreadGs4.java
+index 25ae440839f1d286550a77d0a4c61e1dc02b369d..bc739e77394ce824b7dc47067c83c4cb690cde2b 100644
+--- a/src/main/java/net/minecraft/server/rcon/thread/QueryThreadGs4.java
++++ b/src/main/java/net/minecraft/server/rcon/thread/QueryThreadGs4.java
+@@ -348,7 +348,7 @@ public class QueryThreadGs4 extends GenericThread {
+             this.identBytes[2] = bs[5];
+             this.identBytes[3] = bs[6];
+             this.ident = new String(this.identBytes, StandardCharsets.UTF_8);
+-            this.challenge = (new Random()).nextInt(16777216);
++            this.challenge = (new me.titaniumtown.util.rand.XoRoShiRoRandom()).nextInt(16777216); // JettPack - use XoRoShiRoRandom
+             this.challengeBytes = String.format("\t%s%d\u0000", this.ident, this.challenge).getBytes(StandardCharsets.UTF_8);
+         }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java b/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java
+index 204ca4fbd89bdadd902529f1f191df46fce3cace..6a9f2473b73634c656f9a28d633090aeba6e8936 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/ShufflingList.java
+@@ -13,7 +13,7 @@ import java.util.stream.Stream;
+ 
+ public class ShufflingList<U> {
+     public final List<ShufflingList.WeightedEntry<U>> entries; // Paper - public
+-    private final Random random = new Random();
++    private final Random random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+     private final boolean isUnsafe; // Paper
+ 
+     public ShufflingList() {
+diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
+index f3b8e253a5bfc3f68121dbe656ae7e2ac0f0eb1c..28ca514b6d51ca07dc92e3a2fa7bf02618bfed05 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
++++ b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
+@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+ 
+ public abstract class Sensor<E extends LivingEntity> {
+-    private static final Random RANDOM = new Random();
++    private static final Random RANDOM = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+     private static final int DEFAULT_SCAN_RATE = 20;
+     protected static final int TARGETING_RANGE = 16;
+     private static final TargetingConditions TARGET_CONDITIONS = TargetingConditions.forNonCombat().range(16.0D);
+diff --git a/src/main/java/net/minecraft/world/entity/npc/WanderingTraderSpawner.java b/src/main/java/net/minecraft/world/entity/npc/WanderingTraderSpawner.java
+index 323eea2bccacfcc85849b5d82c2b30d991e0c0d8..3dfa498f96b63b8ebdeb0205db09a45370b0860d 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/WanderingTraderSpawner.java
++++ b/src/main/java/net/minecraft/world/entity/npc/WanderingTraderSpawner.java
+@@ -35,7 +35,7 @@ public class WanderingTraderSpawner implements CustomSpawner {
+     private static final int SPAWN_CHANCE_INCREASE = 25;
+     private static final int SPAWN_ONE_IN_X_CHANCE = 10;
+     private static final int NUMBER_OF_SPAWN_ATTEMPTS = 10;
+-    private final Random random = new Random();
++    private final Random random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+     private final ServerLevelData serverLevelData;
+     private int tickDelay;
+     private int spawnDelay;
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java b/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
+index 23aa4f3f3295a8cc6e58eca410a8ad1471ba356e..674948181e69e947d3b4994bc30a999a85695b68 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
+@@ -76,7 +76,7 @@ public class FishingHook extends Projectile {
+ 
+     private FishingHook(EntityType<? extends FishingHook> type, Level world, int luckOfTheSeaLevel, int lureLevel) {
+         super(type, world);
+-        this.syncronizedRandom = new Random();
++        this.syncronizedRandom = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+         this.openWater = true;
+         this.currentState = FishingHook.FishHookState.FLYING;
+         this.noCulling = true;
+diff --git a/src/main/java/net/minecraft/world/entity/raid/Raid.java b/src/main/java/net/minecraft/world/entity/raid/Raid.java
+index 7131226de05bc57830f7a68ba545ebfd19d33a59..eb08620d4f1f1b87bb5418b8df323674bc20cf4c 100644
+--- a/src/main/java/net/minecraft/world/entity/raid/Raid.java
++++ b/src/main/java/net/minecraft/world/entity/raid/Raid.java
+@@ -110,7 +110,7 @@ public class Raid {
+ 
+     public Raid(int id, ServerLevel world, BlockPos pos) {
+         this.raidEvent = new ServerBossEvent(Raid.RAID_NAME_COMPONENT, BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_10);
+-        this.random = new Random();
++        this.random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+         this.waveSpawnPos = Optional.empty();
+         this.id = id;
+         this.level = world;
+@@ -124,7 +124,7 @@ public class Raid {
+ 
+     public Raid(ServerLevel world, CompoundTag nbt) {
+         this.raidEvent = new ServerBossEvent(Raid.RAID_NAME_COMPONENT, BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_10);
+-        this.random = new Random();
++        this.random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+         this.waveSpawnPos = Optional.empty();
+         this.level = world;
+         this.id = nbt.getInt("Id");
+diff --git a/src/main/java/net/minecraft/world/inventory/EnchantmentMenu.java b/src/main/java/net/minecraft/world/inventory/EnchantmentMenu.java
+index d75f14e23d94deee2b6af20c8af3bcd42c1fbbc3..d1eb45438759a77240d3fa28a66071a5e6838b9f 100644
+--- a/src/main/java/net/minecraft/world/inventory/EnchantmentMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/EnchantmentMenu.java
+@@ -68,7 +68,7 @@ public class EnchantmentMenu extends AbstractContainerMenu {
+             }
+             // CraftBukkit end
+         };
+-        this.random = new Random();
++        this.random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+         this.enchantmentSeed = DataSlot.standalone();
+         this.costs = new int[3];
+         this.enchantClue = new int[]{-1, -1, -1};
+diff --git a/src/main/java/net/minecraft/world/level/BaseSpawner.java b/src/main/java/net/minecraft/world/level/BaseSpawner.java
+index 03726227fdd60e9cf77213d50184abff438e01ef..aedf6faa00a3a4e0894906446118d122c2bdbbac 100644
+--- a/src/main/java/net/minecraft/world/level/BaseSpawner.java
++++ b/src/main/java/net/minecraft/world/level/BaseSpawner.java
+@@ -41,7 +41,7 @@ public abstract class BaseSpawner {
+     public int maxNearbyEntities = 6;
+     public int requiredPlayerRange = 16;
+     public int spawnRange = 4;
+-    private final Random random = new Random();
++    private final Random random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+     private int tickDelay = 0; // Paper
+ 
+     public BaseSpawner() {}
+diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
+index 97f99a06b8954b08af9f4156abe8abdad359349a..6ea3ceb436e7601ede41f96d2900cd484745983e 100644
+--- a/src/main/java/net/minecraft/world/level/Explosion.java
++++ b/src/main/java/net/minecraft/world/level/Explosion.java
+@@ -89,7 +89,7 @@ public class Explosion {
+     }
+ 
+     public Explosion(Level world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionDamageCalculator behavior, double x, double y, double z, float power, boolean createFire, Explosion.BlockInteraction destructionType) {
+-        this.random = new Random();
++        this.random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+         this.toBlow = Lists.newArrayList();
+         this.hitPlayers = Maps.newHashMap();
+         this.level = world;
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index c29b2446cd2971a0adb99c8b3571f176edcf3c36..004663f05c4c05db97950111b141bff17aba13d7 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -124,13 +124,13 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+     public final Thread thread;
+     private final boolean isDebug;
+     private int skyDarken;
+-    protected int randValue = (new Random()).nextInt();
++    protected int randValue = (new me.titaniumtown.util.rand.XoRoShiRoRandom()).nextInt(); // JettPack - use XoRoShiRoRandom
+     protected final int addend = 1013904223;
+     protected float oRainLevel;
+     public float rainLevel;
+     protected float oThunderLevel;
+     public float thunderLevel;
+-    public final Random random = new Random();
++    public final Random random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+     private final DimensionType dimensionType;
+     public final WritableLevelData levelData;
+     private final Supplier<ProfilerFiller> profiler;
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
+index f74c5bb8e1ba42c77c59d481b871fd992483b128..c8984839e21067a5582a5457ffb7633ff0ba7bbe 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
+@@ -21,7 +21,7 @@ import org.bukkit.entity.HumanEntity;
+ 
+ public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
+ 
+-    private static final Random RANDOM = new Random();
++    private static final Random RANDOM = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+     public static final int CONTAINER_SIZE = 9;
+     private NonNullList<ItemStack> items;
+ 
+diff --git a/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java b/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java
+index d33af84300db18ea2b71dba2c9ed43390a293500..f80d375eec908713622d3e3b447ca906129d19f5 100644
+--- a/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java
++++ b/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java
+@@ -201,7 +201,7 @@ public class LootContext {
+                 } else {
+                     Random random = this.random;
+                     if (random == null) {
+-                        random = new Random();
++                        random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+                     }
+ 
+                     MinecraftServer minecraftServer = this.level.getServer();
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index 2c3ce2065812de227c34506edddb439da9a07ba1..7fb2273732864737b5c180948f1b3e830a62ad53 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -236,7 +236,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+     }
+     // Paper end
+ 
+-    private static final Random rand = new Random();
++    private static final Random rand = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+ 
+     public CraftWorld(ServerLevel world, ChunkGenerator gen, BiomeProvider biomeProvider, Environment env) {
+         this.world = world;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java
+index be86114eac3975b82ca74d4d6ed3f0402a642e8a..4d3130dd6d8ca30c7bb98870ef30594e1c412858 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java
+@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
+ 
+ public class CraftFirework extends CraftProjectile implements Firework {
+ 
+-    private final Random random = new Random();
++    private final Random random = new me.titaniumtown.util.rand.XoRoShiRoRandom(); // JettPack - use XoRoShiRoRandom
+     private final CraftItemStack item;
+ 
+     public CraftFirework(CraftServer server, FireworkRocketEntity entity) {

@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Simon Gardling <titaniumtown@gmail.com>
+Date: Wed, 5 Jan 2022 15:35:05 -0500
+Subject: [PATCH] remove advertising from pufferfish.yml
+
+
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+index 31c3e9460625f47c166f81e9b44a3b7bdaecbeb6..08e536fb88c5268927027a8eae3908a23235624d 100644
+--- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+@@ -66,11 +66,13 @@ public class PufferfishConfig {
+ 		}
+ 		
+ 		getString("info.version", "1.0");
++		/*
+ 		setComment("info",
+ 				"Pufferfish Configuration",
+ 				"Check out Pufferfish Host for maximum performance server hosting: https://pufferfish.host",
+ 				"Join our Discord for support: https://discord.gg/reZw4vQV9H",
+ 				"Download new builds at https://ci.pufferfish.host/job/Pufferfish");
++		*/
+ 		
+ 		for (Method method : PufferfishConfig.class.getDeclaredMethods()) {
+ 			if (Modifier.isStatic(method.getModifiers()) && Modifier.isPrivate(method.getModifiers()) && method.getParameterCount() == 0 &&

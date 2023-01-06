@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: nostalgic853 <yuu8583@proton.me>
+Date: Sun, 23 Oct 2022 23:15:53 +0800
+Subject: [PATCH] Add an option for tripwire duping
+
+
+diff --git a/src/main/java/cc/keyimc/keyi/KeyiConfig.java b/src/main/java/cc/keyimc/keyi/KeyiConfig.java
+index 5582c15a37fbbf74d2039ba15d67684f5294a46d..8884a2471b4b7c5cabf1c0c767710ba69c7ae4ec 100644
+--- a/src/main/java/cc/keyimc/keyi/KeyiConfig.java
++++ b/src/main/java/cc/keyimc/keyi/KeyiConfig.java
+@@ -142,4 +142,10 @@ public final class KeyiConfig {
+         enableOfflineModeWarning = getBoolean("misc.enable-offline-mode-warning", enableOfflineModeWarning);
+         enableProxyUnsafeWarning = getBoolean("misc.enable-proxy-unsafe-warning", enableProxyUnsafeWarning);
+     }
++
++    public static boolean fixTripwireDuping = true;
++
++    private static void fixes() {
++        fixTripwireDuping = getBoolean("fixes.fix-tripwire-duping", fixTripwireDuping);
++    }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java b/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
+index 004dce26ff073f1de52a84cd425c4f60fdab5e50..b37a5d643dc07eaa0808b972f43281f2e24d3394 100644
+--- a/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
+@@ -147,7 +147,7 @@ public class TripWireHookBlock extends Block {
+                 boolean flag7 = (Boolean) iblockdata2.getValue(TripWireBlock.POWERED);
+ 
+                 flag5 |= flag6 && flag7;
+-                if (k != i || !tripWireBeingRemoved || !flag6) // Paper - don't update the tripwire again if being removed and not disarmed
++                if (k != i || !tripWireBeingRemoved || !flag6 || cc.keyimc.keyi.KeyiConfig.fixTripwireDuping) // Paper - don't update the tripwire again if being removed and not disarmed // KeYi
+                 aiblockdata[k] = iblockdata2;
+                 if (k == i) {
+                     world.scheduleTick(pos, (Block) this, 10);

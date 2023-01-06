@@ -3,9 +3,13 @@ From: AlphaKR93 <alphakr93@outlook.com>
 Date: Fri, 6 Jan 2023 16:22:35 +0900
 Subject: [PATCH] Optimize default config
 
+Original: YouHaveTrouble/minecraft-optimization
+(https://github.com/YouHaveTrouble/minecraft-optimization)
+
+Copyright (C) 2023 YouHaveTrouble
 
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-index 067e6be716a58799ab5fc871fb3f57bf4fc0dbff..8e73bd12a2581d8de7b319287ddab966f381b3fa 100644
+index e2d6ae8baa43fe0c4b59d386b5b66ab16a1910ee..d1ad2c4808176efedfb1d23bf299cc3637c963af 100644
 --- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 @@ -211,7 +211,7 @@ public class PufferfishConfig {

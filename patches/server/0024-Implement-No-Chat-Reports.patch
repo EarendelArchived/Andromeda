@@ -3,6 +3,19 @@ From: AlphaKR93 <alphakr93@outlook.com>
 Date: Fri, 6 Jan 2023 15:16:10 +0900
 Subject: [PATCH] Implement No Chat Reports
 
+SHA: 4d16c048c1ffed9d996b0e557aec26869bdb2999
+
+Original: Aizistral
+Copyright (C) 2023 Aizistral Studios LLC
+
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
+
+DO WHAT THE F**K YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+0. You just DO WHAT THE F**K YOU WANT TO.
 
 diff --git a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatPacket.java b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatPacket.java
 index d1d2fc0c57523c1abf1e8bfec913c78927c3dafc..a19e2902778106d4cfa163e24dae63d622b5d412 100644

@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 2No2Name <2No2Name@web.de>
+Date: Mon, 10 Jan 2022 09:05:17 -0500
+Subject: [PATCH] lithium: collections.attributes
+
+Original code licensed under GNU Lesser General Public License v3.0 and created for the lithium project: https://github.com/CaffeineMC/lithium-fabric/
+
+diff --git a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
+index 52ddf38d5a1894a248e142c6b9ebaff5cc921e5b..048259977cf53ff363213c34a0c4bde23217817c 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
++++ b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
+@@ -16,11 +16,15 @@ import net.minecraft.nbt.ListTag;
+ import net.minecraft.resources.ResourceLocation;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
++// JettPack start
++import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
++import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
++// JettPack end
+ 
+ public class AttributeMap {
+     private static final Logger LOGGER = LogManager.getLogger();
+-    private final Map<Attribute, AttributeInstance> attributes = Maps.newHashMap();
+-    private final Set<AttributeInstance> dirtyAttributes = Sets.newHashSet();
++    private final Map<Attribute, AttributeInstance> attributes = new Reference2ReferenceOpenHashMap<>(); // JettPack - lithium: collections.attributes
++    private final Set<AttributeInstance> dirtyAttributes = new ReferenceOpenHashSet<>(); // JettPack - lithium: collections.attributes
+     private final AttributeSupplier supplier;
+     private final java.util.function.Function<Attribute, AttributeInstance> createInstance; // Pufferfish
+ 

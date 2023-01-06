@@ -1,0 +1,125 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bjarne Koll <lynxplay101@gmail.com>
+Date: Thu, 3 Mar 2022 17:10:48 +0100
+Subject: [PATCH] Add #getConfigurationSectionList to yaml API
+
+The yaml parser does not consider yaml sections that are defined as part
+of a list, configuration sections but rather simple maps. This makes
+interaction with theses sections rather difficult.
+
+To ease interaction, this patch creates a new getter in the
+configuration section interface that returns a list of configuration
+sections by actively converting the parsed maps into memory sections.
+
+diff --git a/src/main/java/org/bukkit/configuration/ConfigurationSection.java b/src/main/java/org/bukkit/configuration/ConfigurationSection.java
+index b6b00af08f12f838411845e4f4e29e62826dfc7f..fa3a7380984d298950d41a24f0a350842ad33b34 100644
+--- a/src/main/java/org/bukkit/configuration/ConfigurationSection.java
++++ b/src/main/java/org/bukkit/configuration/ConfigurationSection.java
+@@ -1058,4 +1058,22 @@ public interface ConfigurationSection {
+      * one line.
+      */
+     public void setInlineComments(@NotNull String path, @Nullable List<String> comments);
++
++    // KTP start - expose lists of configuration sections
++
++    /**
++     * Gets the requested list of configuration sections by their poth.
++     * <p>
++     * If the list does not exist but a default value has been specified, this
++     * will return the default value. If the list does not exist and no
++     * default value was specified, this will return an empty List.
++     * <p>
++     * This method will attempt to convert any form of map into a configuration section
++     * before returning it.
++     *
++     * @param path the fully qualified path to the list of configuration sections.
++     * @return the requested list of configuration sections.
++     */
++    @NotNull List<@NotNull ConfigurationSection> getConfigurationSectionList(@NotNull String path);
++    // KTP end - expose lists of configuration sections
+ }
+diff --git a/src/main/java/org/bukkit/configuration/MemorySection.java b/src/main/java/org/bukkit/configuration/MemorySection.java
+index 90751edd742d9b8d2171c4b16891aa009e4b8dfe..d405896662dd8676062884e5a8ee7d328b7dff1f 100644
+--- a/src/main/java/org/bukkit/configuration/MemorySection.java
++++ b/src/main/java/org/bukkit/configuration/MemorySection.java
+@@ -1042,4 +1042,39 @@ public class MemorySection implements ConfigurationSection {
+             .append("']")
+             .toString();
+     }
++
++    // KTP start - expose lists of configuration sections
++    /**
++     * Gets the requested list of configuration sections by their poth.
++     * <p>
++     * If the list does not exist but a default value has been specified, this
++     * will return the default value. If the list does not exist and no
++     * default value was specified, this will return an empty List.
++     * <p>
++     * This method will attempt to convert any form of map into a configuration section
++     * before returning it.
++     *
++     * @param path the fully qualified path to the list of configuration sections.
++     * @return the requested list of configuration sections.
++     */
++    @SuppressWarnings({"rawtypes", "unchecked"})
++    @Override
++    public @NotNull List<@NotNull ConfigurationSection> getConfigurationSectionList(@NotNull final String path) {
++        final var list = this.getList(path);
++        if (list == null) return new ArrayList<>(0);
++
++        final var mappedList = new ArrayList<ConfigurationSection>(list.size());
++        for (final var object : list) {
++            if (object instanceof ConfigurationSection configurationSection) {
++                mappedList.add(configurationSection);
++            } else if (object instanceof Map sectionMap) {
++                final var mappedConfigurationSection = new MemorySection(this, path);
++                sectionMap.forEach((key, value) -> mappedConfigurationSection.set(String.valueOf(key), value));
++                mappedList.add(mappedConfigurationSection);
++            }
++        }
++
++        return mappedList;
++    }
++    // KTP end - expose lists of configuration sections
+ }
+diff --git a/src/test/java/dev/lynxplay/ktp/configuration/GetConfigurationSectionListTest.java b/src/test/java/dev/lynxplay/ktp/configuration/GetConfigurationSectionListTest.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4a73a9fefd61fe22f70848e87ca395eeb238efd8
+--- /dev/null
++++ b/src/test/java/dev/lynxplay/ktp/configuration/GetConfigurationSectionListTest.java
+@@ -0,0 +1,35 @@
++package dev.lynxplay.ktp.configuration;
++
++import org.bukkit.configuration.InvalidConfigurationException;
++import org.bukkit.configuration.file.YamlConfiguration;
++import org.junit.Assert;
++import org.junit.Test;
++
++public class GetConfigurationSectionListTest {
++
++    private static final String YAML_CONTENT = """
++        list:
++          - name: 'lynxplay'
++            role: 'developer'
++          - name: 'carter'
++            role: 'admiral'
++        """;
++
++    @Test
++    public void testGetConfigurationSectionList() throws InvalidConfigurationException {
++        final var config = new YamlConfiguration();
++        config.loadFromString(YAML_CONTENT);
++
++        final var configSectionList = config.getConfigurationSectionList("list");
++        Assert.assertEquals(2, configSectionList.size());
++
++        final var lynxplay = configSectionList.get(0);
++        Assert.assertEquals("lynxplay", lynxplay.getString("name"));
++        Assert.assertEquals("developer", lynxplay.getString("role"));
++
++        final var carter = configSectionList.get(1);
++        Assert.assertEquals("carter", carter.getString("name"));
++        Assert.assertEquals("admiral", carter.getString("role"));
++    }
++
++}

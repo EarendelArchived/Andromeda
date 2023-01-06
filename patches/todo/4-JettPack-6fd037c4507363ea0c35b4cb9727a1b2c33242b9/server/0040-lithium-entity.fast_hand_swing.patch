@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 2No2Name <2No2Name@web.de>
+Date: Mon, 10 Jan 2022 09:03:31 -0500
+Subject: [PATCH] lithium: entity.fast_hand_swing
+
+Original code licensed under GNU Lesser General Public License v3.0 and created for the lithium project: https://github.com/CaffeineMC/lithium-fabric/
+
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 4c8f5f7e5bf9ba1eccf1bcd33f5d7f35afe36fb1..fa82f5393ce2c87b4e36e60eab3c13c3fd706aa9 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -2427,6 +2427,7 @@ public abstract class LivingEntity extends Entity {
+     }
+ 
+     protected void updateSwingTime() {
++        if (!this.swinging && this.swingTime == 0) return; // JettPack - lithium: entity.fast_hand_swing
+         int i = this.getCurrentSwingDuration();
+ 
+         if (this.swinging) {

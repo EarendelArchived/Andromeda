@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: nostalgic853 <yuu8583@proton.me>
+Date: Sun, 20 Nov 2022 00:20:00 +0800
+Subject: [PATCH] Player Skull API
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index b0fab5197b07cc81828ddb41ad07ccba4e58ebe2..b5703dcd07449b079de5e8e815b655029c3e215a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -26,6 +26,9 @@ import java.util.Optional;
+ import java.util.Set;
+ import java.util.UUID;
+ import java.util.WeakHashMap;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ExecutorService;
++import java.util.concurrent.Executors;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
+ import javax.annotation.Nullable;
+@@ -146,6 +149,7 @@ import org.bukkit.event.player.PlayerUnregisterChannelEvent;
+ import org.bukkit.inventory.EquipmentSlot;
+ import org.bukkit.inventory.InventoryView.Property;
+ import org.bukkit.inventory.ItemStack;
++import org.bukkit.inventory.meta.SkullMeta;
+ import org.bukkit.map.MapCursor;
+ import org.bukkit.map.MapView;
+ import org.bukkit.metadata.MetadataValue;
+@@ -3143,4 +3147,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.getHandle().connection.send(packet);
+     }
+     // Purpur end
++
++    // KeYi start
++    @Override
++    public ItemStack getSkull() {
++        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
++        SkullMeta meta = (SkullMeta) skull.getItemMeta();
++
++        meta.setOwningPlayer(this);
++
++        skull.setItemMeta(meta);
++
++        return skull;
++    }
++
++    @Override
++    public CompletableFuture<ItemStack> getSkullAsynchronously() {
++        ExecutorService executorService = Executors.newCachedThreadPool();
++
++        CompletableFuture<ItemStack> future = (CompletableFuture<ItemStack>) executorService.submit(() -> getSkull());
++        executorService.shutdown();
++
++        return future;
++    }
++    // KeYi end
+ }

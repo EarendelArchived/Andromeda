@@ -3,6 +3,21 @@ From: AlphaKR93 <alphakr93@outlook.com>
 Date: Fri, 6 Jan 2023 18:14:30 +0900
 Subject: [PATCH] Faster Random
 
+Original: Xyene (https://gist.github.com/Xyene/4637619)
+Copyright (C) 2023 Xyene
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/src/main/java/com/destroystokyo/paper/loottable/PaperLootableInventoryData.java b/src/main/java/com/destroystokyo/paper/loottable/PaperLootableInventoryData.java
 index e5ea9f27a1936ed9e329e74317c91c5df89b9fbd..0f56142b967de425a70106e204b3cdf435554c42 100644

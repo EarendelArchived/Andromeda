@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 2No2Name <2No2Name@web.de>
+Date: Mon, 10 Jan 2022 08:50:27 -0500
+Subject: [PATCH] lithium: entity.fast_powder_snow_check
+
+Original code licensed under GNU Lesser General Public License v3.0 and created for the lithium project: https://github.com/CaffeineMC/lithium-fabric/
+
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 8e1c76d92dcb2468114d6c93963835f4717b7318..c09c0cd320b39cefb1ea79682730023ce744d150 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -564,11 +564,11 @@ public abstract class LivingEntity extends Entity {
+     }
+ 
+     protected void tryAddFrost() {
+-        if (!this.getBlockStateOn().isAir()) {
++        // if (!this.getBlockStateOn().isAir()) { // JettPack - lithium: entity.fast_powder_snow_check
+             int i = this.getTicksFrozen();
+ 
+             if (i > 0) {
+-                AttributeInstance attributemodifiable = this.getAttribute(Attributes.MOVEMENT_SPEED);
++                AttributeInstance attributemodifiable = this.getBlockStateOn().isAir() ? null : this.getAttribute(Attributes.MOVEMENT_SPEED); // JettPack - lithium: entity.fast_powder_snow_check
+ 
+                 if (attributemodifiable == null) {
+                     return;
+@@ -578,8 +578,7 @@ public abstract class LivingEntity extends Entity {
+ 
+                 attributemodifiable.addTransientModifier(new AttributeModifier(LivingEntity.SPEED_MODIFIER_POWDER_SNOW_UUID, "Powder snow slow", (double) f, AttributeModifier.Operation.ADDITION));
+             }
+-        }
+-
++        // } // JettPack - lithium: entity.fast_powder_snow_check
+     }
+ 
+     protected void onChangedBlock(BlockPos pos) {

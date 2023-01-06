@@ -1,0 +1,98 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Simon Gardling <titaniumtown@gmail.com>
+Date: Thu, 8 Jul 2021 17:03:31 -0400
+Subject: [PATCH] Use MCUtil.asyncExecutor for MAIN_WORKER_EXECUTOR in Util
+
+Instead of creating a new threadpool for `MAIN_WORKER_EXECUTOR` in `Util`, this patch makes it so `MAIN_WORKER_EXECUTOR` just passes the `execute()` method over to `MCUtil.asyncExecutor` for it to be executed on that threadpool instead.
+
+diff --git a/src/main/java/me/titaniumtown/util/ServerWorkerWrapper.java b/src/main/java/me/titaniumtown/util/ServerWorkerWrapper.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b45371f7a776451d5a15da03d130a32ff3d49e28
+--- /dev/null
++++ b/src/main/java/me/titaniumtown/util/ServerWorkerWrapper.java
+@@ -0,0 +1,24 @@
++package me.titaniumtown.util;
++
++import com.google.common.base.Preconditions;
++import net.minecraft.Util;
++
++public final class ServerWorkerWrapper implements Runnable {
++    private final Runnable internalRunnable;
++
++    public ServerWorkerWrapper(Runnable runnable) {
++        this.internalRunnable = Preconditions.checkNotNull(runnable, "internalRunnable");
++    }
++
++    @Override
++    public final void run() {
++        try {
++            this.internalRunnable.run();
++            return;
++        }
++        catch (Throwable throwable) {
++            Util.onThreadException(Thread.currentThread(), throwable);
++            return;
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/Util.java b/src/main/java/net/minecraft/Util.java
+index f16483ed6fec9fb198d03383a9a1dbddb44bc71c..03aef2b85e18f01a549adc89e55e56926a1dd2a6 100644
+--- a/src/main/java/net/minecraft/Util.java
++++ b/src/main/java/net/minecraft/Util.java
+@@ -67,6 +67,10 @@ import org.apache.logging.log4j.core.LoggerContext;
+ import org.apache.logging.log4j.core.config.Configuration;
+ import org.apache.logging.log4j.core.lookup.StrLookup;
+ import org.apache.logging.log4j.core.lookup.StrSubstitutor;
++import java.util.concurrent.AbstractExecutorService;
++import me.titaniumtown.util.ServerWorkerWrapper;
++import net.minecraft.server.MCUtil;
++import java.util.Collections;
+ 
+ public class Util {
+     static final Logger LOGGER = LogManager.getLogger();
+@@ -151,7 +155,43 @@ public class Util {
+         if (i <= 0) {
+             executorService = MoreExecutors.newDirectExecutorService();
+         } else {
+-            executorService = new java.util.concurrent.ThreadPoolExecutor(i, i,0L, TimeUnit.MILLISECONDS, new java.util.concurrent.LinkedBlockingQueue<Runnable>(), target -> new net.minecraft.server.ServerWorkerThread(target, s, priorityModifier));
++            executorService = Integer.getInteger("Paper.WorkerThreadCount", i) <= 0 ? MoreExecutors.newDirectExecutorService() : new AbstractExecutorService(){
++                    private volatile boolean shutdown = false;
++                
++                    @Override
++                    public final List<Runnable> shutdownNow() {
++                        this.shutdown = true;
++                        return Collections.emptyList();
++                    }
++                
++                    @Override
++                    public final void shutdown() {
++                        this.shutdown = true;
++                    }
++                
++                    @Override
++                    public final boolean isShutdown() {
++                        return this.shutdown;
++                    }
++                
++                    @Override
++                    public final boolean isTerminated() {
++                        return this.shutdown;
++                    }
++                
++                    @Override
++                    public final boolean awaitTermination(long l2, TimeUnit timeUnit) throws InterruptedException {
++                        if (!this.shutdown) {
++                            throw new UnsupportedOperationException();
++                        }
++                        return true;
++                    }
++                
++                    @Override
++                    public final void execute(Runnable runnable) {
++                        MCUtil.asyncExecutor.execute(new ServerWorkerWrapper(runnable));
++                    }
++            };
+         }
+         /*
+                     @Override

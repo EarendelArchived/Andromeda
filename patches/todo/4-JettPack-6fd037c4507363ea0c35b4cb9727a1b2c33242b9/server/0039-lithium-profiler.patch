@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 2No2Name <2No2Name@web.de>
+Date: Mon, 10 Jan 2022 09:00:50 -0500
+Subject: [PATCH] lithium: profiler
+
+Original code licensed under GNU Lesser General Public License v3.0 and created for the lithium project: https://github.com/CaffeineMC/lithium-fabric/
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index cd71eeb8bb8178f0bbd2c29c9968a0efad89f558..82027209c95b54c78f1afaed3084308c6295509c 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -220,6 +220,13 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         return new Throwable(entity + " Added to world at " + new java.util.Date());
+     }
+ 
++    // Jettpack start - lithium: profiler
++    @Override
++    public ProfilerFiller getProfiler() {
++        return this.getServer().getProfiler();
++    }
++    // JettPack end
++
+     @Override public LevelChunk getChunkIfLoaded(int x, int z) { // Paper - this was added in world too but keeping here for NMS ABI
+         return this.chunkSource.getChunkAtIfLoadedImmediately(x, z); // Paper
+     }

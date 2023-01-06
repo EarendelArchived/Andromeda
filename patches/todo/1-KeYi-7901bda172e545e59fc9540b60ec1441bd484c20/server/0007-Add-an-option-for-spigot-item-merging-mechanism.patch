@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: nostalgic853 <yuu8583@proton.me>
+Date: Sun, 23 Oct 2022 23:21:45 +0800
+Subject: [PATCH] Add an option for spigot item merging mechanism
+
+
+diff --git a/src/main/java/cc/keyimc/keyi/KeyiConfig.java b/src/main/java/cc/keyimc/keyi/KeyiConfig.java
+index 8884a2471b4b7c5cabf1c0c767710ba69c7ae4ec..4f08f2e40f5bc3bc5a87bf3a34945afdec65f288 100644
+--- a/src/main/java/cc/keyimc/keyi/KeyiConfig.java
++++ b/src/main/java/cc/keyimc/keyi/KeyiConfig.java
+@@ -148,4 +148,10 @@ public final class KeyiConfig {
+     private static void fixes() {
+         fixTripwireDuping = getBoolean("fixes.fix-tripwire-duping", fixTripwireDuping);
+     }
++
++    public static boolean useSpigotItemMergingMechanism = true;
++
++    private static void performance() {
++        useSpigotItemMergingMechanism = getBoolean("performance.use-spigot-item-merging-mechanism", useSpigotItemMergingMechanism);
++    }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+index 9c3db8f774e5c11df18d2c317c874e8ac26e7f8e..2bcdd7232377784c548c228e4768697ef6918f2b 100644
+--- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+@@ -294,7 +294,7 @@ public class ItemEntity extends Entity {
+         ItemStack itemstack1 = other.getItem();
+ 
+         if (Objects.equals(this.getOwner(), other.getOwner()) && ItemEntity.areMergable(itemstack, itemstack1)) {
+-            if (true || itemstack1.getCount() < itemstack.getCount()) { // Spigot
++            if (cc.keyimc.keyi.KeyiConfig.useSpigotItemMergingMechanism || itemstack1.getCount() < itemstack.getCount()) { // Spigot // KeYi
+                 ItemEntity.merge(this, itemstack, other, itemstack1);
+             } else {
+                 ItemEntity.merge(other, itemstack1, this, itemstack);

@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 2No2Name <2No2Name@web.de>
+Date: Mon, 10 Jan 2022 12:31:54 -0500
+Subject: [PATCH] lithium: collections.entity_filtering
+
+Original code licensed under GNU Lesser General Public License v3.0 and created for the lithium project: https://github.com/CaffeineMC/lithium-fabric/
+
+diff --git a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+index f6489a136fd66eaccf10dd85b6968381db84e7fa..a4640d98aac3a03032c9c6188f6031bdfc57581e 100644
+--- a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
++++ b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+@@ -57,15 +57,32 @@ public class ClassInstanceMultiMap<T> extends AbstractCollection<T> {
+     }
+ 
+     public <S> Collection<S> find(Class<S> type) {
+-        if (!this.baseClass.isAssignableFrom(type)) {
+-            throw new IllegalArgumentException("Don't know how to search for " + type);
+-        } else {
+-            List list = this.byClass.computeIfAbsent(type, (typeClass) -> { // JettPack - decomp fix
+-                return this.allInstances.stream().filter(typeClass::isInstance).collect(Collectors.toList());
+-            });
+-            return Collections.unmodifiableCollection(list);
++        // JettPack start - lithium: collections.entity_filtering
++       Collection<T> collection = this.byClass.get(type);
++
++        if (collection == null) {
++            collection = this.createAllOfType(type);
+         }
++
++        return (Collection<S>) Collections.unmodifiableCollection(collection);
++        // JettPack end
++    }
++
++    // JettPack start - lithium: collections.entity_filtering
++    private <S> Collection<T> createAllOfType(Class<S> type) {
++        List<T> list = new java.util.ArrayList<>();
++
++        for (T allElement : this.allInstances) {
++            if (type.isInstance(allElement)) {
++                list.add(allElement);
++            }
++        }
++
++        this.byClass.put(type, list);
++
++        return list;
+     }
++    // JettPack end
+ 
+     @Override
+     public Iterator<T> iterator() {
