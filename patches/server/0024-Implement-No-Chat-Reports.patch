@@ -80,10 +80,10 @@ index 6e0a3086da142f1c42007a16bbec7edbab17da04..96448f1d5f799c076251ac82ecd920ec
          }
      }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 500cbe5e1ccd7b7159a691166c89d35a6bcbd134..e84fdbec157e6242159410462d8a63f8db0e88ed 100644
+index cd065947249a83498c072ac0e01832005aa535e5..ba03b8ab812f096511662855cf1477166e84a956 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -681,6 +681,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -682,6 +682,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
  
      @Override
      public boolean enforceSecureProfile() {
@@ -145,7 +145,7 @@ index f32b490a387dd343fe036979a1321690e6c0a838..0008e6ba936f3229a4f40d372c3031ad
      }
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 42edeb98ae832739a83c9083f5b27659a05a7c9b..65b4ea38f254580c38a79349548573ce3322de12 100644
+index 925fd068e044ffde4729343997b8a04313fe9bdc..8811783adbb20f007375a35af738a8feea9afa86 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 @@ -188,4 +188,19 @@ public class AndromedaConfiguration {

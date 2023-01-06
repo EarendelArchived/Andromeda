@@ -58,11 +58,11 @@ index a38194accb2d0ba204ab2f81b4be6031842faf9c..97551d995554b5678eec92659f396db0
              }
          } else {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 8ba84372436e0df4888344d656272c9bb13ed48c..45f48e26594f3312da94e70cc7ee94fb1ca501ba 100644
+index 4dc8390855f4010cf7be0dfffb9bc70aaf8fc70c..727cf4d810e908fdeaa550a2c9d1b4a663af0ae6 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 @@ -162,4 +162,25 @@ public class AndromedaConfiguration {
-         offlineWarning = getBoolean("options.ports.rubia.unsupported-settings.server.offline-warning", offlineWarning);
+         offlineWarning = getBoolean("options.server.logging.offline-warning", offlineWarning);
          allowAnyNickname = getBoolean("options.ports.rubia.unsupported-settings.players.allow-any-nickname", allowAnyNickname);
      }
 +

@@ -26,19 +26,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 0008 - Allow any characters in username
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 554e092c39c6ac2a6b7ee7ecb5552b46d5486f69..500cbe5e1ccd7b7159a691166c89d35a6bcbd134 100644
+index 554e092c39c6ac2a6b7ee7ecb5552b46d5486f69..cd065947249a83498c072ac0e01832005aa535e5 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -319,7 +319,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -319,6 +319,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
          // CraftBukkit end
  
--        if (!this.usesAuthentication()) {
-+        if (!this.usesAuthentication() && team.earendel.andromeda.configurations.AndromedaConfiguration.offlineWarning) { // Andromeda - Rubia Patches
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.offlineWarning) // Andromeda - Rubia Patches
+         if (!this.usesAuthentication()) {
              DedicatedServer.LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
              DedicatedServer.LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
-             // Spigot start
-@@ -331,7 +331,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -331,7 +332,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
                  DedicatedServer.LOGGER.warn("You will not be offered any support as long as the server allows offline-mode players to join."); // Purpur
              }
              // Spigot end
@@ -60,7 +59,7 @@ index f7f085a2dc5dc8d09bc665a371afac04b0e118fc..01e0b400f4cc144c5eb8c573d86ffcfe
          // Paper start - validate usernames
          if (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode() && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.performUsernameValidation) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 54a533aaaad0c515156e4da8d5fd4bc627742796..8ba84372436e0df4888344d656272c9bb13ed48c 100644
+index 54a533aaaad0c515156e4da8d5fd4bc627742796..4dc8390855f4010cf7be0dfffb9bc70aaf8fc70c 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 @@ -155,4 +155,11 @@ public class AndromedaConfiguration {
@@ -71,7 +70,7 @@ index 54a533aaaad0c515156e4da8d5fd4bc627742796..8ba84372436e0df4888344d656272c9b
 +    public static boolean offlineWarning = true;
 +    public static boolean allowAnyNickname = false;
 +    private static void rubiaPatches() {
-+        offlineWarning = getBoolean("options.ports.rubia.unsupported-settings.server.offline-warning", offlineWarning);
++        offlineWarning = getBoolean("options.server.logging.offline-warning", offlineWarning);
 +        allowAnyNickname = getBoolean("options.ports.rubia.unsupported-settings.players.allow-any-nickname", allowAnyNickname);
 +    }
  }

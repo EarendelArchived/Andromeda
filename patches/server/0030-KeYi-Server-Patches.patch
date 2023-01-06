@@ -1,0 +1,120 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 6 Jan 2023 19:37:13 +0900
+Subject: [PATCH] KeYi Server Patches
+
+SHA: 7901bda172e545e59fc9540b60ec1441bd484c20
+
+Original: nostalgic853 <yuu8583@proton.me>
+Copyright (C) 2023 KeYiMC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+[PORTED PATCHES]
+0005 - Options of warnings
+0006 - Add an option for tripwire duping
+0007 - Add an option for spigot item merging mechanism
+0023 - Fast item merging raytracing
+
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index ba03b8ab812f096511662855cf1477166e84a956..41df6b0b55e12bb62626c29202262b56184d1c1b 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -180,6 +180,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         }
+ 
+         // Paper start - detect running as root
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.rootUserWarning) // Andromeda
+         if (io.papermc.paper.util.ServerEnvironment.userIsRootOrAdmin()) {
+             DedicatedServer.LOGGER.warn("****************************");
+             DedicatedServer.LOGGER.warn("YOU ARE RUNNING THIS SERVER AS AN ADMINISTRATIVE OR ROOT USER. THIS IS NOT ADVISED.");
+diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+index 9c3db8f774e5c11df18d2c317c874e8ac26e7f8e..628eb453b6bd78f6021b936c3ef53ead83de6df4 100644
+--- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+@@ -262,12 +262,12 @@ public class ItemEntity extends Entity {
+                     // Paper Start - Fix items merging through walls
+                         if (this.level.paperConfig().fixes.fixItemsMergingThroughWalls) {
+                             // Pufferfish start - skip the allocations
+-                            /*
++                            if (!level.andromedaWorldConfiguration.usePufferfishItemMergeRaytrace) { // Andromeda
+                             net.minecraft.world.level.ClipContext rayTrace = new net.minecraft.world.level.ClipContext(this.position(), entityitem.position(),
+                                 net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, this);
+                             net.minecraft.world.phys.BlockHitResult rayTraceResult = level.clip(rayTrace);
+                             if (rayTraceResult.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) continue;
+-                             */
++                            } else // Andromeda
+                             if (level.rayTraceDirect(this.position(), entityitem.position(), net.minecraft.world.phys.shapes.CollisionContext.of(this)) ==
+                                 net.minecraft.world.phys.HitResult.Type.BLOCK) continue;
+                             // Pufferfish end
+@@ -294,7 +294,7 @@ public class ItemEntity extends Entity {
+         ItemStack itemstack1 = other.getItem();
+ 
+         if (Objects.equals(this.getOwner(), other.getOwner()) && ItemEntity.areMergable(itemstack, itemstack1)) {
+-            if (true || itemstack1.getCount() < itemstack.getCount()) { // Spigot
++            if (this.level.andromedaWorldConfiguration.useSpigotItemMergeMechanism || itemstack1.getCount() < itemstack.getCount()) { // Spigot // Andromeda
+                 ItemEntity.merge(this, itemstack, other, itemstack1);
+             } else {
+                 ItemEntity.merge(other, itemstack1, this, itemstack);
+diff --git a/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java b/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
+index 004dce26ff073f1de52a84cd425c4f60fdab5e50..459718c70fbb55a02f5982d230f969c8d94cdc45 100644
+--- a/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
+@@ -147,6 +147,7 @@ public class TripWireHookBlock extends Block {
+                 boolean flag7 = (Boolean) iblockdata2.getValue(TripWireBlock.POWERED);
+ 
+                 flag5 |= flag6 && flag7;
++                if (world.andromedaWorldConfiguration.fixTripWireDuping) // Andromeda
+                 if (k != i || !tripWireBeingRemoved || !flag6) // Paper - don't update the tripwire again if being removed and not disarmed
+                 aiblockdata[k] = iblockdata2;
+                 if (k == i) {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+index 5f3e13ee611fbb00704c8026257f2014cf029ea9..e469257735f9451b52c1baa5d7e68bf3192bf1bc 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+@@ -163,6 +163,11 @@ public class AndromedaConfiguration {
+         allowAnyNickname = getBoolean("options.ports.rubia.unsupported-settings.players.allow-any-nickname", allowAnyNickname);
+     }
+ 
++    public static boolean rootUserWarning = true;
++    private static void keyiPatches() {
++        rootUserWarning = getBoolean("options.server.logging.root-warning", rootUserWarning);
++    }
++
+     public static boolean mixableWeaponEnchantment = false;
+     public static boolean mixableProtectionEnchantment = false;
+     public static boolean weaponEnchantmentOnTrident = false;
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+index 4949a69fd8098d5187bcc03789a8555ff23f03ae..2f23137983b879311d7232555fe32b5cedba1a49 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+@@ -122,4 +122,13 @@ public class AndromedaWorldConfiguration {
+     private void veryManyPlayers() {
+         skipEntityMoveIfNoMovement = getBoolean("ports.very-many-players.skip-entity-move-if-no-movement", skipEntityMoveIfNoMovement);
+     }
++
++    public boolean fixTripWireDuping = true;
++    public boolean useSpigotItemMergeMechanism = true;
++    public boolean usePufferfishItemMergeRaytrace = true;
++    private void keyiPatches() {
++        fixTripWireDuping = getBoolean("ports.keyi.unsupported-settings.fix-tripwire-duping", fixTripWireDuping);
++        useSpigotItemMergeMechanism = getBoolean("ports.keyi.unsupported-settings.use-spigot-item-merge-mechanism", useSpigotItemMergeMechanism);
++        usePufferfishItemMergeRaytrace = getBoolean("ports.keyi.unsupported-settings.use-pufferfish-item-merge-raytrace", usePufferfishItemMergeRaytrace);
++    }
+ }
