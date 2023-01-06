@@ -1,0 +1,83 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 6 Jan 2023 21:31:19 +0900
+Subject: [PATCH] Implement RTUBiomeLib
+
+Original: IPECTER <ipectert@gmail.com>
+Copyright (C) 2023 RTU Developments
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+diff --git a/src/main/java/org/bukkit/RegionAccessor.java b/src/main/java/org/bukkit/RegionAccessor.java
+index 39fa4c65e0f61450901662ff5c08d54a5d9841b2..aed02fa1d28862efdbe13c2511966a0c04c4c6ea 100644
+--- a/src/main/java/org/bukkit/RegionAccessor.java
++++ b/src/main/java/org/bukkit/RegionAccessor.java
+@@ -43,6 +43,18 @@ public interface RegionAccessor extends Keyed { // Paper
+     @NotNull
+     Biome getBiome(int x, int y, int z);
+ 
++    // Andromeda start
++    /**
++     * Gets the Biome name at the given coordinates.
++     *
++     * @param x X-coordinate of the block
++     * @param y Y-coordinate of the block
++     * @param z Z-coordinate of the block
++     * @return Name of Biome at the given coordinates
++     */
++    String getBiomeName(int x, int y, int z);
++    // Andromeda end
++
+     // Paper start
+     /**
+      * Gets the computed {@link Biome} at the given coordinates.
+diff --git a/src/main/java/org/bukkit/block/Block.java b/src/main/java/org/bukkit/block/Block.java
+index aba40431c5a1ae43106a678445483e0653e130d1..191dcfbba046e1160ef02d4831f32b25ae6560a4 100644
+--- a/src/main/java/org/bukkit/block/Block.java
++++ b/src/main/java/org/bukkit/block/Block.java
+@@ -375,6 +375,16 @@ public interface Block extends Metadatable, net.kyori.adventure.translation.Tran
+     @NotNull
+     Biome getBiome();
+ 
++    // Andromeda start
++    /**
++     * Returns the biome name that this block resides in
++     *
++     * @return Biome name string containing this block
++     * @see #getBiome()
++     */
++    String getBiomeName();
++    // Andromeda end
++
+     // Paper start
+     /**
+      * Gets the computed biome at the location of this Block.
+diff --git a/src/main/java/org/bukkit/generator/BiomeProvider.java b/src/main/java/org/bukkit/generator/BiomeProvider.java
+index 9f6d75af207d2546ac82081582f4342d9b8310e5..04279e1f29381bc704cd5ef42a9c0b8b727eeefc 100644
+--- a/src/main/java/org/bukkit/generator/BiomeProvider.java
++++ b/src/main/java/org/bukkit/generator/BiomeProvider.java
+@@ -49,4 +49,13 @@ public abstract class BiomeProvider {
+      */
+     @NotNull
+     public abstract List<Biome> getBiomes(@NotNull WorldInfo worldInfo);
++
++    // Andromeda start
++    /**
++     * Returns a list with every biome's name.
++     *
++     * @return A list with every biome's name
++     */
++    public abstract List<String> getBiomesNames(@NotNull WorldInfo worldInfo);
++    // Andromeda end
+ }
