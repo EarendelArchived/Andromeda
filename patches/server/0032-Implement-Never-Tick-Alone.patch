@@ -1,0 +1,86 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 00:12:38 +0900
+Subject: [PATCH] Implement Never Tick Alone
+
+Original: Thor12022
+Copyright (C) 2023 Thor12022
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 89101b79dfc787450152b9f55a666267681f7459..c043895b0469002262a4d762416e7fc315eb8af2 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1120,6 +1120,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 throw new IllegalStateException("Failed to initialize server");
+             }
+ 
++            // Andromeda start
++            if (team.earendel.andromeda.configurations.AndromedaConfiguration.doNotTickWhenNoPlayersOnline && this.getPlayerCount() == 0)
++                this.nextTickTime = this.getNextTickTime() + 333L;
++            else
++            // Andromeda end
+             this.nextTickTime = Util.getMillis();
+             this.status.setDescription(Component.literal(this.motd));
+             this.status.setVersion(new ServerStatus.Version(SharedConstants.getCurrentVersion().getName(), SharedConstants.getCurrentVersion().getProtocolVersion()));
+@@ -1201,11 +1206,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 //this.profiler.popPush("nextTickWait"); // Purpur
+                 this.mayHaveDelayedTasks = true;
+                     // Purpur start - tps catchup
++                // Andromeda start
++                if (team.earendel.andromeda.configurations.AndromedaConfiguration.doNotTickWhenNoPlayersOnline && this.getPlayerCount() == 0)
++                    this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 333L, this.nextTickTime);
++                else {
++                // Andromeda end
+                     if (org.purpurmc.purpur.PurpurConfig.tpsCatchup) {
+                         this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 50L, this.nextTickTime);
+                     } else {
+                         this.delayedTasksMaxNextTickTime = this.nextTickTime = curTime / 1000000L + 50L;
+                     }
++                } // Andromeda
+                     // Purpur end - tps catchup
+                 this.waitUntilNextTick();
+                 //this.profiler.pop(); // Purpur
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 0ad3d1a3ef2b165625d472a817adc04878fc0eeb..9b39d831a87afd7a0337dae00c1725ca4aa8ef38 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -646,6 +646,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
+     }
+ 
+     public void tick(BooleanSupplier shouldKeepTicking) {
++        // Andromeda start
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.doNotTickWhenNoPlayersOnline && this.getServer().getPlayerCount() == 0)
++            return;
++        if (this.andromedaWorldConfiguration.doNotTickWhenNoPlayersInWorld && this.players.isEmpty()) return;
++        // Andromeda end
+         // Paper start - optimise checkDespawn
+         this.playersAffectingSpawning.clear();
+         for (ServerPlayer player : this.players) {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+index e469257735f9451b52c1baa5d7e68bf3192bf1bc..d98b51db8197c663731a9b264717a9c0570ef9d6 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+@@ -213,4 +213,9 @@ public class AndromedaConfiguration {
+     private static void carpetFixes() {
+         useFasterRecipeManager = getBoolean("options.ports.carpet-fixes.use-faster-recipe-manager", useFasterRecipeManager);
+     }
++
++    public static boolean doNotTickWhenNoPlayersOnline = false;
++    private static void miscSettings() {
++        doNotTickWhenNoPlayersOnline = getBoolean("options.misc.do-not-tick-when-no-players-online", doNotTickWhenNoPlayersOnline);
++    }
+ }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+index 2f23137983b879311d7232555fe32b5cedba1a49..6b7f5b9b3eabc4eacdf9c9bb33332da740c210e1 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+@@ -131,4 +131,9 @@ public class AndromedaWorldConfiguration {
+         useSpigotItemMergeMechanism = getBoolean("ports.keyi.unsupported-settings.use-spigot-item-merge-mechanism", useSpigotItemMergeMechanism);
+         usePufferfishItemMergeRaytrace = getBoolean("ports.keyi.unsupported-settings.use-pufferfish-item-merge-raytrace", usePufferfishItemMergeRaytrace);
+     }
++
++    public boolean doNotTickWhenNoPlayersInWorld = false;
++    private void miscSettings() {
++        doNotTickWhenNoPlayersInWorld = getBoolean("misc.do-not-tick-when-no-players-in-world", doNotTickWhenNoPlayersInWorld);
++    }
+ }
