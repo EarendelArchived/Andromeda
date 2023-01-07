@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 18:17:45 +0900
+Subject: [PATCH] Add configuration to disable advancement reward
+
+
+diff --git a/src/main/java/net/minecraft/advancements/AdvancementRewards.java b/src/main/java/net/minecraft/advancements/AdvancementRewards.java
+index ca24b2373dfdcd887eacfdd5c4299e6dd61f63f7..25665e8536acbdd103c8486e12429b2d46de5103 100644
+--- a/src/main/java/net/minecraft/advancements/AdvancementRewards.java
++++ b/src/main/java/net/minecraft/advancements/AdvancementRewards.java
+@@ -42,7 +42,7 @@ public class AdvancementRewards {
+     }
+ 
+     public void grant(ServerPlayer player) {
+-        player.giveExperiencePoints(this.experience);
++        if (!player.getLevel().andromedaWorldConfiguration.disableAdvancementsReward) player.giveExperiencePoints(this.experience); // Andromeda
+         LootContext lootContext = (new LootContext.Builder(player.getLevel())).withParameter(LootContextParams.THIS_ENTITY, player).withParameter(LootContextParams.ORIGIN, player.position()).withRandom(player.getRandom()).create(LootContextParamSets.ADVANCEMENT_REWARD);
+         boolean bl = false;
+ 
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+index 6b7f5b9b3eabc4eacdf9c9bb33332da740c210e1..577d15d2c7509aad06ea1f946338a5941729f861 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+@@ -136,4 +136,9 @@ public class AndromedaWorldConfiguration {
+     private void miscSettings() {
+         doNotTickWhenNoPlayersInWorld = getBoolean("misc.do-not-tick-when-no-players-in-world", doNotTickWhenNoPlayersInWorld);
+     }
++
++    public boolean disableAdvancementsReward = false;
++    private void playerSettings() {
++        disableAdvancementsReward = getBoolean("player.disable-advancements-reward", disableAdvancementsReward);
++    }
+ }
