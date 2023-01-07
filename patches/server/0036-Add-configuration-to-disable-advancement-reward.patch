@@ -18,12 +18,12 @@ index ca24b2373dfdcd887eacfdd5c4299e6dd61f63f7..25665e8536acbdd103c8486e12429b2d
          boolean bl = false;
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
-index 6b7f5b9b3eabc4eacdf9c9bb33332da740c210e1..577d15d2c7509aad06ea1f946338a5941729f861 100644
+index 94bf5ebff48086a6a11c206ae756c2c5bb091ab2..684fa87944a4032cf40dd36ff49d5a2ebdeb1c3b 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
-@@ -136,4 +136,9 @@ public class AndromedaWorldConfiguration {
-     private void miscSettings() {
-         doNotTickWhenNoPlayersInWorld = getBoolean("misc.do-not-tick-when-no-players-in-world", doNotTickWhenNoPlayersInWorld);
+@@ -141,4 +141,9 @@ public class AndromedaWorldConfiguration {
+     private void cursedSettings() {
+         JUST_DONT_TICK = getBoolean("unsupported-settings.cursed.JUST_DONT_TICK", JUST_DONT_TICK);
      }
 +
 +    public boolean disableAdvancementsReward = false;

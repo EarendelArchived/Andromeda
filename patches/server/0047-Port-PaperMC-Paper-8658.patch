@@ -1,0 +1,121 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 22:41:47 +0900
+Subject: [PATCH] Port PaperMC/Paper#8658
+
+
+diff --git a/src/main/java/net/minecraft/core/dispenser/AbstractProjectileDispenseBehavior.java b/src/main/java/net/minecraft/core/dispenser/AbstractProjectileDispenseBehavior.java
+index 309ad5a1da6b3a297d5526cd9247359ac5f49406..73ada4184f5cd264a80b6d76b98a1313e08a49a9 100644
+--- a/src/main/java/net/minecraft/core/dispenser/AbstractProjectileDispenseBehavior.java
++++ b/src/main/java/net/minecraft/core/dispenser/AbstractProjectileDispenseBehavior.java
+@@ -24,7 +24,6 @@ public abstract class AbstractProjectileDispenseBehavior extends DefaultDispense
+         ServerLevel worldserver = pointer.getLevel();
+         Position iposition = DispenserBlock.getDispensePosition(pointer);
+         Direction enumdirection = (Direction) pointer.getBlockState().getValue(DispenserBlock.FACING);
+-        Projectile iprojectile = this.getProjectile(worldserver, iposition, stack);
+ 
+         // CraftBukkit start
+         // iprojectile.shoot((double) enumdirection.getStepX(), (double) ((float) enumdirection.getStepY() + 0.1F), (double) enumdirection.getStepZ(), this.getPower(), this.getUncertainty());
+@@ -53,6 +52,7 @@ public abstract class AbstractProjectileDispenseBehavior extends DefaultDispense
+                 return stack;
+             }
+         }
++        Projectile iprojectile = this.getProjectile(worldserver, iposition, CraftItemStack.asNMSCopy(event.getItem())); // Andromeda - Port PaperMC/Paper#8658
+ 
+         iprojectile.shoot(event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ(), this.getPower(), this.getUncertainty());
+         ((Entity) iprojectile).projectileSource = new org.bukkit.craftbukkit.projectiles.CraftBlockProjectileSource((DispenserBlockEntity) pointer.getEntity());
+diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
+index ed137bb15f76bac5a73f3dec215078c21e4953b9..60c48aff048eee397a931fa3956e8593f27731d2 100644
+--- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
++++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
+@@ -241,10 +241,14 @@ public interface DispenseItemBehavior {
+                         idispensebehavior.dispense(pointer, eventStack);
+                         return stack;
+                     }
++                    // Andromeda start - Port PaperMC/Paper#8658
++                    itemstack1 = CraftItemStack.asNMSCopy(event.getItem());
++                    entitytypes = ((SpawnEggItem) itemstack1.getItem()).getType(itemstack1.getTag());
++                    // Andromeda end
+                 }
+ 
+                 try {
+-                    entitytypes.spawn(pointer.getLevel(), stack, (Player) null, pointer.getPos().relative(enumdirection), MobSpawnType.DISPENSER, enumdirection != Direction.UP, false);
++                    entitytypes.spawn(pointer.getLevel(), itemstack1, (Player) null, pointer.getPos().relative(enumdirection), MobSpawnType.DISPENSER, enumdirection != Direction.UP, false); // Andromeda - Port PaperMC/Paper#8658
+                 } catch (Exception exception) {
+                     DispenseItemBehavior.LOGGER.error("Error while dispensing spawn egg from dispenser at {}", pointer.getPos(), exception); // CraftBukkit - decompile error
+                     return ItemStack.EMPTY;
+@@ -301,7 +305,7 @@ public interface DispenseItemBehavior {
+ 
+                 ArmorStand entityarmorstand = new ArmorStand(worldserver, (double) blockposition.getX() + 0.5D, (double) blockposition.getY(), (double) blockposition.getZ() + 0.5D);
+ 
+-                EntityType.updateCustomEntityTag(worldserver, (Player) null, entityarmorstand, stack.getTag());
++                EntityType.updateCustomEntityTag(worldserver, (Player) null, entityarmorstand, CraftItemStack.asNMSCopy(event.getItem()).getTag()); // Andromeda - Port PaperMC/Paper#8658
+                 entityarmorstand.setYRot(enumdirection.toYRot());
+                 worldserver.addFreshEntity(entityarmorstand);
+                 if (shrink) stack.shrink(1); // Paper - actually handle here
+@@ -579,7 +583,7 @@ public interface DispenseItemBehavior {
+                 }
+ 
+                 SmallFireball entitysmallfireball = new SmallFireball(worldserver, d0, d1, d2, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ());
+-                entitysmallfireball.setItem(itemstack1);
++                entitysmallfireball.setItem(CraftItemStack.asNMSCopy(event.getItem())); // Andromeda - Port PaperMC/Paper#8658
+                 entitysmallfireball.projectileSource = new org.bukkit.craftbukkit.projectiles.CraftBlockProjectileSource((DispenserBlockEntity) pointer.getEntity());
+ 
+                 worldserver.addFreshEntity(entitysmallfireball);
+@@ -624,6 +628,7 @@ public interface DispenseItemBehavior {
+                 int z = blockposition.getZ();
+                 BlockState iblockdata = worldserver.getBlockState(blockposition);
+                 Material material = iblockdata.getMaterial();
++                ItemStack dispancedItem = stack; // Andromeda - Port PaperMC/Paer#8658
+                 if (worldserver.isEmptyBlock(blockposition) || !material.isSolid() || material.isReplaceable() || (dispensiblecontaineritem instanceof BucketItem && iblockdata.getBlock() instanceof LiquidBlockContainer && ((LiquidBlockContainer) iblockdata.getBlock()).canPlaceLiquid(worldserver, blockposition, iblockdata, ((BucketItem) dispensiblecontaineritem).content))) {
+                     org.bukkit.block.Block block = worldserver.getWorld().getBlockAt(pointer.getPos().getX(), pointer.getPos().getY(), pointer.getPos().getZ());
+                     CraftItemStack craftItem = CraftItemStack.asCraftMirror(stack.copyWithCount(1)); // Paper - single item in event
+@@ -647,12 +652,15 @@ public interface DispenseItemBehavior {
+                         }
+                     }
+ 
+-                    dispensiblecontaineritem = (DispensibleContainerItem) CraftItemStack.asNMSCopy(event.getItem()).getItem();
++                    // Andromeda start - Port PaperMC/Paper#8658
++                    dispancedItem = CraftItemStack.asNMSCopy(event.getItem());
++                    dispensiblecontaineritem = (DispensibleContainerItem) dispancedItem.getItem();
++                    // Andromeda end
+                 }
+                 // CraftBukkit end
+ 
+                 if (dispensiblecontaineritem.emptyContents((Player) null, worldserver, blockposition, (BlockHitResult) null)) {
+-                    dispensiblecontaineritem.checkExtraContent((Player) null, worldserver, stack, blockposition);
++                    dispensiblecontaineritem.checkExtraContent((Player) null, worldserver, dispancedItem, blockposition);
+                     // CraftBukkit start - Handle stacked buckets
+                     Item item = Items.BUCKET;
+                     stack.shrink(1);
+diff --git a/src/main/java/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java b/src/main/java/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
+index 0159ed9cbc644c39fa79e62327f13375193fdc98..d093005bbf1c7e4ffb9ff45670be9fc128c27034 100644
+--- a/src/main/java/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
++++ b/src/main/java/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
+@@ -57,7 +57,10 @@ public class ShulkerBoxDispenseBehavior extends OptionalDispenseItemBehavior {
+             // CraftBukkit end
+ 
+             try {
+-                this.setSuccess(((BlockItem) item).place(new DirectionalPlaceContext(pointer.getLevel(), blockposition, enumdirection, stack, enumdirection1)).consumesAction());
++                // Andromeda start - Port PaperMC/Paper#8658
++                this.setSuccess(((BlockItem) item).place(new DirectionalPlaceContext(pointer.getLevel(), blockposition, enumdirection, CraftItemStack.asNMSCopy(event.getItem()), enumdirection1)).consumesAction());
++                if (this.isSuccess()) stack.shrink(1);
++                // Andromeda end
+             } catch (Exception exception) {
+                 ShulkerBoxDispenseBehavior.LOGGER.error("Error trying to place shulker box at {}", blockposition, exception);
+             }
+diff --git a/src/main/java/net/minecraft/world/item/MinecartItem.java b/src/main/java/net/minecraft/world/item/MinecartItem.java
+index 33a30d26da2401535f0a72acb2bbffec1aef151e..c158303fba26fcb685fb90fd86ff5d43995a33ca 100644
+--- a/src/main/java/net/minecraft/world/item/MinecartItem.java
++++ b/src/main/java/net/minecraft/world/item/MinecartItem.java
+@@ -91,8 +91,8 @@ public class MinecartItem extends Item {
+             itemstack1 = CraftItemStack.asNMSCopy(event.getItem());
+             AbstractMinecart entityminecartabstract = AbstractMinecart.createMinecart(worldserver, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ(), ((MinecartItem) itemstack1.getItem()).type);
+ 
+-            if (stack.hasCustomHoverName()) {
+-                entityminecartabstract.setCustomName(stack.getHoverName());
++            if (itemstack1.hasCustomHoverName()) { // Andromeda - Port PaperMC/Paper#8658
++                entityminecartabstract.setCustomName(itemstack1.getHoverName()); // Andromeda - Port PaperMC/Paper#8658
+             }
+ 
+             if (worldserver.addFreshEntity(entityminecartabstract) && shrink) stack.shrink(1); // Paper - actually handle here

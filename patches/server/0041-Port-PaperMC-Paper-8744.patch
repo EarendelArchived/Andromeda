@@ -25,7 +25,7 @@ index 0554afa72ae6d2f01886916031c8b90b0d45eb52..254cc5cc409e2d1161319f767716a179
      }
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
-index 577d15d2c7509aad06ea1f946338a5941729f861..b92c9161a77739e4d646f46a754f8dbddb0bb5ed 100644
+index 684fa87944a4032cf40dd36ff49d5a2ebdeb1c3b..6f7ec7cc22a55452b62d4c1170784d976405f8c7 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 @@ -133,8 +133,10 @@ public class AndromedaWorldConfiguration {
@@ -38,4 +38,4 @@ index 577d15d2c7509aad06ea1f946338a5941729f861..b92c9161a77739e4d646f46a754f8dbd
 +        setWardenSpawnReasonToNatural = getBoolean("misc.set-warden-spawn-reason-to-natural", setWardenSpawnReasonToNatural);
      }
  
-     public boolean disableAdvancementsReward = false;
+     public boolean JUST_DONT_TICK = false;

@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 22:08:21 +0900
+Subject: [PATCH] Port PaperMC/Paper#8713
+
+
+diff --git a/src/main/java/net/minecraft/world/item/HoneycombItem.java b/src/main/java/net/minecraft/world/item/HoneycombItem.java
+index 1f8b7b50c6aa24778d87821ae2ff4d019d176082..4021f73ebd035ac25a0117e847a3af1f90da9859 100644
+--- a/src/main/java/net/minecraft/world/item/HoneycombItem.java
++++ b/src/main/java/net/minecraft/world/item/HoneycombItem.java
+@@ -39,6 +39,7 @@ public class HoneycombItem extends Item {
+             ItemStack itemStack = context.getItemInHand();
+             // Paper start - EntityChangeBlockEvent
+             if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(player, blockPos, state).isCancelled()) {
++                if (!player.isCreative()) player.containerMenu.sendAllDataToRemote(); // Andromeda - Port PaperMC/Paper#8713
+                 return InteractionResult.PASS;
+             }
+             // Paper end
