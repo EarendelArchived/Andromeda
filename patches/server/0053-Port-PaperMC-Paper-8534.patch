@@ -46,10 +46,21 @@ index 5968c3b2c9e4871691ba9a090ea14122023fe48c..af7e769755d2897226730025aee55287
                      return null;
                  }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index f074f29a5866a185206c787689e6196dd9157349..b73f2f958980adfc773613c1ea8365e48088718d 100644
+index f074f29a5866a185206c787689e6196dd9157349..1816c16d8666ffe53ddc23d2bf52cadd360fee76 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2443,7 +2443,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2237,9 +2237,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                 LOGGER.info("Sending message: {}", chat.unsignedContent() != null ? chat.unsignedContent() : chat.body().content());
+ 
+             if (team.earendel.andromeda.configurations.AndromedaConfiguration.NCRConvertToGameMessage) {
+-                packet = new ClientboundSystemChatPacket(
+-                        chat.chatType().resolve(this.player.level.registryAccess())
+-                                .get().decorate(chat.unsignedContent() != null ? chat.unsignedContent() : Component.literal(chat.body().content())), false);
++                packet = new ClientboundSystemChatPacket(PaperAdventure.asAdventure(chat.chatType().resolve(this.player.level.registryAccess()).get().decorate(chat.unsignedContent() != null ? chat.unsignedContent() : Component.literal(chat.body().content()))), false);
+                 this.send(packet, null);
+                 return;
+             }
+@@ -2443,7 +2441,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
              }); // Paper - push to main
              return Optional.empty();
          } else if (this.player.isRemoved() || this.player.getChatVisibility() == ChatVisiblity.HIDDEN) { // CraftBukkit - dead men tell no tales
@@ -58,7 +69,7 @@ index f074f29a5866a185206c787689e6196dd9157349..b73f2f958980adfc773613c1ea8365e4
              return Optional.empty();
          } else {
              Optional<LastSeenMessages> optional = this.unpackAndApplyLastSeen(acknowledgment);
-@@ -2660,7 +2660,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2660,7 +2658,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                  }
              });
          } else if (this.player.getChatVisibility() == ChatVisiblity.SYSTEM) { // Re-add "Command Only" flag check
