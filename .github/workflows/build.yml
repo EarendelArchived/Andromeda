@@ -22,13 +22,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout action
-        uses: actions/checkout@main
+        uses: actions/checkout@v3
 
       - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@master
+        uses: gradle/wrapper-validation-action@v1
 
       - name: Set up JDK ${{ matrix.java }} ${{ matrix.jdk }}
-        uses: actions/setup-java@main
+        uses: actions/setup-java@v3
         with:
           distribution: ${{ matrix.java }}
           java-version: ${{ matrix.jdk }}
@@ -36,7 +36,7 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions[bot]"
           echo "workflow=$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
 
       - name: Apply Patches
@@ -53,8 +53,6 @@ jobs:
       
       - name: Publish Packages
         run: |
-          echo "GITHUB_USERNAME=${{ env.ORG_NAME }}" >> $GITHUB_ENV
-          echo "GITHUB_TOKEN=${{ secrets.GH_PAT }}" >> $GITHUB_ENV
           export GITHUB_USERNAME=${{ env.ORG_NAME }}
           export GITHUB_TOKEN=${{ secrets.GH_PAT }}
           ./gradlew publish --stacktrace
@@ -72,7 +70,7 @@ jobs:
         with:
           title: "Release #${{ env.workflow }}"
           automatic_release_tag: release-${{ env.workflow }}
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          repo_token: "${{ secrets.GH_PAT }}"
           files: build/libs/*.jar
           prerelease: false
           
@@ -82,6 +80,6 @@ jobs:
         with:
           title: "Release #${{ env.workflow }}"
           automatic_release_tag: latest-${{ env.version }}
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          repo_token: "${{ secrets.GH_PAT }}"
           files: build/libs/*.jar
           prerelease: false
