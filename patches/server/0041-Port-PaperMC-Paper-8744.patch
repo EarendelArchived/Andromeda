@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 19:50:12 +0900
+Subject: [PATCH] Port PaperMC/Paper#8744
+
+
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
+index 0554afa72ae6d2f01886916031c8b90b0d45eb52..254cc5cc409e2d1161319f767716a179df851a78 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
+@@ -36,6 +36,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.level.gameevent.GameEventListener;
+ import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.event.entity.CreatureSpawnEvent;
+ import org.slf4j.Logger;
+ 
+ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationListener.VibrationListenerConfig {
+@@ -198,6 +199,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
+     }
+ 
+     private boolean trySummonWarden(ServerLevel world) {
++        if (world.andromedaWorldConfiguration.setWardenSpawnReasonToNatural) return this.warningLevel >= 4 && SpawnUtil.trySpawnMob(EntityType.WARDEN, MobSpawnType.TRIGGERED, world, this.getBlockPos(), 20, 5, 6, SpawnUtil.Strategy.ON_TOP_OF_COLLIDER, CreatureSpawnEvent.SpawnReason.NATURAL, null).isPresent(); // Andromeda - Port PaperMC/Paper#8744
+         return this.warningLevel < 4 ? false : SpawnUtil.trySpawnMob(EntityType.WARDEN, MobSpawnType.TRIGGERED, world, this.getBlockPos(), 20, 5, 6, SpawnUtil.Strategy.ON_TOP_OF_COLLIDER).isPresent();
+     }
+ 
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+index 577d15d2c7509aad06ea1f946338a5941729f861..b92c9161a77739e4d646f46a754f8dbddb0bb5ed 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+@@ -133,8 +133,10 @@ public class AndromedaWorldConfiguration {
+     }
+ 
+     public boolean doNotTickWhenNoPlayersInWorld = false;
++    public boolean setWardenSpawnReasonToNatural = true;
+     private void miscSettings() {
+         doNotTickWhenNoPlayersInWorld = getBoolean("misc.do-not-tick-when-no-players-in-world", doNotTickWhenNoPlayersInWorld);
++        setWardenSpawnReasonToNatural = getBoolean("misc.set-warden-spawn-reason-to-natural", setWardenSpawnReasonToNatural);
+     }
+ 
+     public boolean disableAdvancementsReward = false;

@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 19:38:53 +0900
+Subject: [PATCH] Port PaperMC/Paper#8754
+
+
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
+index 830326496e2f961682daadc7a7859247042b4cdd..ed9c7373a29b9d860292c0844f0f4308e92d825a 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
+@@ -85,11 +85,15 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
+                         result = blockCookEvent.getResult();
+                         itemstack1 = CraftItemStack.asNMSCopy(result);
+                         // CraftBukkit end
+-                    // Paper start
+-                    net.minecraft.world.entity.item.ItemEntity droppedItem = new net.minecraft.world.entity.item.ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, itemstack1.split(world.random.nextInt(21) + 10));
+-                    droppedItem.setDeltaMovement(world.random.nextGaussian() * 0.05D, world.random.nextGaussian() * 0.05D + 0.2D, world.random.nextGaussian() * 0.05D);
+-                    world.addFreshEntity(droppedItem);
+-                    // Paper end
++                        // Andromeda start - Port PaperMC/Paper#8754
++                        while (!itemstack1.isEmpty()) {
++                            // Paper start
++                            net.minecraft.world.entity.item.ItemEntity droppedItem = new net.minecraft.world.entity.item.ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, itemstack1.split(world.random.nextInt(21) + 10));
++                            droppedItem.setDeltaMovement(world.random.triangle(0.0D, 0.11485000171139836D), world.random.triangle(0.2D, 0.11485000171139836D), world.random.triangle(0.0D, 0.11485000171139836D));
++                            world.addFreshEntity(droppedItem);
++                            // Paper end
++                        }
++                        // Andromeda end
+                         campfire.items.set(i, ItemStack.EMPTY);
+                         world.sendBlockUpdated(pos, state, state, 3);
+                         world.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
