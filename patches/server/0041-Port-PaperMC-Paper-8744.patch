@@ -5,22 +5,14 @@ Subject: [PATCH] Port PaperMC/Paper#8744
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
-index 0554afa72ae6d2f01886916031c8b90b0d45eb52..254cc5cc409e2d1161319f767716a179df851a78 100644
+index 0554afa72ae6d2f01886916031c8b90b0d45eb52..ca7f5c777c69aad49f2baac80d4b3ea090f846cb 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
-@@ -36,6 +36,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
- import net.minecraft.world.level.gameevent.GameEventListener;
- import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
- import net.minecraft.world.phys.Vec3;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
- import org.slf4j.Logger;
- 
- public class SculkShriekerBlockEntity extends BlockEntity implements VibrationListener.VibrationListenerConfig {
-@@ -198,6 +199,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
+@@ -198,6 +198,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
      }
  
      private boolean trySummonWarden(ServerLevel world) {
-+        if (world.andromedaWorldConfiguration.setWardenSpawnReasonToNatural) return this.warningLevel >= 4 && SpawnUtil.trySpawnMob(EntityType.WARDEN, MobSpawnType.TRIGGERED, world, this.getBlockPos(), 20, 5, 6, SpawnUtil.Strategy.ON_TOP_OF_COLLIDER, CreatureSpawnEvent.SpawnReason.NATURAL, null).isPresent(); // Andromeda - Port PaperMC/Paper#8744
++        if (world.andromedaWorldConfiguration.setWardenSpawnReasonToNatural) return this.warningLevel >= 4 && SpawnUtil.trySpawnMob(EntityType.WARDEN, MobSpawnType.TRIGGERED, world, this.getBlockPos(), 20, 5, 6, SpawnUtil.Strategy.ON_TOP_OF_COLLIDER, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL, null).isPresent(); // Andromeda - Port PaperMC/Paper#8744
          return this.warningLevel < 4 ? false : SpawnUtil.trySpawnMob(EntityType.WARDEN, MobSpawnType.TRIGGERED, world, this.getBlockPos(), 20, 5, 6, SpawnUtil.Strategy.ON_TOP_OF_COLLIDER).isPresent();
      }
  
