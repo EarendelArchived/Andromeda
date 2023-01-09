@@ -2818,7 +2818,7 @@ index 877498729c66de9aa6a27c9148f7494d7895615c..acd7468ee3c86d3456e96e4ec3d7e6a4
              Util.logAndPauseIfInIde("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + pos + ", status: " + this.generatingStatus + (this.currentlyGenerating == null ? "" : ", currently generating: " + (String) this.currentlyGenerating.get()));
              hasSetFarWarned = true;
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index c89e430cfddb431ee1d20e59f8bd60e3a3a952b9..be44d43ee9b5fec44f1b3cb27e7180ba370f6de7 100644
+index a50af1f62661622f4a162c7dbad4e7ff056a64ef..a8e205af936efe0909c94575e3b7f8ca50cead2f 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -259,6 +259,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -3275,10 +3275,10 @@ index 9ddbfcf80d9a381dace78a62880f85a4d767e0eb..7383c7d3820dce06108eaafd236a7c6c
      }
  
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 8961310c0789c4dd95a729ecc0b8dbf8d701ffc4..974f6b0f1ee2d2ff8ad589d1f91e3b3a9cc4de3b 100644
+index a01654bb553c00459e64f16e5ccc91b70cc84444..b0fa557e756d1e30097ad5a72e679d8844b34cd9 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -449,6 +449,7 @@ public abstract class PlayerList {
+@@ -455,6 +455,7 @@ public abstract class PlayerList {
              scoreboard.addPlayerToTeam(player.getScoreboardName(), collideRuleTeam);
          }
          // Paper end
@@ -3286,7 +3286,7 @@ index 8961310c0789c4dd95a729ecc0b8dbf8d701ffc4..974f6b0f1ee2d2ff8ad589d1f91e3b3a
          // CraftBukkit - Moved from above, added world
          PlayerList.LOGGER.info("{}[{}] logged in with entity id {} at ([{}]{}, {}, {})", player.getName().getString(), s1, player.getId(), worldserver1.serverLevelData.getLevelName(), player.getX(), player.getY(), player.getZ());
      }
-@@ -558,6 +559,8 @@ public abstract class PlayerList {
+@@ -564,6 +565,8 @@ public abstract class PlayerList {
      }
      public net.kyori.adventure.text.Component remove(ServerPlayer entityplayer, net.kyori.adventure.text.Component leaveMessage) {
          // Paper end
@@ -3295,7 +3295,7 @@ index 8961310c0789c4dd95a729ecc0b8dbf8d701ffc4..974f6b0f1ee2d2ff8ad589d1f91e3b3a
          ServerLevel worldserver = entityplayer.getLevel();
  
          entityplayer.awardStat(Stats.LEAVE_GAME);
-@@ -711,7 +714,7 @@ public abstract class PlayerList {
+@@ -717,7 +720,7 @@ public abstract class PlayerList {
              event.disallow(PlayerLoginEvent.Result.KICK_BANNED, PaperAdventure.asAdventure(ichatmutablecomponent)); // Paper - Adventure
          } else {
              // return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameprofile) ? IChatBaseComponent.translatable("multiplayer.disconnect.server_full") : null;
@@ -3304,7 +3304,7 @@ index 8961310c0789c4dd95a729ecc0b8dbf8d701ffc4..974f6b0f1ee2d2ff8ad589d1f91e3b3a
                  event.disallow(PlayerLoginEvent.Result.KICK_FULL, net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(org.spigotmc.SpigotConfig.serverFullMessage)); // Spigot // Paper - Adventure
              }
          }
-@@ -947,6 +950,8 @@ public abstract class PlayerList {
+@@ -953,6 +956,8 @@ public abstract class PlayerList {
          }
          // Paper end
  
@@ -3313,7 +3313,7 @@ index 8961310c0789c4dd95a729ecc0b8dbf8d701ffc4..974f6b0f1ee2d2ff8ad589d1f91e3b3a
          // CraftBukkit end
          return entityplayer1;
      }
-@@ -1007,6 +1012,20 @@ public abstract class PlayerList {
+@@ -1013,6 +1018,20 @@ public abstract class PlayerList {
      }
      // CraftBukkit end
  
@@ -3334,7 +3334,7 @@ index 8961310c0789c4dd95a729ecc0b8dbf8d701ffc4..974f6b0f1ee2d2ff8ad589d1f91e3b3a
      public void broadcastAll(Packet<?> packet, ResourceKey<Level> dimension) {
          Iterator iterator = this.players.iterator();
  
-@@ -1110,6 +1129,7 @@ public abstract class PlayerList {
+@@ -1116,6 +1135,7 @@ public abstract class PlayerList {
              } else {
                  b0 = (byte) (24 + permissionLevel);
              }
@@ -3342,7 +3342,7 @@ index 8961310c0789c4dd95a729ecc0b8dbf8d701ffc4..974f6b0f1ee2d2ff8ad589d1f91e3b3a
  
              player.connection.send(new ClientboundEntityEventPacket(player, b0));
          }
-@@ -1118,6 +1138,27 @@ public abstract class PlayerList {
+@@ -1124,6 +1144,27 @@ public abstract class PlayerList {
          player.getBukkitEntity().recalculatePermissions(); // CraftBukkit
          this.server.getCommands().sendCommands(player);
          } // Paper
@@ -3370,7 +3370,7 @@ index 8961310c0789c4dd95a729ecc0b8dbf8d701ffc4..974f6b0f1ee2d2ff8ad589d1f91e3b3a
      }
  
      public boolean isWhiteListed(GameProfile profile) {
-@@ -1179,7 +1220,7 @@ public abstract class PlayerList {
+@@ -1185,7 +1226,7 @@ public abstract class PlayerList {
  
      public void saveAll(int interval) {
          io.papermc.paper.util.MCUtil.ensureMain("Save Players" , () -> { // Paper - Ensure main
@@ -3379,7 +3379,7 @@ index 8961310c0789c4dd95a729ecc0b8dbf8d701ffc4..974f6b0f1ee2d2ff8ad589d1f91e3b3a
          int numSaved = 0;
          long now = MinecraftServer.currentTick;
          for (int i = 0; i < this.players.size(); ++i) {
-@@ -1190,7 +1231,7 @@ public abstract class PlayerList {
+@@ -1196,7 +1237,7 @@ public abstract class PlayerList {
              }
              // Paper end
          }
@@ -26836,7 +26836,7 @@ index 0000000000000000000000000000000000000000..b7586f494528f30eb0da82420d3bcf5b
 +    }
 +}
 diff --git a/src/main/java/org/spigotmc/ActivationRange.java b/src/main/java/org/spigotmc/ActivationRange.java
-index 76b0e05d448208a50a62c0b5e029430da34faf32..e126789cb1e04835b0e6a0668884334c87c2c4b2 100644
+index 63d3fcc45be732a4cd2dc8b5347d860fd6577bdd..665625c69b93a2568b1f2218a0db39da435d8c99 100644
 --- a/src/main/java/org/spigotmc/ActivationRange.java
 +++ b/src/main/java/org/spigotmc/ActivationRange.java
 @@ -15,6 +15,7 @@ import net.minecraft.world.entity.ambient.AmbientCreature;
