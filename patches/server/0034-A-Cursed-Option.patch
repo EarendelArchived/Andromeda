@@ -17,10 +17,10 @@ index f01c74653b8e1e0a9b280094ff279defdac64508..dd72e94d94ae843f8cca56ce8c99c3b8
          this.managedBlock(() -> {
              return !this.canSleepForTickNoOversleep(); // Paper - move oversleep into full server tick
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 6f394db90f27671f29131863b4de388d43d669d5..2f6b730e41aa21644483d126287f0ea1694e69b4 100644
+index 2670458fccbcd8f9ccdbfba6557d6b952d65f660..ed24824c1d5e1c6d40a6904f8ffc207fbe6d520b 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-@@ -220,7 +220,9 @@ public class AndromedaConfiguration {
+@@ -215,7 +215,9 @@ public class AndromedaConfiguration {
      }
  
      public static boolean JUST_DONT_TICK = false;

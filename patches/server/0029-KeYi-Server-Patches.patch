@@ -85,7 +85,7 @@ index 004dce26ff073f1de52a84cd425c4f60fdab5e50..459718c70fbb55a02f5982d230f969c8
                  aiblockdata[k] = iblockdata2;
                  if (k == i) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 5f3e13ee611fbb00704c8026257f2014cf029ea9..e469257735f9451b52c1baa5d7e68bf3192bf1bc 100644
+index 8811783adbb20f007375a35af738a8feea9afa86..24eefe1eee2636e52305d6619c38c4768bdab2d8 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 @@ -163,6 +163,11 @@ public class AndromedaConfiguration {

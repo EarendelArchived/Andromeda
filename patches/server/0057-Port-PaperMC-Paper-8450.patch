@@ -18,7 +18,7 @@ index 744c936c3aa9bd7bcf43ac3d78a08ece9cde87c3..cce3a39d453662ef47f4c400ecf74205
                  return false;
              } else if (this.player.blockActionRestricted(this.level, pos, this.gameModeForPlayer)) {
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 1816c16d8666ffe53ddc23d2bf52cadd360fee76..87028a67cbec03c8a985e9706a40eac892bc10a1 100644
+index 123f4bb857483b3f6e31acd49739a8f40c4d8fd3..e1b7760ecbcf6fa280aba58bb45b28e8b0f67aa3 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -974,7 +974,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic

@@ -24,7 +24,7 @@ index 314318a21b6fa9e827945d8996c6ed0f9679a4eb..1b271896213f40b007a87ebbfe44e5c7
              // Purpur end
              Item item = stack.getItem();
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index ff40082f6ac3f08aa5bf8ef34bb963a2d2dae1f8..f074f29a5866a185206c787689e6196dd9157349 100644
+index 0f4d819d2f62de51c75aa27e4d9c66ad85890b57..6bde9706c48030fa6b2b92f9376eaa8cb945682c 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -3443,6 +3443,13 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic

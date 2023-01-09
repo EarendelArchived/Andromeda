@@ -57,12 +57,12 @@ index 0ad3d1a3ef2b165625d472a817adc04878fc0eeb..2c3e722a702780b09a0e218d3cd9534f
          this.playersAffectingSpawning.clear();
          for (ServerPlayer player : this.players) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index e469257735f9451b52c1baa5d7e68bf3192bf1bc..6f394db90f27671f29131863b4de388d43d669d5 100644
+index 24eefe1eee2636e52305d6619c38c4768bdab2d8..2670458fccbcd8f9ccdbfba6557d6b952d65f660 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-@@ -213,4 +213,14 @@ public class AndromedaConfiguration {
-     private static void carpetFixes() {
-         useFasterRecipeManager = getBoolean("options.ports.carpet-fixes.use-faster-recipe-manager", useFasterRecipeManager);
+@@ -208,4 +208,14 @@ public class AndromedaConfiguration {
+         NCRDemandOnClient = getBoolean("options.ports.no-chat-reports.demand-on-client", NCRDemandOnClient);
+         NCRDemandOnClientMessage = getString("options.ports.no-chat-reports.demand-on-client-message", NCRDemandOnClientMessage);
      }
 +
 +    public static boolean doNotTickWhenNoPlayersOnline = false;
