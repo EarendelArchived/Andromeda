@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Tue, 10 Jan 2023 23:52:25 +0900
+Subject: [PATCH] Cache BukkitVersion
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index dddea464dcae91def0ac56c8ff0477f51a8c0784..e17371bbef3404536c4fdc2e7e27c65079a3a940 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -8,9 +8,9 @@ import java.util.logging.Logger;
+ import org.bukkit.Bukkit;
+ 
+ public final class Versioning {
+-    public static String getBukkitVersion() {
+-        String result = "Unknown-Version";
+-
++    // Andromeda start - Cache Version
++    public static String version = "Unknown-Version";
++    static {
+         InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/team.earendel.andromeda/andromeda-api/pom.properties"); // Purpur // Andromeda
+         Properties properties = new Properties();
+ 
+@@ -18,12 +18,15 @@ public final class Versioning {
+             try {
+                 properties.load(stream);
+ 
+-                result = properties.getProperty("version");
++                version = properties.getProperty("version");
+             } catch (IOException ex) {
+                 Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Andromeda version!", ex); // Andromeda
+             }
+         }
++    }
+ 
+-        return result;
++    public static String getBukkitVersion() {
++        return version;
+     }
++    // Andromeda end
+ }

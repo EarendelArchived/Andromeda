@@ -85,21 +85,20 @@ index 004dce26ff073f1de52a84cd425c4f60fdab5e50..459718c70fbb55a02f5982d230f969c8
                  aiblockdata[k] = iblockdata2;
                  if (k == i) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 8811783adbb20f007375a35af738a8feea9afa86..24eefe1eee2636e52305d6619c38c4768bdab2d8 100644
+index 440d5417bf9fc271779fad4c365a947a12459bf8..8bd7a75c68f07cec77f351a8b1c4cbe1c2f69454 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-@@ -163,6 +163,11 @@ public class AndromedaConfiguration {
-         allowAnyNickname = getBoolean("options.ports.rubia.unsupported-settings.players.allow-any-nickname", allowAnyNickname);
+@@ -162,8 +162,10 @@ public class AndromedaConfiguration {
      }
  
+     public static boolean offlineWarning = true;
 +    public static boolean rootUserWarning = true;
-+    private static void keyiPatches() {
+     private static void logSettings() {
+         offlineWarning = getBoolean("options.server.logging.offline-warning", offlineWarning);
 +        rootUserWarning = getBoolean("options.server.logging.root-warning", rootUserWarning);
-+    }
-+
+     }
+ 
      public static boolean mixableWeaponEnchantment = false;
-     public static boolean mixableProtectionEnchantment = false;
-     public static boolean weaponEnchantmentOnTrident = false;
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 index 4949a69fd8098d5187bcc03789a8555ff23f03ae..2f23137983b879311d7232555fe32b5cedba1a49 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java

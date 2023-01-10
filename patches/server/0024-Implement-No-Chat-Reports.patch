@@ -145,10 +145,10 @@ index bb2d07a2b08d4dae000f3f013cdd559538a1a896..c71d6655b63aa27eb4043d60385a2e73
      }
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 925fd068e044ffde4729343997b8a04313fe9bdc..8811783adbb20f007375a35af738a8feea9afa86 100644
+index 24c9fa54c31fc47ce4db88878c29d02c1c6a1f95..440d5417bf9fc271779fad4c365a947a12459bf8 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-@@ -188,4 +188,19 @@ public class AndromedaConfiguration {
+@@ -191,4 +191,19 @@ public class AndromedaConfiguration {
      private static void attributeSettings() {
          armorAttributeLimit = (float) getDouble("options.attributes.armor-limit", armorAttributeLimit);
      }

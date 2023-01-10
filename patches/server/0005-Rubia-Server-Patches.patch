@@ -59,18 +59,21 @@ index f7f085a2dc5dc8d09bc665a371afac04b0e118fc..01e0b400f4cc144c5eb8c573d86ffcfe
          // Paper start - validate usernames
          if (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode() && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.performUsernameValidation) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 54a533aaaad0c515156e4da8d5fd4bc627742796..4dc8390855f4010cf7be0dfffb9bc70aaf8fc70c 100644
+index 54a533aaaad0c515156e4da8d5fd4bc627742796..a69c41af253aad114ead47a5911f697b4022b270 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-@@ -155,4 +155,11 @@ public class AndromedaConfiguration {
+@@ -155,4 +155,14 @@ public class AndromedaConfiguration {
          }
          return builder.build();
      }
 +
-+    public static boolean offlineWarning = true;
 +    public static boolean allowAnyNickname = false;
 +    private static void rubiaPatches() {
-+        offlineWarning = getBoolean("options.server.logging.offline-warning", offlineWarning);
 +        allowAnyNickname = getBoolean("options.ports.rubia.unsupported-settings.players.allow-any-nickname", allowAnyNickname);
++    }
++
++    public static boolean offlineWarning = true;
++    private static void logSettings() {
++        offlineWarning = getBoolean("options.server.logging.offline-warning", offlineWarning);
 +    }
  }

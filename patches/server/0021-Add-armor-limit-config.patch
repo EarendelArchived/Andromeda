@@ -24,10 +24,10 @@ index aa2331c6df4e79d4bb0add071a0b11d2a3a08b88..38c88b2784e6999c59cf599020b4b0c7
      }
  }
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 45f48e26594f3312da94e70cc7ee94fb1ca501ba..42edeb98ae832739a83c9083f5b27659a05a7c9b 100644
+index a0c55fb75d081612f60bec74b10fe6f4f1e99b08..24c9fa54c31fc47ce4db88878c29d02c1c6a1f95 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-@@ -183,4 +183,9 @@ public class AndromedaConfiguration {
+@@ -186,4 +186,9 @@ public class AndromedaConfiguration {
          knockbackOnAxe = getBoolean("options.enchantments.axe.allow-knockback", knockbackOnAxe);
          lootingOnAxe = getBoolean("options.enchantments.axe.allow-looting", lootingOnAxe);
      }
