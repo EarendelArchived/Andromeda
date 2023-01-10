@@ -81,7 +81,7 @@ index f9d77ad2493b9ba67e8f45ce248d29a8e9ab7b80..0600b2fca10ed994cfe652643e7df5a0
      @Override
      protected Brain<?> makeBrain(Dynamic<?> dynamic) {
 diff --git a/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java b/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
-index b7d25d404ae06b74b7ff6d76f91cdd9ca4a2b4c5..6e417460c9567621a7d8221eafadd0b67d459db5 100644
+index aeebe3b3ea879025bda89fda716db6fb124af2ef..71cb2ccc0b473ceccb25f25ee87be846a48c7781 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
 @@ -147,6 +147,23 @@ public class Frog extends Animal implements VariantHolder<FrogVariant> {
@@ -165,7 +165,7 @@ index 17df2b09542f67cdd1d83f795d9b2aad9ccd4e05..faee4b5fd9906511a00cee171c5efc2a
      public Packet<ClientGamePacketListener> getAddEntityPacket() {
          return new ClientboundAddEntityPacket(this, this.hasPose(Pose.EMERGING) ? 1 : 0);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index a3f9df384e5723d51177c78722e405a172bb385b..5fafa3594da643345917447fe01b7fbecd875872 100644
+index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..96a8e6d4459ad5654aadcd8e9f71c1997b2d68e9 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -9,7 +9,6 @@ import net.minecraft.world.entity.EntityType;
@@ -184,7 +184,7 @@ index a3f9df384e5723d51177c78722e405a172bb385b..5fafa3594da643345917447fe01b7fbe
  import java.util.Map;
  import java.util.function.Predicate;
  import java.util.logging.Level;
-@@ -1069,11 +1067,21 @@ public class PurpurWorldConfig {
+@@ -1074,11 +1072,21 @@ public class PurpurWorldConfig {
      public boolean allayRidable = false;
      public boolean allayRidableInWater = false;
      public boolean allayControllable = true;
@@ -206,7 +206,7 @@ index a3f9df384e5723d51177c78722e405a172bb385b..5fafa3594da643345917447fe01b7fbe
          allayRespectNBT.clear();
          getList("mobs.allay.respect-nbt", new ArrayList<>()).forEach(key -> allayRespectNBT.add(key.toString()));
      }
-@@ -1174,8 +1182,24 @@ public class PurpurWorldConfig {
+@@ -1179,8 +1187,24 @@ public class PurpurWorldConfig {
          blazeAlwaysDropExp = getBoolean("mobs.blaze.always-drop-exp", blazeAlwaysDropExp);
      }
  
@@ -231,7 +231,7 @@ index a3f9df384e5723d51177c78722e405a172bb385b..5fafa3594da643345917447fe01b7fbe
          camelBreedingTicks = getInt("mobs.camel.breeding-delay-ticks", camelBreedingTicks);
      }
  
-@@ -1594,12 +1618,22 @@ public class PurpurWorldConfig {
+@@ -1599,12 +1623,22 @@ public class PurpurWorldConfig {
      public boolean frogRidable = false;
      public boolean frogRidableInWater = false;
      public boolean frogControllable = true;
@@ -254,7 +254,7 @@ index a3f9df384e5723d51177c78722e405a172bb385b..5fafa3594da643345917447fe01b7fbe
          frogRidableJumpHeight = (float) getDouble("mobs.frog.ridable-jump-height", frogRidableJumpHeight);
          frogBreedingTicks = getInt("mobs.frog.breeding-delay-ticks", frogBreedingTicks);
      }
-@@ -2633,10 +2667,20 @@ public class PurpurWorldConfig {
+@@ -2638,10 +2672,20 @@ public class PurpurWorldConfig {
      public boolean tadpoleRidable = false;
      public boolean tadpoleRidableInWater = false;
      public boolean tadpoleControllable = true;
@@ -275,7 +275,7 @@ index a3f9df384e5723d51177c78722e405a172bb385b..5fafa3594da643345917447fe01b7fbe
      }
  
      public boolean traderLlamaRidable = false;
-@@ -2843,10 +2887,20 @@ public class PurpurWorldConfig {
+@@ -2848,10 +2892,20 @@ public class PurpurWorldConfig {
      public boolean wardenRidable = false;
      public boolean wardenRidableInWater = false;
      public boolean wardenControllable = true;

@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@outlook.com>
-Date: Mon, 9 Jan 2023 05:03:34 +0000
+Date: Tue, 10 Jan 2023 13:25:42 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -3263,7 +3263,7 @@ index 9ddbfcf80d9a381dace78a62880f85a4d767e0eb..7383c7d3820dce06108eaafd236a7c6c
      }
  
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index a01654bb553c00459e64f16e5ccc91b70cc84444..b0fa557e756d1e30097ad5a72e679d8844b34cd9 100644
+index 4b754f6eae683248d7fe11d6d6cb168d5dd696a2..c34c5368e336ba4b181a95932a9b40cb4f50ae1d 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -455,6 +455,7 @@ public abstract class PlayerList {
@@ -16947,9 +16947,27 @@ index 3b959f42d958bf0f426853aee56753d6c455fcdb..d17abb283ea818244df0379d6b57fc63
                  if (range < 0.0D || d < range * range) {
                      return true;
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index a213f4098859858a73ddd601bbe8c7511972e0d5..c0d39afe5b80159ed9aaca4ddd4763d707882f2e 100644
+index a213f4098859858a73ddd601bbe8c7511972e0d5..55414d53061663038f05d68c327f595abb2b0e44 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
+@@ -86,7 +86,7 @@ public class Explosion {
+         this.hitPlayers = Maps.newHashMap();
+         this.level = world;
+         this.source = entity;
+-        this.radius = (float) Math.max(power, 0.0); // CraftBukkit - clamp bad values
++        this.radius = (float) (world.purpurConfig.explosionClampRadius ? Math.max(power, 0.0) : power); // CraftBukkit - clamp bad values // Purpur
+         this.x = x;
+         this.y = y;
+         this.z = z;
+@@ -137,7 +137,7 @@ public class Explosion {
+ 
+     public void explode() {
+         // CraftBukkit start
+-        if (this.radius < 0.1F) {
++        if (this.level != null ? this.level.purpurConfig.explosionClampRadius && this.radius < 0.1F : this.radius < 0.1F) { // Purpur
+             return;
+         }
+         // CraftBukkit end
 @@ -360,7 +360,7 @@ public class Explosion {
                  if (!iblockdata.isAir() && iblockdata.isDestroyable()) { // Paper
                      BlockPos blockposition1 = blockposition.immutable();
@@ -21628,10 +21646,10 @@ index 0000000000000000000000000000000000000000..c7c0ed8dfe58c841faf684a1fe228eed
 +}
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..de2f5ebfc48b4ea20fa8e194c1c7766d89c287de
+index 0000000000000000000000000000000000000000..d3eaf4c2983d16dcfed9f6b376b462d24b11be7f
 --- /dev/null
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -0,0 +1,3150 @@
+@@ -0,0 +1,3155 @@
 +package org.purpurmc.purpur;
 +
 +//import gg.pufferfish.pufferfish.PufferfishConfig;
@@ -21848,6 +21866,11 @@ index 0000000000000000000000000000000000000000..de2f5ebfc48b4ea20fa8e194c1c7766d
 +        entityLifeSpan = getInt("gameplay-mechanics.entity-lifespan", entityLifeSpan);
 +        entityLeftHandedChance = (float) getDouble("gameplay-mechanics.entity-left-handed-chance", entityLeftHandedChance);
 +        entitySharedRandom = getBoolean("settings.entity.shared-random", entitySharedRandom);
++    }
++
++    public boolean explosionClampRadius = true;
++    private void explosionSettings() {
++        explosionClampRadius = getBoolean("gameplay-mechanics.clamp-explosion-radius", explosionClampRadius);
 +    }
 +
 +    public boolean infinityWorksWithoutArrows = false;

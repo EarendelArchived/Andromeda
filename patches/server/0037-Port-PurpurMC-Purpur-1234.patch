@@ -5,13 +5,13 @@ Subject: [PATCH] Port PurpurMC/Purpur#1234
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 83dde93586b0051fbfdff8051490b0dd46cd9913..b1051252c115852844245f6685f8a6b43e91b185 100644
+index 0be544660aa5b2131cd8b985e14f1a2fda25e3b2..75e692c8b776bacb96791b083641a72cc734eb42 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -140,6 +140,23 @@ public class Explosion {
-         if (this.radius < 0.1F) {
+@@ -141,6 +141,23 @@ public class Explosion {
              return;
          }
+         // CraftBukkit end
 +
 +        // Andromeda start - Port PurpurMC/Purpur#1234
 +        Location loc = new Location(this.level.getWorld(), this.x, this.y, this.z);
@@ -29,6 +29,6 @@ index 83dde93586b0051fbfdff8051490b0dd46cd9913..b1051252c115852844245f6685f8a6b4
 +        }
 +        // Andromeda end
 +
-         // CraftBukkit end
          this.level.gameEvent(this.source, GameEvent.EXPLODE, new Vec3(this.x, this.y, this.z));
          Set<BlockPos> set = Sets.newHashSet();
+         boolean flag = true;

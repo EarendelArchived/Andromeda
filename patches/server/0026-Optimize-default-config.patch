@@ -273,10 +273,10 @@ index c88f9ade3db7118bb0b7e4c3c841ac1dee0ed4a0..93785c8b47bddea5bad01d9c600be771
          useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
      }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 5fafa3594da643345917447fe01b7fbecd875872..520589e9d06060f14186a34464d9d7be8838d8c9 100644
+index 96a8e6d4459ad5654aadcd8e9f71c1997b2d68e9..f6b8ac1efad6e2cf70f6078530092856ac3df857 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -415,7 +415,7 @@ public class PurpurWorldConfig {
+@@ -420,7 +420,7 @@ public class PurpurWorldConfig {
      public boolean playerInvulnerableWhileAcceptingResourcePack = false;
      public String playerDeathExpDropEquation = "expLevel * 7";
      public int playerDeathExpDropMax = 100;
