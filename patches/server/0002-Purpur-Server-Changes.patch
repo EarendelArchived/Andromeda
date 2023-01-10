@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@outlook.com>
-Date: Tue, 10 Jan 2023 13:25:42 +0000
+Date: Tue, 10 Jan 2023 20:33:36 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -10108,10 +10108,16 @@ index 500500468c12d1d44ea6b83a9176b470a954f59a..d542652d376a790c817e09921a432ee8
  
                  this.onDestroyedBy(source);
 diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..1e2304347fc369e5d9fe5d4c3cca8856766f5c1a 100644
+index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d0fb62e0c 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-@@ -103,6 +103,7 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -98,11 +98,12 @@ public class EnderDragon extends Mob implements Enemy {
+     private final Node[] nodes = new Node[24];
+     private final int[] nodeAdjacency = new int[24];
+     private final BinaryHeap openSet = new BinaryHeap();
+-    private Explosion explosionSource = new Explosion(null, this, null, null, Double.NaN, Double.NaN, Double.NaN, Float.NaN, true, Explosion.BlockInteraction.DESTROY); // CraftBukkit - reusable source for CraftTNTPrimed.getSource()
++    private Explosion explosionSource = new Explosion(level, this, null, null, Double.NaN, Double.NaN, Double.NaN, Float.NaN, true, Explosion.BlockInteraction.DESTROY); // CraftBukkit - reusable source for CraftTNTPrimed.getSource() // Purpur
+     // Paper start - add var for save custom podium
      @Nullable
      private BlockPos podium;
      // Paper end
@@ -16947,7 +16953,7 @@ index 3b959f42d958bf0f426853aee56753d6c455fcdb..d17abb283ea818244df0379d6b57fc63
                  if (range < 0.0D || d < range * range) {
                      return true;
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index a213f4098859858a73ddd601bbe8c7511972e0d5..55414d53061663038f05d68c327f595abb2b0e44 100644
+index a213f4098859858a73ddd601bbe8c7511972e0d5..3c9e0cee78deeae6b47a186f1bfc47f3956ec9c7 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -86,7 +86,7 @@ public class Explosion {
@@ -16964,7 +16970,7 @@ index a213f4098859858a73ddd601bbe8c7511972e0d5..55414d53061663038f05d68c327f595a
      public void explode() {
          // CraftBukkit start
 -        if (this.radius < 0.1F) {
-+        if (this.level != null ? this.level.purpurConfig.explosionClampRadius && this.radius < 0.1F : this.radius < 0.1F) { // Purpur
++        if (this.level.purpurConfig.explosionClampRadius && this.radius < 0.1F) { // Purpur
              return;
          }
          // CraftBukkit end
