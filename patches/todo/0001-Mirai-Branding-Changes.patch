@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: etil2jz <81570777+etil2jz@users.noreply.github.com>
+Date: Sun, 27 Mar 2022 23:23:55 +0200
+Subject: [PATCH] Mirai Branding Changes
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index 80553face9c70c2a3d897681e7761df85b22d464..fdfb304a860a1c5bda8fa6a9a5fc6e65cd1e6df4 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -8,22 +8,27 @@ import java.util.logging.Logger;
+ import org.bukkit.Bukkit;
+ 
+ public final class Versioning {
+-    public static String getBukkitVersion() {
+-        String result = "Unknown-Version";
++    // Mirai start - cache getBukkitVersion
++    public static String bukkitVersion;
++    static {
++        bukkitVersion = "Unknown-Version";
+ 
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/gg.pufferfish.pufferfish/pufferfish-api/pom.properties"); // Pufferfish
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/dev.etil.mirai/mirai-api/pom.properties"); // Pufferfish // Mirai
+         Properties properties = new Properties();
+ 
+         if (stream != null) {
+             try {
+                 properties.load(stream);
+ 
+-                result = properties.getProperty("version");
++                bukkitVersion = properties.getProperty("version");
+             } catch (IOException ex) {
+                 Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Bukkit version!", ex);
+             }
+         }
++    }
++    // Mirai end
+ 
+-        return result;
++    public static String getBukkitVersion() {
++        return bukkitVersion; // Mirai
+     }
+ }
