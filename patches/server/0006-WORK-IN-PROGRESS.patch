@@ -1,0 +1,150 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Wed, 11 Jan 2023 03:02:41 +0900
+Subject: [PATCH] WORK IN PROGRESS
+
+
+diff --git a/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java b/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4ea9669f986ec4dc06c1b194ec93c989a8daf8c4
+--- /dev/null
++++ b/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java
+@@ -0,0 +1,50 @@
++package team.earendel.andromeda.commands;
++
++import net.minecraft.Util;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import org.checkerframework.checker.nullness.qual.NonNull;
++import org.checkerframework.framework.qual.DefaultQualifier;
++import org.jetbrains.annotations.NotNull;
++import team.earendel.andromeda.commands.subcommands.AndromedaSubCommand;
++import team.earendel.andromeda.commands.subcommands.ReloadCommand;
++import team.earendel.andromeda.commands.subcommands.VersionCommand;
++
++import java.util.HashMap;
++import java.util.Map;
++import java.util.Set;
++import java.util.stream.Collectors;
++
++@DefaultQualifier(NonNull.class)
++public class AndromedaCommand extends Command {
++
++    private static final Map<String, AndromedaSubCommand> SUB_COMMANDS = Util.make(() -> {
++        final Map<Set<String>, AndromedaSubCommand> commands = new HashMap<>();
++
++        commands.put(Set.of("reload"), new ReloadCommand());
++        commands.put(Set.of("version"), new VersionCommand());
++
++        return commands.entrySet().stream().flatMap(entry -> entry.getKey().stream().map(key -> Map.entry(key, entry.getValue()))).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
++    });
++
++    private static final Map<String, String> ALIASES = Util.make(() -> {
++        final Map<String, Set<String>> aliases = new HashMap<>();
++
++        aliases.put("reload", Set.of("rl"));
++        aliases.put("version", Set.of("ver"));
++
++        return aliases.entrySet().stream().flatMap(entry -> entry.getValue().stream().map(s -> Map.entry(s, entry.getKey()))).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
++    });
++
++    protected AndromedaCommand(@NotNull String name) {
++        super(name);
++
++        this.description = "Andromeda related commands";
++        this.usageMessage = String.format("/andromeda [%s]", String.join("|", SUB_COMMANDS.keySet()));
++    }
++
++    @Override
++    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
++        return false;
++    }
++}
+diff --git a/src/main/java/team/earendel/andromeda/commands/AndromedaCommands.java b/src/main/java/team/earendel/andromeda/commands/AndromedaCommands.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..1047076e0274d5b576a52ce7bf24cbfd1c1ed34e
+--- /dev/null
++++ b/src/main/java/team/earendel/andromeda/commands/AndromedaCommands.java
+@@ -0,0 +1,4 @@
++package team.earendel.andromeda.commands;
++
++public class AndromedaCommands {
++}
+diff --git a/src/main/java/team/earendel/andromeda/commands/subcommands/AndromedaSubCommand.java b/src/main/java/team/earendel/andromeda/commands/subcommands/AndromedaSubCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..31a517bc474e480adf2a031b0da6dc34fefbe2d7
+--- /dev/null
++++ b/src/main/java/team/earendel/andromeda/commands/subcommands/AndromedaSubCommand.java
+@@ -0,0 +1,17 @@
++package team.earendel.andromeda.commands.subcommands;
++
++import org.bukkit.command.CommandSender;
++import org.checkerframework.checker.nullness.qual.NonNull;
++import org.checkerframework.framework.qual.DefaultQualifier;
++
++import java.util.Collections;
++import java.util.List;
++
++@DefaultQualifier(NonNull.class)
++public interface AndromedaSubCommand {
++    boolean execute(CommandSender sender, String subCommand, String[] args);
++
++    default List<String> tabComplete(final CommandSender sender, final String subCommand, final String[] args) {
++        return Collections.emptyList();
++    }
++}
+diff --git a/src/main/java/team/earendel/andromeda/commands/subcommands/ReloadCommand.java b/src/main/java/team/earendel/andromeda/commands/subcommands/ReloadCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5eb7494904f7209b4c0d4f1ae63440d69f83ca48
+--- /dev/null
++++ b/src/main/java/team/earendel/andromeda/commands/subcommands/ReloadCommand.java
+@@ -0,0 +1,28 @@
++package team.earendel.andromeda.commands.subcommands;
++
++import net.kyori.adventure.text.format.NamedTextColor;
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import org.bukkit.craftbukkit.CraftServer;
++
++import static net.kyori.adventure.text.Component.text;
++
++public class ReloadCommand implements AndromedaSubCommand {
++
++    @Override
++    public boolean execute(CommandSender sender, String subCommand, String[] args) {
++        return true;
++    }
++
++    private void doReload(final CommandSender sender) {
++        Command.broadcastCommandMessage(sender, text("Please note that this command is not supported and may cause issues.", NamedTextColor.RED));
++        Command.broadcastCommandMessage(sender, text("If you encounter any issues please use the /stop command to restart your server.", NamedTextColor.RED));
++
++        MinecraftServer server = ((CraftServer) sender.getServer()).getServer();
++        server.andromedaConfigurations.reloadConfigurations(server);
++        server.server.reloadCount++;
++
++        Command.broadcastCommandMessage(sender, text("Successfully reloaded Andromeda configuration files.", NamedTextColor.GREEN));
++    }
++}
+diff --git a/src/main/java/team/earendel/andromeda/commands/subcommands/VersionCommand.java b/src/main/java/team/earendel/andromeda/commands/subcommands/VersionCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..10d7a2d08a49e9afb6e0ef3ffd0f8d75135adc88
+--- /dev/null
++++ b/src/main/java/team/earendel/andromeda/commands/subcommands/VersionCommand.java
+@@ -0,0 +1,15 @@
++package team.earendel.andromeda.commands.subcommands;
++
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import org.checkerframework.checker.nullness.qual.Nullable;
++
++public class VersionCommand implements AndromedaSubCommand {
++    @Override
++    public boolean execute(CommandSender sender, String subCommand, String[] args) {
++        final @Nullable Command ver = MinecraftServer.getServer().server.getCommandMap().getCommand("version");
++        if (ver != null) ver.execute(sender, "andromeda", new String[0]);
++        return true;
++    }
++}
