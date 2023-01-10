@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@outlook.com>
-Date: Tue, 10 Jan 2023 20:33:36 +0000
+Date: Tue, 10 Jan 2023 20:48:35 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -10108,15 +10108,15 @@ index 500500468c12d1d44ea6b83a9176b470a954f59a..d542652d376a790c817e09921a432ee8
  
                  this.onDestroyedBy(source);
 diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d0fb62e0c 100644
+index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..84b230d979a91dd776e180e5b828b26bdc98ef12 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-@@ -98,11 +98,12 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -98,14 +98,16 @@ public class EnderDragon extends Mob implements Enemy {
      private final Node[] nodes = new Node[24];
      private final int[] nodeAdjacency = new int[24];
      private final BinaryHeap openSet = new BinaryHeap();
 -    private Explosion explosionSource = new Explosion(null, this, null, null, Double.NaN, Double.NaN, Double.NaN, Float.NaN, true, Explosion.BlockInteraction.DESTROY); // CraftBukkit - reusable source for CraftTNTPrimed.getSource()
-+    private Explosion explosionSource = new Explosion(level, this, null, null, Double.NaN, Double.NaN, Double.NaN, Float.NaN, true, Explosion.BlockInteraction.DESTROY); // CraftBukkit - reusable source for CraftTNTPrimed.getSource() // Purpur
++    private Explosion explosionSource; // CraftBukkit - reusable source for CraftTNTPrimed.getSource() // Purpur - moved instantiation to ctor
      // Paper start - add var for save custom podium
      @Nullable
      private BlockPos podium;
@@ -10125,7 +10125,11 @@ index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d
  
      public EnderDragon(EntityType<? extends EnderDragon> entitytypes, Level world) {
          super(EntityType.ENDER_DRAGON, world);
-@@ -117,7 +118,59 @@ public class EnderDragon extends Mob implements Enemy {
++        this.explosionSource = new Explosion(this.level, this, null, null, Double.NaN, Double.NaN, Double.NaN, Float.NaN, true, Explosion.BlockInteraction.DESTROY); // Purpur - moved instantiation from field
+         this.subEntities = new EnderDragonPart[]{this.head, this.neck, this.body, this.tail1, this.tail2, this.tail3, this.wing1, this.wing2};
+         this.setHealth(this.getMaxHealth());
+         this.noPhysics = true;
+@@ -117,7 +119,59 @@ public class EnderDragon extends Mob implements Enemy {
          }
  
          this.phaseManager = new EnderDragonPhaseManager(this);
@@ -10185,7 +10189,7 @@ index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d
  
      public static AttributeSupplier.Builder createAttributes() {
          return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 200.0D);
-@@ -180,6 +233,37 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -180,6 +234,37 @@ public class EnderDragon extends Mob implements Enemy {
  
      @Override
      public void aiStep() {
@@ -10223,7 +10227,7 @@ index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d
          this.processFlappingMovement();
          if (this.level.isClientSide) {
              this.setHealth(this.getHealth());
-@@ -193,6 +277,8 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -193,6 +278,8 @@ public class EnderDragon extends Mob implements Enemy {
          float f;
  
          if (this.isDeadOrDying()) {
@@ -10232,7 +10236,7 @@ index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d
              float f1 = (this.random.nextFloat() - 0.5F) * 8.0F;
  
              f = (this.random.nextFloat() - 0.5F) * 4.0F;
-@@ -205,9 +291,9 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -205,9 +292,9 @@ public class EnderDragon extends Mob implements Enemy {
  
              f = 0.2F / ((float) vec3d.horizontalDistance() * 10.0F + 1.0F);
              f *= (float) Math.pow(2.0D, vec3d.y);
@@ -10244,7 +10248,7 @@ index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d
                  this.flapTime += f * 0.5F;
              } else {
                  this.flapTime += f;
-@@ -252,7 +338,7 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -252,7 +339,7 @@ public class EnderDragon extends Mob implements Enemy {
                      }
  
                      this.phaseManager.getCurrentPhase().doClientTick();
@@ -10253,7 +10257,7 @@ index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d
                      DragonPhaseInstance idragoncontroller = this.phaseManager.getCurrentPhase();
  
                      idragoncontroller.doServerTick();
-@@ -321,7 +407,7 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -321,7 +408,7 @@ public class EnderDragon extends Mob implements Enemy {
                  this.tickPart(this.body, (double) (f11 * 0.5F), 0.0D, (double) (-f12 * 0.5F));
                  this.tickPart(this.wing1, (double) (f12 * 4.5F), 2.0D, (double) (f11 * 4.5F));
                  this.tickPart(this.wing2, (double) (f12 * -4.5F), 2.0D, (double) (f11 * -4.5F));
@@ -10262,7 +10266,7 @@ index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d
                      this.knockBack(this.level.getEntities((Entity) this, this.wing1.getBoundingBox().inflate(4.0D, 2.0D, 4.0D).move(0.0D, -2.0D, 0.0D), EntitySelector.NO_CREATIVE_OR_SPECTATOR));
                      this.knockBack(this.level.getEntities((Entity) this, this.wing2.getBoundingBox().inflate(4.0D, 2.0D, 4.0D).move(0.0D, -2.0D, 0.0D), EntitySelector.NO_CREATIVE_OR_SPECTATOR));
                      this.hurt(this.level.getEntities((Entity) this, this.head.getBoundingBox().inflate(1.0D), EntitySelector.NO_CREATIVE_OR_SPECTATOR));
-@@ -365,7 +451,7 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -365,7 +452,7 @@ public class EnderDragon extends Mob implements Enemy {
                  }
  
                  if (!this.level.isClientSide) {
@@ -10271,7 +10275,7 @@ index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d
                      if (this.dragonFight != null) {
                          this.dragonFight.updateDragon(this);
                      }
-@@ -497,7 +583,7 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -497,7 +584,7 @@ public class EnderDragon extends Mob implements Enemy {
                      BlockState iblockdata = this.level.getBlockState(blockposition);
  
                      if (!iblockdata.isAir() && !iblockdata.is(BlockTags.DRAGON_TRANSPARENT)) {
@@ -10280,7 +10284,7 @@ index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d
                              // CraftBukkit start - Add blocks to list rather than destroying them
                              // flag1 = this.level.removeBlock(blockposition, false) || flag1;
                              flag1 = true;
-@@ -632,7 +718,7 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -632,7 +719,7 @@ public class EnderDragon extends Mob implements Enemy {
          boolean flag = this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT);
          short short0 = 500;
  
@@ -10289,7 +10293,7 @@ index c7caaebfb4b9f28cbe700d88fdcf232a500e8ca7..61fe1d1c3142a6670dc74c4fb13baa9d
              short0 = 12000;
          }
  
-@@ -1069,6 +1155,7 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -1069,6 +1156,7 @@ public class EnderDragon extends Mob implements Enemy {
  
      @Override
      protected boolean canRide(Entity entity) {
