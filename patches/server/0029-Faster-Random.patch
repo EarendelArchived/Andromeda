@@ -33,18 +33,18 @@ index e5ea9f27a1936ed9e329e74317c91c5df89b9fbd..0f56142b967de425a70106e204b3cdf4
      private long lastFill = -1;
      private long nextRefill = -1;
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index c5175ba257b51170a5cff984ccb65df73443e1df..5da6b3d53ef3083147dc67c788fce66ec74b48dc 100644
+index c5175ba257b51170a5cff984ccb65df73443e1df..a75bb4e5bcfc9172ac77022f4d18d62aa9e6b61a 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -89,6 +89,8 @@ public class Main {
-                 | $$  | $$| $$ \\  $$| $$$$$$$/| $$  | $$|  $$$$$$/| $$ \\/  | $$| $$$$$$$$| $$$$$$$/| $$  | $$
-                 |__/  |__/|__/  \\__/|_______/ |__/  |__/ \\______/ |__/     |__/|________/|_______/ |__/  |__/
-                 """);
-+        if (!Boolean.getBoolean("Andromeda.UseJavaRandom"))
-+            LOGGER.info("Using faster random instance, if you want to use Java's random, add \"-DAndromeda.UseJavaRandom=true\" to your server startup flags, IN FRONT OF the \"-jar\"");
-         // Andromeda end
-         SharedConstants.tryDetectVersion();
-         /* CraftBukkit start - Replace everything
+@@ -172,6 +172,8 @@ public class Main {
+                 return;
+             }
+ 
++            if (!Boolean.getBoolean("Andromeda.UseJavaRandom")) LOGGER.info("Using faster random instance, if you want to use Java's random, add \"-DAndromeda.UseJavaRandom=true\" to your server startup flags, IN FRONT OF the \"-jar\""); // Andromeda
++
+             // Paper start - Warn on headless
+             String awtException = io.papermc.paper.util.ServerEnvironment.awtDependencyCheck();
+             if (awtException != null) {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
 index de0eb5a673b873e402cb4290f0c67a8f18660860..84f1cdf6e4f368705547d4c5eb027c84b8f130e4 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
