@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 17:57:05 +0900
+Subject: [PATCH] A Cursed Option
+
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index dcf62e3422144a0a70006b942a5c7ea1d4af0b43..343eec9490b6f46341c376f97519229ed945e1fe 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1334,6 +1334,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     // CraftBukkit end
+ 
+     protected void waitUntilNextTick() {
++        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().misc.unsupportedSettings.cursed.disableTPSLimit) return; // Andromeda - CURSED
+         //this.executeAll(); // Paper - move this into the tick method for timings
+         this.managedBlock(() -> {
+             return !this.canSleepForTickNoOversleep(); // Paper - move oversleep into full server tick
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index 14b7caae01cd64c12b0df4de10f21ea7c085042c..2adf2403d9bb21e82eaa26c677582576a4332371 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -91,4 +91,19 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+     }
+ 
++    public Misc misc;
++    public class Misc extends ConfigurationPart {
++
++        public UnsupportedSettings unsupportedSettings;
++        public class UnsupportedSettings extends ConfigurationPart {
++
++            public Cursed cursed;
++            public class Cursed extends ConfigurationPart {
++                public boolean disableTPSLimit = false;
++            }
++
++        }
++
++    }
++
+ }

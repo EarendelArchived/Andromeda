@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Thu, 22 Dec 2022 20:52:01 +0900
+Subject: [PATCH] Add option to configure portal size
+
+
+diff --git a/src/main/java/net/minecraft/world/level/portal/PortalShape.java b/src/main/java/net/minecraft/world/level/portal/PortalShape.java
+index e7554ec800f321e4e34c926c53f2375a8c3aa979..f92d9ab174d4cdbe09d65758931a0f0731e684c3 100644
+--- a/src/main/java/net/minecraft/world/level/portal/PortalShape.java
++++ b/src/main/java/net/minecraft/world/level/portal/PortalShape.java
+@@ -100,7 +100,7 @@ public class PortalShape {
+     private int calculateWidth() {
+         int i = this.getDistanceUntilEdgeAboveFrame(this.bottomLeft, this.rightDir);
+ 
+-        return i >= 2 && i <= 21 ? i : 0;
++        return i >= this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.minimumWidth() && (this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.maximumWidth() == -1 || i <= this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.maximumWidth()) ? i : 0; // Andromeda
+     }
+ 
+     private int getDistanceUntilEdgeAboveFrame(BlockPos pos, Direction direction) {
+@@ -133,7 +133,7 @@ public class PortalShape {
+         BlockPos.MutableBlockPos blockposition_mutableblockposition = new BlockPos.MutableBlockPos();
+         int i = this.getDistanceUntilTop(blockposition_mutableblockposition);
+ 
+-        return i >= 3 && i <= 21 && this.hasTopFrame(blockposition_mutableblockposition, i) ? i : 0;
++        return i >= this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.minimumHeight() && (this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.maximunHeight() == -1 || i <= this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.maximunHeight()) && this.hasTopFrame(blockposition_mutableblockposition, i) ? i : 0; // Andromeda
+     }
+ 
+     private boolean hasTopFrame(BlockPos.MutableBlockPos pos, int height) {
+@@ -187,7 +187,15 @@ public class PortalShape {
+     }
+ 
+     public boolean isValid() {
+-        return this.bottomLeft != null && this.width >= 2 && this.width <= 21 && this.height >= 3 && this.height <= 21;
++        // Andromeda start
++        boolean i = this.width >= this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.minimumWidth()
++                && (this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.maximumWidth() == -1
++                || this.width <= this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.maximumWidth());
++        boolean j = this.height >= this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.minimumHeight()
++                && (this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.maximunHeight() == -1
++                || this.width <= this.level.getMinecraftWorld().andromedaLevelConfiguration().portal.netherPortal.maximunHeight());
++        return this.bottomLeft != null && i && j;
++        // Andromeda end
+     }
+ 
+     // CraftBukkit start - return boolean
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index a76d86c797dd1e5e2469aa4fef8e1e804ec403ff..00a61572df804073c78300fbd034461e9058c03c 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -27,4 +27,19 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+     @Setting(Configuration.VERSION_FIELD)
+     public int version = CURRENT_VERSION;
++
++    public Portal portal;
++    public class Portal extends ConfigurationPart {
++
++        public NetherPortal netherPortal;
++        public class NetherPortal extends ConfigurationPart {
++
++            public int minimumWidth = 2; public int minimumWidth() { return Math.max(this.minimumWidth, 1); }
++            public int minimumHeight = 3; public int minimumHeight() { return Math.max(this.minimumHeight, 2); }
++            public int maximumWidth = 21; public int maximumWidth() { return Math.max(this.maximumWidth, this.minimumWidth); }
++            public int maximunHeight = 21; public int maximunHeight() { return Math.max(this.maximunHeight, this.minimumHeight); }
++
++        }
++
++    }
+ }

@@ -1,0 +1,70 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 24 Dec 2022 19:03:29 +0900
+Subject: [PATCH] Add option to configure snowball & egg knockback
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
+index c7c10c89871a3ee6d21da4bb19407a68759b3ade..1b4cc464ffc0cd245a8398c20ead210520e198e5 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
+@@ -54,6 +54,12 @@ public class Snowball extends ThrowableItemProjectile {
+     protected void onHitEntity(EntityHitResult entityHitResult) {
+         super.onHitEntity(entityHitResult);
+         Entity entity = entityHitResult.getEntity();
++        // Andromeda start
++        if (!this.level.andromedaLevelConfiguration().projectile.snowball.knockbackOnlyPlayers || (entity instanceof net.minecraft.server.level.ServerPlayer && !((net.minecraft.server.level.ServerPlayer) entity).getAbilities().invulnerable)) {
++            entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().normalize().multiply(this.level.andromedaLevelConfiguration().projectile.snowball.knockback, this.level.andromedaLevelConfiguration().projectile.snowball.knockback, this.level.andromedaLevelConfiguration().projectile.snowball.knockback)));
++            entity.hurtMarked = true;
++        }
++        // Andromeda end
+         int i = entity.level.purpurConfig.snowballDamage >= 0 ? entity.level.purpurConfig.snowballDamage : entity instanceof Blaze ? 3 : 0; // Purpur
+         entity.hurt(DamageSource.thrown(this, this.getOwner()), (float)i);
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java b/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
+index bdddec9510d84c8940b6116ede389bcac3680ab1..fc02c8edbda1719f219c2cb1d2cd5a3da0d5ea44 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
+@@ -46,7 +46,13 @@ public class ThrownEgg extends ThrowableItemProjectile {
+     @Override
+     protected void onHitEntity(EntityHitResult entityHitResult) {
+         super.onHitEntity(entityHitResult);
+-        entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), 0.0F);
++        // Andromeda start
++        if (!this.level.andromedaLevelConfiguration().projectile.egg.knockbackOnlyPlayers || (entityHitResult.getEntity() instanceof ServerPlayer && !((ServerPlayer) entityHitResult.getEntity()).getAbilities().invulnerable)) {
++            entityHitResult.getEntity().setDeltaMovement(entityHitResult.getEntity().getDeltaMovement().add(this.getDeltaMovement().normalize().multiply(this.level.andromedaLevelConfiguration().projectile.egg.knockback, this.level.andromedaLevelConfiguration().projectile.egg.knockback, this.level.andromedaLevelConfiguration().projectile.egg.knockback)));
++            entityHitResult.getEntity().hurtMarked = true;
++        }
++        if (!this.level.andromedaLevelConfiguration().projectile.egg.damageOnlyPlayers || entityHitResult.getEntity() instanceof ServerPlayer) entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), this.level.andromedaLevelConfiguration().projectile.egg.damage);
++        // Andromeda end
+     }
+ 
+     @Override
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index a5b8ec1fa0ecd8d4856851a0c4b0ac291a29f942..481dd6d0377988b17a1bef1c51d103f961c5ea87 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -54,4 +54,23 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+     }
+ 
++    public Projectile projectile;
++    public class Projectile extends ConfigurationPart {
++
++        public Egg egg;
++        public class Egg extends ConfigurationPart {
++            public float knockback = 0.0f;
++            public boolean knockbackOnlyPlayers = false;
++            public float damage = 0.0f;
++            public boolean damageOnlyPlayers = false;
++        }
++
++        public Snowball snowball;
++        public class Snowball extends ConfigurationPart {
++            public float knockback = 0.0f;
++            public boolean knockbackOnlyPlayers = false;
++        }
++
++    }
++
+ }
