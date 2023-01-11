@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 17:57:05 +0900
+Subject: [PATCH] A Cursed Option
+
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index f01c74653b8e1e0a9b280094ff279defdac64508..dd72e94d94ae843f8cca56ce8c99c3b8b16b7474 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1329,6 +1329,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     // CraftBukkit end
+ 
+     protected void waitUntilNextTick() {
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.disableTPSLimit) return; // Andromeda - CURSED
+         //this.executeAll(); // Paper - move this into the tick method for timings
+         this.managedBlock(() -> {
+             return !this.canSleepForTickNoOversleep(); // Paper - move oversleep into full server tick
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+index 2670458fccbcd8f9ccdbfba6557d6b952d65f660..ed24824c1d5e1c6d40a6904f8ffc207fbe6d520b 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+@@ -215,7 +215,9 @@ public class AndromedaConfiguration {
+     }
+ 
+     public static boolean JUST_DONT_TICK = false;
++    public static boolean disableTPSLimit = false;
+     private static void cursedSettings() {
+         JUST_DONT_TICK = getBoolean("options.unsupported-settings.cursed.just-dont-tick", JUST_DONT_TICK);
++        disableTPSLimit = getBoolean("options.unsupported-settings.cursed.disable-tps-limit", disableTPSLimit);
+     }
+ }

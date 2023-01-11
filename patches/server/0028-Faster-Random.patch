@@ -46,10 +46,10 @@ index c5175ba257b51170a5cff984ccb65df73443e1df..a75bb4e5bcfc9172ac77022f4d18d62a
              String awtException = io.papermc.paper.util.ServerEnvironment.awtDependencyCheck();
              if (awtException != null) {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index de0eb5a673b873e402cb4290f0c67a8f18660860..84f1cdf6e4f368705547d4c5eb027c84b8f130e4 100644
+index d61686a4add9181005fdb673eb68884f738cdb59..89101b79dfc787450152b9f55a666267681f7459 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -691,7 +691,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -689,7 +689,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              ChunkPos chunkcoordintpair = new ChunkPos(chunkproviderserver.randomState().sampler().findSpawnPosition());
              // CraftBukkit start
              if (world.generator != null) {
@@ -60,7 +60,7 @@ index de0eb5a673b873e402cb4290f0c67a8f18660860..84f1cdf6e4f368705547d4c5eb027c84
  
                  if (spawn != null) {
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 1d3c9cfdea9b606f47b7783bdf3064adfd796467..37ca8e7772dd6f6a76779ee103b54a3ce55527e1 100644
+index 01e0b400f4cc144c5eb8c573d86ffcfed99d4f72..8d6437b923f2f3e7ba53ecea425d8f2af795c9e6 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -49,7 +49,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,

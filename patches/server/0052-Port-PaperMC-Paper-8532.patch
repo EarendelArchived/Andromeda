@@ -22,7 +22,7 @@ index 434f229c9e67c4ca459ab612345a1754d8be9780..ebf9370f218ddd66434213c8eeff5d64
          } else if (this == MobEffects.WITHER) {
              entity.hurt(DamageSource.WITHER, entity.level.purpurConfig.entityWitherDegenerationAmount); // Purpur
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index c623f36c7628ebfcff0915d7c34757a39048475e..fc8fc62c9062747342a0b63abcdc02b8292a5fe1 100644
+index 8241dc78f9aaa085657bd9e44cf54b1b6bde71fe..44520492a304d66697b4a7fca53902d6dc95f805 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -397,6 +397,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {

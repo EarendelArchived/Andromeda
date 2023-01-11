@@ -18,7 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 0. You just DO WHAT THE F**K YOU WANT TO.
 
 diff --git a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatPacket.java b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatPacket.java
-index d1d2fc0c57523c1abf1e8bfec913c78927c3dafc..7876c3ceb0ece2f422a74441566691b7e0270903 100644
+index d1d2fc0c57523c1abf1e8bfec913c78927c3dafc..a19e2902778106d4cfa163e24dae63d622b5d412 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatPacket.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatPacket.java
 @@ -25,4 +25,12 @@ public record ServerboundChatPacket(String message, Instant timeStamp, long salt
@@ -29,13 +29,13 @@ index d1d2fc0c57523c1abf1e8bfec913c78927c3dafc..7876c3ceb0ece2f422a74441566691b7
 +    // Andromeda start
 +    @Nullable
 +    public MessageSignature signature() {
-+        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.enabled) return null;
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.enableNoChatReports) return null;
 +        return this.signature;
 +    }
 +    // Andromeda end
  }
 diff --git a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatSessionUpdatePacket.java b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatSessionUpdatePacket.java
-index 9d6db4a378036559efab91c8b7dcf2a6b0c2cce6..afc5bdb5d8f524fa21cb74f53f3f8f79cb3b08a4 100644
+index 9d6db4a378036559efab91c8b7dcf2a6b0c2cce6..bedfd2870cf474934c160e99f57a16be22c4adb5 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatSessionUpdatePacket.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatSessionUpdatePacket.java
 @@ -16,6 +16,16 @@ public record ServerboundChatSessionUpdatePacket(RemoteChatSession.Data chatSess
@@ -43,11 +43,11 @@ index 9d6db4a378036559efab91c8b7dcf2a6b0c2cce6..afc5bdb5d8f524fa21cb74f53f3f8f79
      @Override
      public void handle(ServerGamePacketListener listener) {
 +        // Andromeda start
-+        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.enabled) {
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.enableNoChatReports) {
 +            var impl = (net.minecraft.server.network.ServerGamePacketListenerImpl) listener;
 +            if (!impl.getPlayer().getServer().isSingleplayerOwner(impl.getPlayer().getGameProfile())) {
-+                if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.demandOnClient.enabled) {
-+                    impl.disconnect(team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.demandOnClient.message, org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED);
++                if (team.earendel.andromeda.configurations.AndromedaConfiguration.NCRDemandOnClient) {
++                    impl.disconnect(net.minecraft.network.chat.Component.literal(team.earendel.andromeda.configurations.AndromedaConfiguration.NCRDemandOnClientMessage), org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED);
 +                }
 +            }
 +        }
@@ -56,14 +56,14 @@ index 9d6db4a378036559efab91c8b7dcf2a6b0c2cce6..afc5bdb5d8f524fa21cb74f53f3f8f79
      }
  }
 diff --git a/src/main/java/net/minecraft/network/protocol/status/ServerStatus.java b/src/main/java/net/minecraft/network/protocol/status/ServerStatus.java
-index 6e0a3086da142f1c42007a16bbec7edbab17da04..4bb5b01439ed1822c7db765391249628d7158348 100644
+index 6e0a3086da142f1c42007a16bbec7edbab17da04..96448f1d5f799c076251ac82ecd920ec386484f8 100644
 --- a/src/main/java/net/minecraft/network/protocol/status/ServerStatus.java
 +++ b/src/main/java/net/minecraft/network/protocol/status/ServerStatus.java
 @@ -69,6 +69,7 @@ public class ServerStatus {
      }
  
      public boolean enforcesSecureChat() {
-+        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.enabled && team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.convertToGameMessage) return true;
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.enableNoChatReports && team.earendel.andromeda.configurations.AndromedaConfiguration.NCRConvertToGameMessage) return true;
          return this.enforcesSecureChat;
      }
  
@@ -72,7 +72,7 @@ index 6e0a3086da142f1c42007a16bbec7edbab17da04..4bb5b01439ed1822c7db765391249628
              }
  
 +            // Andromeda start
-+            if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.enabled && team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.addQueryData)
++            if (team.earendel.andromeda.configurations.AndromedaConfiguration.enableNoChatReports && team.earendel.andromeda.configurations.AndromedaConfiguration.NCRAddQueryData)
 +                jsonObject.addProperty("preventsChatReports", true);
 +            // Andromeda end
 +
@@ -80,19 +80,19 @@ index 6e0a3086da142f1c42007a16bbec7edbab17da04..4bb5b01439ed1822c7db765391249628
          }
      }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 148aa2de79ed515532b255404c0dc44ec15c8602..feb340869b744310fdda04276806519bfc7b193c 100644
+index cd065947249a83498c072ac0e01832005aa535e5..ba03b8ab812f096511662855cf1477166e84a956 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -678,6 +678,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -682,6 +682,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
  
      @Override
      public boolean enforceSecureProfile() {
-+        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.enabled) return false; // Andromeda - Implement No Chat Reports
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.enableNoChatReports) return false; // Andromeda - Implement No Chat Reports
          return this.getProperties().enforceSecureProfile && this.getProperties().onlineMode;
      }
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 35648444cb2044a18dfb5637ebbdd4c38d5d3399..3951481cee311002714d68bd4b979c78d3f6e6c9 100644
+index 5cdb98d1d984a565c4cb5fd2e722069f447c45b7..0f4d819d2f62de51c75aa27e4d9c66ad85890b57 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2231,10 +2231,36 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -100,11 +100,11 @@ index 35648444cb2044a18dfb5637ebbdd4c38d5d3399..3951481cee311002714d68bd4b979c78
      @Override
      public void send(Packet<?> packet) {
 +        // Andromeda start
-+        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.enabled && packet instanceof ClientboundPlayerChatPacket chat) {
-+            if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.debug)
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.enableNoChatReports && packet instanceof ClientboundPlayerChatPacket chat) {
++            if (team.earendel.andromeda.configurations.AndromedaConfiguration.NCRDebug)
 +                LOGGER.info("Sending message: {}", chat.unsignedContent() != null ? chat.unsignedContent() : chat.body().content());
 +
-+            if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.convertToGameMessage) {
++            if (team.earendel.andromeda.configurations.AndromedaConfiguration.NCRConvertToGameMessage) {
 +                packet = new ClientboundSystemChatPacket(
 +                        chat.chatType().resolve(this.player.level.registryAccess())
 +                                .get().decorate(chat.unsignedContent() != null ? chat.unsignedContent() : Component.literal(chat.body().content())), false);
@@ -118,11 +118,11 @@ index 35648444cb2044a18dfb5637ebbdd4c38d5d3399..3951481cee311002714d68bd4b979c78
  
      public void send(Packet<?> packet, @Nullable PacketSendListener callbacks) {
 +        // Andromeda start
-+        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.enabled && packet instanceof ClientboundPlayerChatPacket chat) {
-+            if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.debug)
++        if (packet instanceof ClientboundPlayerChatPacket chat) {
++            if (team.earendel.andromeda.configurations.AndromedaConfiguration.NCRDebug)
 +                LOGGER.info("Sending message: {}", chat.unsignedContent() != null ? chat.unsignedContent() : chat.body().content());
 +
-+            if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.convertToGameMessage) {
++            if (team.earendel.andromeda.configurations.AndromedaConfiguration.NCRConvertToGameMessage) {
 +                this.send(chat);
 +                return;
 +            }
@@ -133,47 +133,38 @@ index 35648444cb2044a18dfb5637ebbdd4c38d5d3399..3951481cee311002714d68bd4b979c78
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index bb2d07a2b08d4dae000f3f013cdd559538a1a896..a93e7140f8b7b1f93dfb4e275534e5ac7ab54a3e 100644
+index bb2d07a2b08d4dae000f3f013cdd559538a1a896..c71d6655b63aa27eb4043d60385a2e737f5c2631 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -1448,6 +1448,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(PlayerChatMessage message) { // Paper - private -> public
-+        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.enabled) return true; // Andromeda - Implement No Chat Reports
++        if (team.earendel.andromeda.configurations.AndromedaConfiguration.enableNoChatReports) return true; // Andromeda - Implement No Chat Reports
          return message.hasSignature() && !message.hasExpiredServer(Instant.now());
      }
  
-diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index bba22602522394da88d11f19e14a2dd7d45a0ec1..db0f5ac6520b008aa05506549ff5b2cf70a12610 100644
---- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-+++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -2,6 +2,7 @@ package team.earendel.andromeda.configurations;
- 
- import io.papermc.paper.configuration.Configuration;
- import io.papermc.paper.configuration.ConfigurationPart;
-+import net.kyori.adventure.text.Component;
- import org.spongepowered.configurate.objectmapping.meta.Setting;
- 
- @SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
-@@ -60,4 +61,20 @@ public class GlobalConfiguration extends ConfigurationPart {
-         }
- 
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+index 24c9fa54c31fc47ce4db88878c29d02c1c6a1f95..440d5417bf9fc271779fad4c365a947a12459bf8 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+@@ -191,4 +191,19 @@ public class AndromedaConfiguration {
+     private static void attributeSettings() {
+         armorAttributeLimit = (float) getDouble("options.attributes.armor-limit", armorAttributeLimit);
      }
 +
-+    public NoChatReports noChatReports;
-+    public class NoChatReports extends ConfigurationPart {
-+
-+        public boolean enabled = false;
-+        public boolean debug = false;
-+        public boolean convertToGameMessage = false;
-+        public boolean addQueryData = false;
-+
-+        public DemandOnClient demandOnClient;
-+        public class DemandOnClient extends ConfigurationPart {
-+            public boolean enabled = false;
-+            public Component message = Component.text("You do not have No Chat Reports, and this server is configured to require it on client!");
-+        }
-+
++    public static boolean enableNoChatReports = false;
++    public static boolean NCRConvertToGameMessage = false;
++    public static boolean NCRAddQueryData = true;
++    public static boolean NCRDemandOnClient = false;
++    public static String NCRDemandOnClientMessage = "You do not have No Chat Reports, and this server is configured to require it on client!";
++    public static boolean NCRDebug = false;
++    private static void noChatReports() {
++        enableNoChatReports = getBoolean("options.ports.no-chat-reports.enabled", enableNoChatReports);
++        NCRDebug = getBoolean("options.ports.no-chat-reports.debug", NCRDebug);
++        NCRConvertToGameMessage = getBoolean("options.ports.no-chat-reports.convert-to-game-message", NCRConvertToGameMessage);
++        NCRAddQueryData = getBoolean("options.ports.no-chat-reports.add-query-data", NCRAddQueryData);
++        NCRDemandOnClient = getBoolean("options.ports.no-chat-reports.demand-on-client", NCRDemandOnClient);
++        NCRDemandOnClientMessage = getString("options.ports.no-chat-reports.demand-on-client-message", NCRDemandOnClientMessage);
 +    }
  }

@@ -6,7 +6,7 @@ Subject: [PATCH] Add configuration to disable moved to quickly check for
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a8e205af936efe0909c94575e3b7f8ca50cead2f..35648444cb2044a18dfb5637ebbdd4c38d5d3399 100644
+index be44d43ee9b5fec44f1b3cb27e7180ba370f6de7..6b1acc83de926948620769759bbe023673e70b11 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1531,7 +1531,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -14,23 +14,21 @@ index a8e205af936efe0909c94575e3b7f8ca50cead2f..35648444cb2044a18dfb5637ebbdd4c3
                                  float f2 = this.player.isFallFlying() ? 300.0F : 100.0F;
  
 -                                if (d11 - d10 > Math.max(f2, Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2)) && !this.isSingleplayerOwner()) {
-+                                if (d11 - d10 > Math.max(f2, Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2)) && !this.isSingleplayerOwner() && (this.player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR && this.player.getLevel().andromedaLevelConfiguration().player.checkSpectatorMovedToQuickly)) { // Andromeda
++                                if (d11 - d10 > Math.max(f2, Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2)) && !this.isSingleplayerOwner() && (this.player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR && this.player.level.andromedaWorldConfiguration.checkSpectatorMovedToQuickly)) { // Andromeda
                                  // CraftBukkit end
                                      ServerGamePacketListenerImpl.LOGGER.warn("{} moved too quickly! {},{},{}", new Object[]{this.player.getName().getString(), d7, d8, d9});
                                      this.teleport(this.player.getX(), this.player.getY(), this.player.getZ(), this.player.getYRot(), this.player.getXRot());
-diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 481dd6d0377988b17a1bef1c51d103f961c5ea87..8265845110fa9472b5a528d1075fbcab14e6ae1c 100644
---- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-+++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -73,4 +73,11 @@ public class LevelConfigurations extends ConfigurationPart {
- 
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+index 2dad18c781b84dd8f823515641f60e1f920b6778..5e6c9f8034280bd2ac9c8fb98a68a976646ed709 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+@@ -112,4 +112,9 @@ public class AndromedaWorldConfiguration {
+         snowballKnockback = (float) getDouble("entity.snowball.knockback.value", snowballKnockback);
+         snowballKnockbackOnlyPlayers = getBoolean("entity.snowball.knockback.only-players", snowballKnockbackOnlyPlayers);
      }
- 
-+    public Player player;
-+    public class Player extends ConfigurationPart {
 +
-+        public boolean checkSpectatorMovedToQuickly = true;
-+
++    public boolean checkSpectatorMovedToQuickly = true;
++    private void spectatorSettings() {
++        checkSpectatorMovedToQuickly = getBoolean("spectator.check-moved-to-quickly", checkSpectatorMovedToQuickly);
 +    }
-+
  }

@@ -46,13 +46,13 @@ index 5968c3b2c9e4871691ba9a090ea14122023fe48c..af7e769755d2897226730025aee55287
                      return null;
                  }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index caa4e27f02274107402c3b250ad41d9a5ea8b9eb..dc7856282236a6352240639f8332a6c2fca6ce72 100644
+index 6bde9706c48030fa6b2b92f9376eaa8cb945682c..123f4bb857483b3f6e31acd49739a8f40c4d8fd3 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2237,9 +2237,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                  LOGGER.info("Sending message: {}", chat.unsignedContent() != null ? chat.unsignedContent() : chat.body().content());
  
-             if (team.earendel.andromeda.configurations.GlobalConfiguration.get().noChatReports.convertToGameMessage) {
+             if (team.earendel.andromeda.configurations.AndromedaConfiguration.NCRConvertToGameMessage) {
 -                packet = new ClientboundSystemChatPacket(
 -                        chat.chatType().resolve(this.player.level.registryAccess())
 -                                .get().decorate(chat.unsignedContent() != null ? chat.unsignedContent() : Component.literal(chat.body().content())), false);

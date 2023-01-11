@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 0ec4cb1c721b85b25ba0f4eac48e8d13113441f0..c623f36c7628ebfcff0915d7c34757a39048475e 100644
+index 0ec4cb1c721b85b25ba0f4eac48e8d13113441f0..8241dc78f9aaa085657bd9e44cf54b1b6bde71fe 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -399,6 +399,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -41,7 +41,7 @@ index 0ec4cb1c721b85b25ba0f4eac48e8d13113441f0..c623f36c7628ebfcff0915d7c34757a3
  
      public void move(MoverType movementType, Vec3 movement) {
 +        // Andromeda start - Port VMP
-+        if (!boundingBoxChanged && movement.equals(Vec3.ZERO) && this.level.andromedaLevelConfiguration().veryManyPlayers.skipEntityMoveIfNoMovement) {
++        if (!boundingBoxChanged && movement.equals(Vec3.ZERO)) {
 +            boundingBoxChanged = false;
 +            return;
 +        }
@@ -53,21 +53,21 @@ index 0ec4cb1c721b85b25ba0f4eac48e8d13113441f0..c623f36c7628ebfcff0915d7c34757a3
      }
  
      public final void setBoundingBox(AABB boundingBox) {
-+        if (!this.bb.equals(boundingBox) && this.level.andromedaLevelConfiguration().veryManyPlayers.skipEntityMoveIfNoMovement) boundingBoxChanged = true; // Andromeda - Port VMP
++        if (!this.bb.equals(boundingBox)) boundingBoxChanged = true; // Andromeda - Port VMP
          // CraftBukkit start - block invalid bounding boxes
          double minX = boundingBox.minX,
                  minY = boundingBox.minY,
-diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 8265845110fa9472b5a528d1075fbcab14e6ae1c..9d2f0aac4f18ae54588994e66867d03c26d93a9a 100644
---- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-+++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -80,4 +80,9 @@ public class LevelConfigurations extends ConfigurationPart {
- 
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+index 5e6c9f8034280bd2ac9c8fb98a68a976646ed709..4949a69fd8098d5187bcc03789a8555ff23f03ae 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+@@ -117,4 +117,9 @@ public class AndromedaWorldConfiguration {
+     private void spectatorSettings() {
+         checkSpectatorMovedToQuickly = getBoolean("spectator.check-moved-to-quickly", checkSpectatorMovedToQuickly);
      }
- 
-+    public VeryManyPlayers veryManyPlayers;
-+    public class VeryManyPlayers extends ConfigurationPart {
-+        public boolean skipEntityMoveIfNoMovement = true;
-+    }
 +
++    public boolean skipEntityMoveIfNoMovement = true;
++    private void veryManyPlayers() {
++        skipEntityMoveIfNoMovement = getBoolean("ports.very-many-players.skip-entity-move-if-no-movement", skipEntityMoveIfNoMovement);
++    }
  }

@@ -1,1004 +1,424 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@outlook.com>
-Date: Wed, 11 Jan 2023 02:24:51 +0900
+Date: Thu, 22 Dec 2022 20:05:01 +0900
 Subject: [PATCH] Andromeda Configurations
 
 
-diff --git a/src/main/java/io/papermc/paper/configuration/ConfigurationPart.java b/src/main/java/io/papermc/paper/configuration/ConfigurationPart.java
-index 7a4a7a654fe2516ed894a68f2657344df9d70f4c..954e8f8d6bac0a990f5554f3b26697f8d5c4dcd4 100644
---- a/src/main/java/io/papermc/paper/configuration/ConfigurationPart.java
-+++ b/src/main/java/io/papermc/paper/configuration/ConfigurationPart.java
-@@ -1,6 +1,6 @@
- package io.papermc.paper.configuration;
- 
--abstract class ConfigurationPart {
-+public abstract class ConfigurationPart { // Andromeda - package -> public
- 
-     public static abstract class Post extends ConfigurationPart {
- 
-diff --git a/src/main/java/io/papermc/paper/configuration/Configurations.java b/src/main/java/io/papermc/paper/configuration/Configurations.java
-index c2dca89291361d60cbf160cab77749cb0130035a..4c48dcfb82eade62f6464d834c914d1e47d23db0 100644
---- a/src/main/java/io/papermc/paper/configuration/Configurations.java
-+++ b/src/main/java/io/papermc/paper/configuration/Configurations.java
-@@ -88,7 +88,7 @@ public abstract class Configurations<G, W> {
-         };
-     }
- 
--    static <T> CheckedFunction<ConfigurationNode, T, SerializationException> reloader(Class<T> type, T instance) {
-+    public static <T> CheckedFunction<ConfigurationNode, T, SerializationException> reloader(Class<T> type, T instance) { // Andromeda - package -> public
-         return node -> {
-             ObjectMapper.Factory factory = (ObjectMapper.Factory) Objects.requireNonNull(node.options().serializers().get(type));
-             ObjectMapper.Mutable<T> mutable = (ObjectMapper.Mutable<T>) factory.get(type);
-@@ -148,7 +148,7 @@ public abstract class Configurations<G, W> {
-         final YamlConfigurationLoader loader = result.loader();
-         final ConfigurationNode node = loader.load();
-         if (result.isNewFile()) { // add version to new files
--            node.node(Configuration.VERSION_FIELD).raw(WorldConfiguration.CURRENT_VERSION);
-+            node.node(Configuration.VERSION_FIELD).raw(getWorldConfigurationCurrentVersion()); // Andromeda
-         }
-         this.applyWorldConfigTransformations(contextMap, node);
-         final W instance = node.require(this.worldConfigClass);
-@@ -207,7 +207,7 @@ public abstract class Configurations<G, W> {
-             .build();
-         final ConfigurationNode worldNode = worldLoader.load();
-         if (newFile) { // set the version field if new file
--            worldNode.node(Configuration.VERSION_FIELD).set(WorldConfiguration.CURRENT_VERSION);
-+            worldNode.node(Configuration.VERSION_FIELD).set(getWorldConfigurationCurrentVersion()); // Andromeda
-         }
-         this.applyWorldConfigTransformations(contextMap, worldNode);
-         this.applyDefaultsAwareWorldConfigTransformations(contextMap, worldNode, defaultsNode);
-@@ -308,4 +308,19 @@ public abstract class Configurations<G, W> {
-             return "ContextKey{" + this.name + "}";
-         }
-     }
-+
-+    // Andromeda start
-+    @Deprecated
-+    public org.bukkit.configuration.file.YamlConfiguration createLegacyObject(final net.minecraft.server.MinecraftServer server) {
-+        org.bukkit.configuration.file.YamlConfiguration global = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(this.globalFolder.resolve(this.globalConfigFileName).toFile());
-+        org.bukkit.configuration.ConfigurationSection worlds = global.createSection("__________WORLDS__________");
-+        worlds.set("__defaults__", org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(this.globalFolder.resolve(this.defaultWorldConfigFileName).toFile()));
-+        for (ServerLevel level : server.getAllLevels()) {
-+            worlds.set(level.getWorld().getName(), org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(getWorldConfigFile(level).toFile()));
-+        }
-+        return global;
-+    }
-+
-+    protected abstract int getWorldConfigurationCurrentVersion();
-+    // Andromeda end
- }
-diff --git a/src/main/java/io/papermc/paper/configuration/InnerClassFieldDiscoverer.java b/src/main/java/io/papermc/paper/configuration/InnerClassFieldDiscoverer.java
-index a0aa1f1a7adf986d500a2135aa42e138aa3c4f08..576bee3f9e5ca7f101e518e38a4b29e1990ea9c9 100644
---- a/src/main/java/io/papermc/paper/configuration/InnerClassFieldDiscoverer.java
-+++ b/src/main/java/io/papermc/paper/configuration/InnerClassFieldDiscoverer.java
-@@ -17,7 +17,7 @@ import java.util.Map;
- 
- import static io.leangen.geantyref.GenericTypeReflector.erase;
- 
--final class InnerClassFieldDiscoverer implements FieldDiscoverer<Map<Field, Object>> {
-+public final class InnerClassFieldDiscoverer implements FieldDiscoverer<Map<Field, Object>> { // Andromeda - package -> public
- 
-     private final Map<Class<?>, Object> instanceMap = new HashMap<>();
-     private final Map<Class<?>, Object> overrides;
-@@ -136,7 +136,20 @@ final class InnerClassFieldDiscoverer implements FieldDiscoverer<Map<Field, Obje
-         return new InnerClassFieldDiscoverer(overrides);
-     }
- 
--    static FieldDiscoverer<?> globalConfig() {
-+    public static FieldDiscoverer<?> globalConfig() { // Andromeda - package -> public
-         return new InnerClassFieldDiscoverer(Collections.emptyMap());
-     }
-+
-+    // Andromeda start
-+    public static FieldDiscoverer<?> andromedaLevelConfiguration(Configurations.ContextMap contextMap) {
-+        final Map<Class<?>, Object> overrides = Map.of(
-+                team.earendel.andromeda.configurations.LevelConfigurations.class,
-+                new team.earendel.andromeda.configurations.LevelConfigurations(
-+                        contextMap.require(PaperConfigurations.SPIGOT_WORLD_CONFIG_CONTEXT_KEY).get(),
-+                        contextMap.require(Configurations.WORLD_KEY)
-+                )
-+        );
-+        return new InnerClassFieldDiscoverer(overrides);
-+    }
-+    // Andromeda end
- }
-diff --git a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-index 9fde9ccb5d069ddce8dd837ef1bc68b93ce66434..dadcd45668beddc3e22fcf4353f6f13a35401d9c 100644
---- a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-+++ b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-@@ -127,13 +127,13 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
-         See https://docs.papermc.io/paper/configuration for more information.
-         """;
- 
--    private static final Supplier<SpigotWorldConfig> SPIGOT_WORLD_DEFAULTS = Suppliers.memoize(() -> new SpigotWorldConfig(RandomStringUtils.randomAlphabetic(255)) {
-+    public static final Supplier<SpigotWorldConfig> SPIGOT_WORLD_DEFAULTS = Suppliers.memoize(() -> new SpigotWorldConfig(RandomStringUtils.randomAlphabetic(255)) { // Andromeda - private -> public
-         @Override // override to ensure "verbose" is false
-         public void init() {
-             SpigotConfig.readConfig(SpigotWorldConfig.class, this);
-         }
-     });
--    static final ContextKey<Supplier<SpigotWorldConfig>> SPIGOT_WORLD_CONFIG_CONTEXT_KEY = new ContextKey<>(new TypeToken<Supplier<SpigotWorldConfig>>() {}, "spigot world config");
-+    public static final ContextKey<Supplier<SpigotWorldConfig>> SPIGOT_WORLD_CONFIG_CONTEXT_KEY = new ContextKey<>(new TypeToken<Supplier<SpigotWorldConfig>>() {}, "spigot world config"); // Andromeda - package -> public
- 
- 
-     public PaperConfigurations(final Path globalFolder) {
-@@ -297,7 +297,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
-         }
-     }
- 
--    private static ContextMap createWorldContextMap(ServerLevel level) {
-+    public static ContextMap createWorldContextMap(ServerLevel level) { // Andromeda - private -> public
-         return createWorldContextMap(level.convertable.levelDirectory.path(), level.serverLevelData.getLevelName(), level.dimension().location(), level.spigotConfig);
-     }
- 
-@@ -398,17 +398,6 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
-         return Files.exists(legacyConfig) && Files.isRegularFile(legacyConfig);
-     }
- 
--    @Deprecated
--    public YamlConfiguration createLegacyObject(final MinecraftServer server) {
--        YamlConfiguration global = YamlConfiguration.loadConfiguration(this.globalFolder.resolve(this.globalConfigFileName).toFile());
--        ConfigurationSection worlds = global.createSection("__________WORLDS__________");
--        worlds.set("__defaults__", YamlConfiguration.loadConfiguration(this.globalFolder.resolve(this.defaultWorldConfigFileName).toFile()));
--        for (ServerLevel level : server.getAllLevels()) {
--            worlds.set(level.getWorld().getName(), YamlConfiguration.loadConfiguration(getWorldConfigFile(level).toFile()));
--        }
--        return global;
--    }
--
-     @Deprecated
-     public static YamlConfiguration loadLegacyConfigFile(File configFile) throws Exception {
-         YamlConfiguration config = new YamlConfiguration();
-@@ -431,9 +420,16 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
-     }
- 
-     // Symlinks are not correctly checked in createDirectories
--    static void createDirectoriesSymlinkAware(Path path) throws IOException {
-+    public static void createDirectoriesSymlinkAware(Path path) throws IOException { // Andromeda - package -> public
-         if (!Files.isDirectory(path)) {
-             Files.createDirectories(path);
-         }
-     }
-+
-+    // Andromeda start
-+    @Override
-+    protected int getWorldConfigurationCurrentVersion() {
-+        return WorldConfiguration.CURRENT_VERSION;
-+    }
-+    // Andromeda end
- }
-diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 3325e688c6bf1bfc14569cbf9e6b1981d46cb42d..016d4bee1137cc5c41c2e83e631e5af7deeaa99a 100644
---- a/src/main/java/net/minecraft/server/MinecraftServer.java
-+++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -305,6 +305,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-     public final double[] recentTps = new double[ 4 ]; // Purpur
-     // Spigot end
-     public final io.papermc.paper.configuration.PaperConfigurations paperConfigurations;
-+    public final team.earendel.andromeda.configurations.AndromedaConfigurations andromedaConfigurations;
-     public static long currentTickLong = 0L; // Paper
-     public boolean lagging = false; // Purpur
-     protected boolean upnp = false; // Purpur
-@@ -412,6 +413,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-         // Paper end
-         Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
-         this.paperConfigurations = services.paperConfigurations(); // Paper
-+        this.andromedaConfigurations = services.andromedaConfigurations();
-     }
-     // CraftBukkit end
- 
-diff --git a/src/main/java/net/minecraft/server/Services.java b/src/main/java/net/minecraft/server/Services.java
-index ef6ff78af2ae747e939895b82ee9d11c75012dcd..9a69831c7645a00fe3b3276a82b67112f0aea5d9 100644
---- a/src/main/java/net/minecraft/server/Services.java
-+++ b/src/main/java/net/minecraft/server/Services.java
-@@ -8,10 +8,10 @@ import net.minecraft.server.players.GameProfileCache;
- import net.minecraft.util.SignatureValidator;
- 
- // Paper start
--public record Services(MinecraftSessionService sessionService, SignatureValidator serviceSignatureValidator, GameProfileRepository profileRepository, GameProfileCache profileCache, @javax.annotation.Nullable io.papermc.paper.configuration.PaperConfigurations paperConfigurations) {
-+public record Services(MinecraftSessionService sessionService, SignatureValidator serviceSignatureValidator, GameProfileRepository profileRepository, GameProfileCache profileCache, @javax.annotation.Nullable io.papermc.paper.configuration.PaperConfigurations paperConfigurations, @javax.annotation.Nullable team.earendel.andromeda.configurations.AndromedaConfigurations andromedaConfigurations) { // Andromeda
- 
-     public Services(MinecraftSessionService sessionService, SignatureValidator signatureValidator, GameProfileRepository profileRepository, GameProfileCache profileCache) {
--        this(sessionService, signatureValidator, profileRepository, profileCache, null);
-+        this(sessionService, signatureValidator, profileRepository, profileCache, null, null); // Andromeda
-     }
- 
-     @Override
-@@ -19,6 +19,14 @@ public record Services(MinecraftSessionService sessionService, SignatureValidato
-         return java.util.Objects.requireNonNull(this.paperConfigurations);
-     }
-     // Paper end
-+
-+    // Andromeda start
-+    @Override
-+    public team.earendel.andromeda.configurations.AndromedaConfigurations andromedaConfigurations() {
-+        return java.util.Objects.requireNonNull(this.andromedaConfigurations);
-+    }
-+    // Andromeda end
-+
-     public static final String USERID_CACHE_FILE = "usercache.json"; // Paper - private -> public
- 
-     public static Services create(YggdrasilAuthenticationService authenticationService, File rootDirectory, File userCacheFile, joptsimple.OptionSet optionSet) throws Exception { // Paper
-@@ -30,7 +38,12 @@ public record Services(MinecraftSessionService sessionService, SignatureValidato
-         final java.nio.file.Path legacyConfigPath = ((File) optionSet.valueOf("paper-settings")).toPath();
-         final java.nio.file.Path configDirPath = ((File) optionSet.valueOf("paper-settings-directory")).toPath();
-         io.papermc.paper.configuration.PaperConfigurations paperConfigurations = io.papermc.paper.configuration.PaperConfigurations.setup(legacyConfigPath, configDirPath, rootDirectory.toPath(), (File) optionSet.valueOf("spigot-settings"));
--        return new Services(minecraftSessionService, signatureValidator, gameProfileRepository, gameProfileCache, paperConfigurations);
-+        // Andromeda start
-+        final java.nio.file.Path legacyAndromedaConfigurationPath = ((File) optionSet.valueOf("andromeda-configurations")).toPath();
-+        final java.nio.file.Path andromedaConfigurationDirPath = ((File) optionSet.valueOf("andromeda-configurations-directory")).toPath();
-+        team.earendel.andromeda.configurations.AndromedaConfigurations andromedaConfigurations = team.earendel.andromeda.configurations.AndromedaConfigurations.setup(legacyAndromedaConfigurationPath, andromedaConfigurationDirPath);
-+        return new Services(minecraftSessionService, signatureValidator, gameProfileRepository, gameProfileCache, paperConfigurations, andromedaConfigurations);
-+        // Andromeda end
-         // Paper end
-     }
- }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 46858fb57f122033a68aeb4ad3943132a677fb46..fdcfed33902f1bcbc78556512b9f01d95f412f1b 100644
+index 46858fb57f122033a68aeb4ad3943132a677fb46..554e092c39c6ac2a6b7ee7ecb5552b46d5486f69 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -208,6 +208,10 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         io.papermc.paper.util.ObfHelper.INSTANCE.getClass(); // Paper - load mappings for stacktrace deobf and etc.
-         paperConfigurations.initializeGlobalConfiguration();
-         paperConfigurations.initializeWorldDefaultsConfiguration();
+@@ -227,6 +227,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         }
+         org.purpurmc.purpur.PurpurConfig.registerCommands();
+         // Purpur end
 +        // Andromeda start
-+        andromedaConfigurations.initializeGlobalConfiguration();
-+        andromedaConfigurations.initializeWorldDefaultsConfiguration();
++        try {
++            team.earendel.andromeda.configurations.AndromedaConfiguration.init((java.io.File) options.valueOf("andromeda-configuration"));
++        } catch (Exception e) {
++            DedicatedServer.LOGGER.error("Unable to load Andromeda configurations", e);
++            return false;
++        }
++        team.earendel.andromeda.configurations.AndromedaConfiguration.registerCommands();
 +        // Andromeda end
-         // Paper start - moved up to right after PlayerList creation but before file load/save
-         if (this.convertOldUsers()) {
-             this.getProfileCache().save(false); // Paper
-@@ -217,6 +221,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         org.spigotmc.WatchdogThread.doStart(org.spigotmc.SpigotConfig.timeoutTime, org.spigotmc.SpigotConfig.restartOnCrash);
-         thread.start(); // Paper - start console thread after MinecraftServer.console & PaperConfig are initialized
-         io.papermc.paper.command.PaperCommands.registerCommands(this);
-+        team.earendel.andromeda.commands.AndromedaCommands.registerCommands(this);
-         com.destroystokyo.paper.Metrics.PaperMetrics.startMetrics();
-         // Purpur start
-         try {
-diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index b396a329e753f42b3878736b6b14bafda02d3744..8ac8651273f1e4683512c7beab4a2029131c60ae 100644
---- a/src/main/java/net/minecraft/server/level/ServerLevel.java
-+++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -530,7 +530,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
-     public ServerLevel(MinecraftServer minecraftserver, Executor executor, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PrimaryLevelData iworlddataserver, ResourceKey<Level> resourcekey, LevelStem worlddimension, ChunkProgressListener worldloadlistener, boolean flag, long i, List<CustomSpawner> list, boolean flag1, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider) {
-         // Holder holder = worlddimension.type(); // CraftBukkit - decompile error
-         // Objects.requireNonNull(minecraftserver); // CraftBukkit - decompile error
--        super(iworlddataserver, resourcekey, worlddimension.type(), minecraftserver::getProfiler, false, flag, i, minecraftserver.getMaxChainedNeighborUpdates(), gen, biomeProvider, env, spigotConfig -> minecraftserver.paperConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig)), executor); // Paper - Async-Anti-Xray - Pass executor
-+        super(iworlddataserver, resourcekey, worlddimension.type(), minecraftserver::getProfiler, false, flag, i, minecraftserver.getMaxChainedNeighborUpdates(), gen, biomeProvider, env, spigotConfig -> minecraftserver.paperConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig)), spigotConfig -> minecraftserver.andromedaConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig)), executor); // Paper - Async-Anti-Xray - Pass executor // Andromeda
-         this.pvpMode = minecraftserver.isPvpAllowed();
-         this.convertable = convertable_conversionsession;
-         this.uuid = WorldUUID.getUUID(convertable_conversionsession.levelDirectory.path().toFile());
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
+         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
+         // Paper end
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 2e5f1a231213340bc0084ba8d3478dce9bde3606..b9562013b8d732d2b12dcb76776b197c35603138 100644
+index 2e5f1a231213340bc0084ba8d3478dce9bde3606..da85386de1f3530e3e55193b2fe634ff8c7ce0d3 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -171,7 +171,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
-         return this.paperConfig;
-     }
-     // Paper end
--
-+    // Andromeda start
-+    private final team.earendel.andromeda.configurations.LevelConfigurations andromedaLevelConfiguration;
-+    public team.earendel.andromeda.configurations.LevelConfigurations andromedaLevelConfiguration() {
-+        return this.andromedaLevelConfiguration;
-+    }
-+    // Andromeda end
+@@ -174,6 +174,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+ 
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public final org.purpurmc.purpur.PurpurWorldConfig purpurConfig; // Purpur
++    public final team.earendel.andromeda.configurations.AndromedaWorldConfiguration andromedaWorldConfiguration; // Andromeda
  
-@@ -326,9 +331,10 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
-     @Override public final int getHeight() { return this.height; }
-     // Pufferfish end
- 
--    protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - Async-Anti-Xray - Pass executor
-+    protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.function.Function<org.spigotmc.SpigotWorldConfig, team.earendel.andromeda.configurations.LevelConfigurations> andromedaLevelConfigurationCreator, java.util.concurrent.Executor executor) { // Paper - Async-Anti-Xray - Pass executor
+     public final co.aikar.timings.WorldTimingsHandler timings; // Paper
+     public static BlockPos lastPhysicsProblem; // Spigot
+@@ -330,6 +331,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper
-+        this.andromedaLevelConfiguration = andromedaLevelConfigurationCreator.apply(this.spigotConfig); // Andromeda
          this.purpurConfig = new org.purpurmc.purpur.PurpurWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Purpur
++        this.andromedaWorldConfiguration = new team.earendel.andromeda.configurations.AndromedaWorldConfiguration(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Andromeda
          this.playerBreedingCooldowns = this.getNewBreedingCooldownCache(); // Purpur
          this.generator = gen;
+         this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 88fbaf7011d322cec621b7fa66c432e26c586d34..a3ce01cdd3d4c97a0b4b1a3881f739ed70b2a7e9 100644
+index 88fbaf7011d322cec621b7fa66c432e26c586d34..42e4ccbeabb4295f5583c3458734f1d04ca7f535 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1025,6 +1025,7 @@ public final class CraftServer implements Server {
- 
+@@ -1026,6 +1026,7 @@ public final class CraftServer implements Server {
          org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
-+        this.console.andromedaConfigurations.reloadConfigurations(this.console); // Andromeda
          org.purpurmc.purpur.PurpurConfig.init((File) console.options.valueOf("purpur-settings")); // Purpur
++        team.earendel.andromeda.configurations.AndromedaConfiguration.init((File) console.options.valueOf("andromeda-configuration")); // Andromeda
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
-@@ -2867,6 +2868,13 @@ public final class CraftServer implements Server {
-             return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
+             world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
+@@ -1042,6 +1043,7 @@ public final class CraftServer implements Server {
+             }
+             world.spigotConfig.init(); // Spigot
+             world.purpurConfig.init(); // Purpur
++            world.andromedaWorldConfiguration.init(); // Andromeda
          }
+ 
+         Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
+@@ -1058,6 +1060,7 @@ public final class CraftServer implements Server {
+         org.spigotmc.SpigotConfig.registerCommands(); // Spigot
+         io.papermc.paper.command.PaperCommands.registerCommands(this.console); // Paper
+         org.purpurmc.purpur.PurpurConfig.registerCommands(); // Purpur
++        team.earendel.andromeda.configurations.AndromedaConfiguration.registerCommands(); // Andromeda
+         this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
+         this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
+ 
+@@ -2879,6 +2882,13 @@ public final class CraftServer implements Server {
+         }
+         // Purpur end
  
 +        // Andromeda start
 +        @Override
 +        public YamlConfiguration getAndromedaConfiguration() {
-+            return CraftServer.this.console.andromedaConfigurations.createLegacyObject(CraftServer.this.console);
++            return team.earendel.andromeda.configurations.AndromedaConfiguration.configuration;
 +        }
 +        // Andromeda end
 +
-         // Purpur start
          @Override
-         public YamlConfiguration getPurpurConfig() {
+         public void restart() {
+             org.spigotmc.RestartCommand.restart();
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 576cd8e20982bb20d10213b6c7a229428eec1c2f..193487b0944cd4bb200ae621c817708e873d95b5 100644
+index 576cd8e20982bb20d10213b6c7a229428eec1c2f..ae10c948bbb00bd2b47dfe5beb5ad7b340181561 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -166,6 +166,19 @@ public class Main {
-                         .describedAs("Jar file");
-                 // Paper end
+@@ -180,6 +180,14 @@ public class Main {
+                         .describedAs("Yml file");
+                 // Purpur end
  
 +                // Andromeda start
-+                acceptsAll(asList("andromeda-dir", "andromeda-configurations-directory"), "Directory for Andromeda configurations")
-+                        .withRequiredArg()
-+                        .ofType(File.class)
-+                        .defaultsTo(new File(io.papermc.paper.configuration.PaperConfigurations.CONFIG_DIR))
-+                        .describedAs("Config directory");
-+                acceptsAll(asList("andromeda", "andromeda-configurations"), "File for Andromeda configurations")
++                acceptsAll(asList("andromeda", "andromeda-configuration"), "File for Andromeda configurations")
 +                        .withRequiredArg()
 +                        .ofType(File.class)
 +                        .defaultsTo(new File("andromeda.yml"))
 +                        .describedAs("Yml file");
 +                // Andromeda end
 +
-                 // Purpur Start
-                 acceptsAll(asList("purpur", "purpur-settings"), "File for purpur settings")
-                     .withRequiredArg()
+                 // Paper start
+                 acceptsAll(asList("server-name"), "Name of the server")
+                         .withRequiredArg()
 diff --git a/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java b/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..596fa8e8269922330a390a0656afc3eff6934ff3
+index 0000000000000000000000000000000000000000..00bc18435bc439b5acd4d61084525df028258d08
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java
-@@ -0,0 +1,127 @@
+@@ -0,0 +1,66 @@
 +package team.earendel.andromeda.commands;
 +
-+import io.papermc.paper.command.CommandUtil;
-+import it.unimi.dsi.fastutil.Pair;
++import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.format.NamedTextColor;
-+import net.minecraft.Util;
-+import org.bukkit.Bukkit;
++import net.minecraft.server.MinecraftServer;
++import net.minecraft.server.level.ServerLevel;
 +import org.bukkit.Location;
 +import org.bukkit.command.Command;
 +import org.bukkit.command.CommandSender;
-+import org.bukkit.permissions.Permission;
-+import org.bukkit.permissions.PermissionDefault;
-+import org.bukkit.plugin.PluginManager;
-+import org.checkerframework.checker.nullness.qual.NonNull;
-+import org.checkerframework.checker.nullness.qual.Nullable;
-+import org.checkerframework.framework.qual.DefaultQualifier;
-+import team.earendel.andromeda.commands.subcommands.AndromedaSubCommand;
-+import team.earendel.andromeda.commands.subcommands.ReloadCommand;
-+import team.earendel.andromeda.commands.subcommands.VersionCommand;
++import team.earendel.andromeda.configurations.AndromedaConfiguration;
 +
-+import java.util.*;
++import java.io.File;
++import java.util.Collections;
++import java.util.List;
 +import java.util.stream.Collectors;
++import java.util.stream.Stream;
 +
-+import static net.kyori.adventure.text.Component.text;
-+
-+@DefaultQualifier(NonNull.class)
 +public class AndromedaCommand extends Command {
-+
-+    private static final Map<String, AndromedaSubCommand> SUB_COMMANDS = Util.make(() -> {
-+        final Map<Set<String>, AndromedaSubCommand> commands = new HashMap<>();
-+
-+        commands.put(Set.of("reload"), new ReloadCommand());
-+        commands.put(Set.of("version"), new VersionCommand());
-+
-+        return commands.entrySet().stream()
-+                .flatMap(entry -> entry.getKey().stream().map(key -> Map.entry(key, entry.getValue())))
-+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-+    });
-+
-+    private static final Map<String, String> ALIASES = Util.make(() -> {
-+        final Map<String, Set<String>> aliases = new HashMap<>();
-+
-+        aliases.put("reload", Set.of("rl"));
-+        aliases.put("version", Set.of("ver"));
-+
-+        return aliases.entrySet().stream()
-+                .flatMap(entry -> entry.getValue().stream().map(s -> Map.entry(s, entry.getKey())))
-+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-+    });
-+
-+    public AndromedaCommand(final String name) {
++    public AndromedaCommand(String name) {
 +        super(name);
-+
-+        final PluginManager pluginManager = Bukkit.getServer().getPluginManager();
-+
-+        final List<String> permissions = new ArrayList<>();
-+        permissions.add("bukkit.command.andromeda");
-+        permissions.addAll(SUB_COMMANDS.keySet().stream().map(s -> "bukkit.command.andromeda." + s).toList());
-+
 +        this.description = "Andromeda related commands";
-+        this.usageMessage = String.format("/andromeda [%s]", String.join("|", SUB_COMMANDS.keySet()));
-+        this.setPermission(String.join(";", permissions));
-+
-+        for (final String perm : permissions)
-+            pluginManager.addPermission(new Permission(perm, PermissionDefault.OP));
++        this.usageMessage = "/andromeda [reload | version]";
++        this.setPermission("bukkit.command.andromeda");
 +    }
 +
 +    @Override
-+    public List<String> tabComplete(final CommandSender sender, final String aliases, final String[] args) throws IllegalArgumentException {
-+        if (args.length <= 1)
-+            return CommandUtil.getListMatchingLast(sender, args, SUB_COMMANDS.keySet());
-+
-+        final @Nullable Pair<String, AndromedaSubCommand> subCommand = resolveSubCommand(args[0]);
-+        if (subCommand != null)
-+            return subCommand.second().tabComplete(sender, subCommand.first(), Arrays.copyOfRange(args, 1, args.length));
-+
++    public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
++        if (args.length == 1) {
++            return Stream.of("reload", "version")
++                    .filter(arg -> arg.startsWith(args[0].toLowerCase()))
++                    .collect(Collectors.toList());
++        }
 +        return Collections.emptyList();
 +    }
 +
 +    @Override
-+    public boolean execute(final CommandSender sender, final String commandLabel, final String[] args) {
++    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
 +        if (!testPermission(sender)) return true;
 +
-+        if (args.length == 0) {
-+            sender.sendMessage(text("Usage: " + this.usageMessage, NamedTextColor.RED));
++        if (args.length != 1) {
++            sender.sendMessage(Component.text("Usage: " + usageMessage).color(NamedTextColor.RED));
 +            return false;
 +        }
 +
-+        final @Nullable Pair<String, AndromedaSubCommand> subCommand = resolveSubCommand(args[0]);
++        if (args[0].equalsIgnoreCase("reload")) {
++            Command.broadcastCommandMessage(sender, Component.text("Please note that this command is not supported and may cause issues.").color(NamedTextColor.RED));
++            Command.broadcastCommandMessage(sender, Component.text("If you encounter any issues please use the /stop command to restart your server.").color(NamedTextColor.RED));
 +
-+        if (subCommand == null) {
-+            sender.sendMessage(text("Usage: " + this.usageMessage, NamedTextColor.RED));
-+            return false;
-+        }
++            MinecraftServer console = MinecraftServer.getServer();
++            AndromedaConfiguration.init((File) console.options.valueOf("andromeda-configuration"));
++            for (ServerLevel level : console.getAllLevels()) {
++                level.andromedaWorldConfiguration.init();
++            }
++            console.server.reloadCount++;
 +
-+        if (!testPermission(sender, subCommand.first())) return true;
-+
-+        final String[] choppedArgs = Arrays.copyOfRange(args, 1, args.length);
-+        return subCommand.second().execute(sender, subCommand.first(), choppedArgs);
-+    }
-+
-+    private static @Nullable Pair<String, AndromedaSubCommand> resolveSubCommand(String label) {
-+        label = label.toLowerCase(Locale.ENGLISH);
-+        @Nullable AndromedaSubCommand subCommand = SUB_COMMANDS.get(label);
-+
-+        if (subCommand == null) {
-+            final @Nullable String command = ALIASES.get(label);
-+            if (command != null) {
-+                label = command;
-+                subCommand = SUB_COMMANDS.get(command);
++            Command.broadcastCommandMessage(sender, Component.text("Successfully reloaded Andromeda configuration.").color(NamedTextColor.GREEN));
++        } else if (args[0].equalsIgnoreCase("version")) {
++            Command verCmd = org.bukkit.Bukkit.getServer().getCommandMap().getCommand("version");
++            if (verCmd != null) {
++                return verCmd.execute(sender, commandLabel, new String[0]);
 +            }
 +        }
 +
-+        if (subCommand != null)
-+            return Pair.of(label, subCommand);
-+
-+        return null;
-+    }
-+
-+    private static boolean testPermission(final CommandSender sender, final String permission) {
-+        if (sender.hasPermission("bukkit.command.andromeda." + permission) || sender.hasPermission("bukkit.command.andromeda"))
-+            return true;
-+
-+        sender.sendMessage(Bukkit.permissionMessage());
-+        return false;
-+    }
-+}
-diff --git a/src/main/java/team/earendel/andromeda/commands/AndromedaCommands.java b/src/main/java/team/earendel/andromeda/commands/AndromedaCommands.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..2924f8dcea6bcca0f0f8017f0e78cf32c577aab1
---- /dev/null
-+++ b/src/main/java/team/earendel/andromeda/commands/AndromedaCommands.java
-@@ -0,0 +1,25 @@
-+package team.earendel.andromeda.commands;
-+
-+import net.minecraft.server.MinecraftServer;
-+import org.bukkit.command.Command;
-+import org.checkerframework.checker.nullness.qual.NonNull;
-+import org.checkerframework.framework.qual.DefaultQualifier;
-+
-+import java.util.HashMap;
-+import java.util.Map;
-+
-+@DefaultQualifier(NonNull.class)
-+public final class AndromedaCommands {
-+
-+    private AndromedaCommands() {}
-+
-+    private static final Map<String, Command> COMMANDS = new HashMap<>();
-+    static {
-+        COMMANDS.put("andromeda", new AndromedaCommand("andromeda"));
-+    }
-+
-+    public static void registerCommands(final MinecraftServer server) {
-+        COMMANDS.forEach((s, command) -> server.server.getCommandMap().register(s, "Andromeda", command));
-+    }
-+
-+}
-diff --git a/src/main/java/team/earendel/andromeda/commands/subcommands/AndromedaSubCommand.java b/src/main/java/team/earendel/andromeda/commands/subcommands/AndromedaSubCommand.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..31a517bc474e480adf2a031b0da6dc34fefbe2d7
---- /dev/null
-+++ b/src/main/java/team/earendel/andromeda/commands/subcommands/AndromedaSubCommand.java
-@@ -0,0 +1,17 @@
-+package team.earendel.andromeda.commands.subcommands;
-+
-+import org.bukkit.command.CommandSender;
-+import org.checkerframework.checker.nullness.qual.NonNull;
-+import org.checkerframework.framework.qual.DefaultQualifier;
-+
-+import java.util.Collections;
-+import java.util.List;
-+
-+@DefaultQualifier(NonNull.class)
-+public interface AndromedaSubCommand {
-+    boolean execute(CommandSender sender, String subCommand, String[] args);
-+
-+    default List<String> tabComplete(final CommandSender sender, final String subCommand, final String[] args) {
-+        return Collections.emptyList();
-+    }
-+}
-diff --git a/src/main/java/team/earendel/andromeda/commands/subcommands/ReloadCommand.java b/src/main/java/team/earendel/andromeda/commands/subcommands/ReloadCommand.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..5eb7494904f7209b4c0d4f1ae63440d69f83ca48
---- /dev/null
-+++ b/src/main/java/team/earendel/andromeda/commands/subcommands/ReloadCommand.java
-@@ -0,0 +1,28 @@
-+package team.earendel.andromeda.commands.subcommands;
-+
-+import net.kyori.adventure.text.format.NamedTextColor;
-+import net.minecraft.server.MinecraftServer;
-+import org.bukkit.command.Command;
-+import org.bukkit.command.CommandSender;
-+import org.bukkit.craftbukkit.CraftServer;
-+
-+import static net.kyori.adventure.text.Component.text;
-+
-+public class ReloadCommand implements AndromedaSubCommand {
-+
-+    @Override
-+    public boolean execute(CommandSender sender, String subCommand, String[] args) {
-+        return true;
-+    }
-+
-+    private void doReload(final CommandSender sender) {
-+        Command.broadcastCommandMessage(sender, text("Please note that this command is not supported and may cause issues.", NamedTextColor.RED));
-+        Command.broadcastCommandMessage(sender, text("If you encounter any issues please use the /stop command to restart your server.", NamedTextColor.RED));
-+
-+        MinecraftServer server = ((CraftServer) sender.getServer()).getServer();
-+        server.andromedaConfigurations.reloadConfigurations(server);
-+        server.server.reloadCount++;
-+
-+        Command.broadcastCommandMessage(sender, text("Successfully reloaded Andromeda configuration files.", NamedTextColor.GREEN));
-+    }
-+}
-diff --git a/src/main/java/team/earendel/andromeda/commands/subcommands/VersionCommand.java b/src/main/java/team/earendel/andromeda/commands/subcommands/VersionCommand.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..10d7a2d08a49e9afb6e0ef3ffd0f8d75135adc88
---- /dev/null
-+++ b/src/main/java/team/earendel/andromeda/commands/subcommands/VersionCommand.java
-@@ -0,0 +1,15 @@
-+package team.earendel.andromeda.commands.subcommands;
-+
-+import net.minecraft.server.MinecraftServer;
-+import org.bukkit.command.Command;
-+import org.bukkit.command.CommandSender;
-+import org.checkerframework.checker.nullness.qual.Nullable;
-+
-+public class VersionCommand implements AndromedaSubCommand {
-+    @Override
-+    public boolean execute(CommandSender sender, String subCommand, String[] args) {
-+        final @Nullable Command ver = MinecraftServer.getServer().server.getCommandMap().getCommand("version");
-+        if (ver != null) ver.execute(sender, "andromeda", new String[0]);
 +        return true;
 +    }
 +}
-diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfigurations.java
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ef41931d5668751354bab6b7d4d52a89c2473062
+index 0000000000000000000000000000000000000000..54a533aaaad0c515156e4da8d5fd4bc627742796
 --- /dev/null
-+++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfigurations.java
-@@ -0,0 +1,324 @@
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
+@@ -0,0 +1,158 @@
 +package team.earendel.andromeda.configurations;
 +
-+import com.google.common.collect.Table;
-+import com.mojang.logging.LogUtils;
-+import io.leangen.geantyref.TypeToken;
-+import io.papermc.paper.configuration.*;
-+import io.papermc.paper.configuration.legacy.RequiresSpigotInitialization;
-+import io.papermc.paper.configuration.serializer.ComponentSerializer;
-+import io.papermc.paper.configuration.serializer.EnumValueSerializer;
-+import io.papermc.paper.configuration.serializer.PacketClassSerializer;
-+import io.papermc.paper.configuration.serializer.StringRepresentableSerializer;
-+import io.papermc.paper.configuration.serializer.collections.FastutilMapSerializer;
-+import io.papermc.paper.configuration.serializer.collections.MapSerializer;
-+import io.papermc.paper.configuration.serializer.collections.TableSerializer;
-+import io.papermc.paper.configuration.serializer.registry.RegistryHolderSerializer;
-+import io.papermc.paper.configuration.serializer.registry.RegistryValueSerializer;
-+import io.papermc.paper.configuration.transformation.Transformations;
-+import io.papermc.paper.configuration.type.*;
-+import io.papermc.paper.configuration.type.fallback.FallbackValueSerializer;
-+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
-+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-+import it.unimi.dsi.fastutil.objects.Reference2LongMap;
-+import it.unimi.dsi.fastutil.objects.Reference2LongOpenHashMap;
-+import net.minecraft.core.registries.Registries;
++import com.google.common.base.Throwables;
++import com.google.common.collect.ImmutableMap;
 +import net.minecraft.server.MinecraftServer;
-+import net.minecraft.server.level.ServerLevel;
-+import net.minecraft.world.entity.EntityType;
-+import net.minecraft.world.item.Item;
-+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-+import org.slf4j.Logger;
-+import org.spongepowered.configurate.ConfigurateException;
-+import org.spongepowered.configurate.ConfigurationNode;
-+import org.spongepowered.configurate.ConfigurationOptions;
-+import org.spongepowered.configurate.NodePath;
-+import org.spongepowered.configurate.objectmapping.ObjectMapper;
-+import org.spongepowered.configurate.transformation.ConfigurationTransformation;
-+import org.spongepowered.configurate.transformation.TransformAction;
-+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
++import net.minecraft.world.level.block.Blocks;
++import org.bukkit.Bukkit;
++import org.bukkit.command.Command;
++import org.bukkit.configuration.ConfigurationSection;
++import org.bukkit.configuration.InvalidConfigurationException;
++import org.bukkit.configuration.file.YamlConfiguration;
++import team.earendel.andromeda.commands.AndromedaCommand;
 +
 +import java.io.File;
 +import java.io.IOException;
-+import java.lang.reflect.Type;
-+import java.nio.file.Files;
-+import java.nio.file.Path;
-+import java.util.Collections;
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
++import java.lang.reflect.Modifier;
++import java.util.HashMap;
 +import java.util.List;
-+import java.util.function.Function;
++import java.util.Map;
++import java.util.logging.Level;
 +
-+import static io.leangen.geantyref.GenericTypeReflector.erase;
-+
-+@SuppressWarnings("Convert2Diamond")
-+public class AndromedaConfigurations extends Configurations<GlobalConfiguration, LevelConfigurations> {
-+
-+    private static final Logger LOGGER = LogUtils.getLogger();
-+    static final String GLOBAL_CONFIGURATION_FILE_NAME= "andromeda-global.yml";
-+    static final String LEVEL_DEFAULT_CONFIGURATION_FILE_NAME = "andromeda-level-dafaults.yml";
-+    static final String LEVEL_CONFIGURATION_FILE_NAME = "andromeda-configuration.yml";
-+
-+    private static final String HEADER_START = """
-+            # English
-+            This is the %s configuration file for Andromeda.
-+            As you can see, there's a lot to configure. Some options may impact gameplay,
-+            so use with caution, and make sure you know what each option does before configuring.
-+            
-+            If you need help with the configuration or have any questions related to Andromeda,
-+            join us in our Discord for Andromeda, or check the GitHub Wiki pages.
-+            
-+            %s
-+            
-+            # 한국어
-+            본 파일은 Andromeda의 %s 구성 파일입니다.
-+            보시다시피, 굉장히 많은 설정이 있습니다. 몇몇 설정은 게임플레이에 영향을 줄 수 있으므로,
-+            주의해서 사용하시기 바라며, 각 설정이 어떠한 역할을 하는지 알고 사용하시기 바랍니다.
-+            
-+            만약 구성에 관한 도움이 필요하거나 Andromeda에 관련한 질문이 있으시다면,
-+            Discord 또는 네이버 카페에 가입하거나, GitHub 위키 페이지를 참고하시기 바랍니다.
-+            
-+            %s
-+            
-+            
-+            Wiki: https://github.com/TeamEarendel/Andromeda/wiki
-+            Discord: *COMMING SOON*
-+            Twitter: *COMMING SOON*
-+            Naver Cafe: *COMMING SOON*
++@SuppressWarnings("unused")
++public class AndromedaConfiguration {
++    private static final String HEADER = """
++            This is the main configuration file for Andromeda.
++            Some options may impact gameplay, so use with caution,
++            and make sure you know what each option does before configuring.
 +            """;
++    private static File CONFIG_FILE;
++    public static YamlConfiguration configuration;
 +
-+    private static final Function<Configurations.ContextMap, String> LEVEL_SPECIFIC_HEADER = map -> String.format("""
-+            # English
-+            This is a level specific configuration file for Andromeda.
-+            This file may start empty, but can be filled with settings to override ones in the %s/%s
-+            
-+            If you need help with the configuration or have any questions related to Andromeda,
-+            join us in our Discord for Andromeda, or check the GitHub Wiki pages.
-+            
-+            # 한국어
-+            본 파일은 Andromeda의 레벨별 구성 파일입니다.
-+            이 파일은 비어있을 수 있지만, %s/%s 파일의 설정을 덮어쓰기 위해 설정을 채울 수 있습니다.
-+            
-+            만약 구성에 관한 도움이 필요하거나 Andromeda에 관련한 질문이 있으시다면,
-+            Discord 또는 네이버 카페에 가입하거나, GitHub 위키 페이지를 참고하시기 바랍니다.
-+            
-+            
-+            Level: %s (%s)
-+            
-+            Wiki: https://github.com/TeamEarendel/Andromeda/wiki
-+            Discord: *COMMING SOON*
-+            Twitter: *COMMING SOON*
-+            Naver Cafe: *COMMING SOON*
-+            """, PaperConfigurations.CONFIG_DIR, LEVEL_DEFAULT_CONFIGURATION_FILE_NAME, PaperConfigurations.CONFIG_DIR, LEVEL_DEFAULT_CONFIGURATION_FILE_NAME,
-+            map.require(WORLD_NAME), map.require(WORLD_KEY));
++    private static Map<String, Command> commands;
 +
-+    private static final String GLOBAL_HEADER = String.format(HEADER_START,
-+            "global", String.format("""
-+                    The level configuration options are inside their respective level folder.
-+                    The files are named %s
-+                    """, LEVEL_CONFIGURATION_FILE_NAME),
-+            "전역", String.format("""
-+                    레벨 구성 옵션은 각각의 레벨 폴더 안에 있으며, 파일 이름은 %s 입니다.
-+                    """, LEVEL_CONFIGURATION_FILE_NAME)
-+    );
++    public static int version;
++    static boolean verbose;
 +
-+    private static final String LEVEL_DEFAULTS_HEADER = String.format(HEADER_START,
-+            "level defaults", """
-+                    Configuration options here apply to all levels, unless you specify overrides inside
-+                    the level-specific config file inside each level folder.
-+                    """,
-+            "기본 레벨", """
-+                    이 구성 파일의 설정은 각 레벨 폴더 안 구성 파일에서 덮어쓰기 되지 않는 한 모든 레벨에 적용됩니다.
-+                    """
-+    );
-+
-+    private static final String MOVED_NOTICE = """
-+            # English
-+            The global and level default configuration have moved to %s
-+            and the level-specific configuration has been moved inside
-+            the respective level folder.
-+            
-+            See GitHub Wiki for more information.
-+            
-+            # 한국어
-+            전역 및 레벨 전역 구성 파일은 %s 로 이동되었으며, 레벨별 구성 파일은
-+            각 레벨 폴더 안으로 이동되었습니다.
-+            
-+            자세한 내용은 GitHub 위키를 참고하시기 바랍니다.
-+            
-+            Wiki: https://github.com/TeamEarendel/Andromeda/wiki
-+            """;
-+
-+    private static final List<Transformations.DefaultsAware> DEFAULTS_AWARE_TRANSFORMATIONS = Collections.emptyList();
-+
-+    public AndromedaConfigurations(final Path globalFolder) {
-+        super(globalFolder, GlobalConfiguration.class, LevelConfigurations.class, GLOBAL_CONFIGURATION_FILE_NAME, LEVEL_DEFAULT_CONFIGURATION_FILE_NAME, LEVEL_CONFIGURATION_FILE_NAME);
-+    }
-+
-+    // Create Loader Builder
-+    private static ConfigurationOptions defaultOptions(ConfigurationOptions options) {
-+        return options.serializers(builder -> builder
-+                .register(MapSerializer.TYPE, new MapSerializer(false))
-+                .register(new EnumValueSerializer())
-+                .register(new ComponentSerializer())
-+        );
-+    }
-+
-+    @Override
-+    protected YamlConfigurationLoader.Builder createLoaderBuilder() {
-+        return super.createLoaderBuilder().defaultOptions(AndromedaConfigurations::defaultOptions);
-+    }
-+
-+    // Create Global Object Mapper Factory Builder
-+    private static ObjectMapper.Factory.Builder defaultGlobalFactoryBuilder(ObjectMapper.Factory.Builder builder) {
-+        return builder.addDiscoverer(InnerClassFieldDiscoverer.globalConfig());
-+    }
-+
-+    @Override
-+    protected ObjectMapper.Factory.Builder createGlobalObjectMapperFactoryBuilder() {
-+        return defaultGlobalFactoryBuilder(super.createGlobalObjectMapperFactoryBuilder());
-+    }
-+
-+    // Create Global Loader Builder
-+    private static ConfigurationOptions defaultGlobalOptions(ConfigurationOptions options) {
-+        return options.header(GLOBAL_HEADER).serializers(builder -> builder.register(new PacketClassSerializer()));
-+    }
-+
-+    @Override
-+    protected YamlConfigurationLoader.Builder createGlobalLoaderBuilder() {
-+        return super.createGlobalLoaderBuilder().defaultOptions(AndromedaConfigurations::defaultGlobalOptions);
-+    }
-+
-+    // Initialize
-+    @Override
-+    public GlobalConfiguration initializeGlobalConfiguration() throws ConfigurateException {
-+        GlobalConfiguration configuration = super.initializeGlobalConfiguration();
-+        GlobalConfiguration.set(configuration);
-+        return configuration;
-+    }
-+
-+    @Override
-+    protected ContextMap.Builder createDefaultContextMap() {
-+        return super.createDefaultContextMap().put(PaperConfigurations.SPIGOT_WORLD_CONFIG_CONTEXT_KEY, PaperConfigurations.SPIGOT_WORLD_DEFAULTS);
-+    }
-+
-+    @Override
-+    protected ObjectMapper.Factory.Builder createWorldObjectMapperFactoryBuilder(final ContextMap contextMap) {
-+        return super.createWorldObjectMapperFactoryBuilder(contextMap)
-+                .addNodeResolver(new RequiresSpigotInitialization.Factory(contextMap.require(PaperConfigurations.SPIGOT_WORLD_CONFIG_CONTEXT_KEY).get()))
-+                .addNodeResolver(new NestedSetting.Factory())
-+                .addDiscoverer(InnerClassFieldDiscoverer.andromedaLevelConfiguration(contextMap));
-+    }
-+
-+    @Override
-+    protected YamlConfigurationLoader.Builder createWorldConfigLoaderBuilder(final ContextMap contextMap) {
-+        return super.createWorldConfigLoaderBuilder(contextMap).defaultOptions(options -> options
-+                .header(contextMap.require(WORLD_NAME).equals(WORLD_DEFAULTS) ? LEVEL_DEFAULTS_HEADER : LEVEL_SPECIFIC_HEADER.apply(contextMap))
-+                .serializers(serializers -> serializers
-+                        .register(new TypeToken<Reference2IntMap<?>>() {}, new FastutilMapSerializer.SomethingToPrimitive<Reference2IntMap<?>>(Reference2IntOpenHashMap::new, Integer.TYPE))
-+                        .register(new TypeToken<Reference2LongMap<?>>() {}, new FastutilMapSerializer.SomethingToPrimitive<Reference2LongMap<?>>(Reference2LongOpenHashMap::new, Long.TYPE))
-+                        .register(new TypeToken<Table<?, ?, ?>>() {}, new TableSerializer())
-+                        .register(new StringRepresentableSerializer())
-+                        .register(IntOr.Default.SERIALIZER)
-+                        .register(DoubleOrDefault.SERIALIZER)
-+                        .register(BooleanOrDefault.SERIALIZER)
-+                        .register(Duration.SERIALIZER)
-+                        .register(EngineMode.SERIALIZER)
-+                        .register(FallbackValueSerializer.create(contextMap.require(PaperConfigurations.SPIGOT_WORLD_CONFIG_CONTEXT_KEY).get(), MinecraftServer::getServer))
-+                        .register(new RegistryValueSerializer<>(new TypeToken<EntityType<?>>() {}, Registries.ENTITY_TYPE, true))
-+                        .register(new RegistryValueSerializer<>(Item.class, Registries.ITEM, true))
-+                        .register(new RegistryHolderSerializer<>(new TypeToken<ConfiguredFeature<?, ?>>() {}, Registries.CONFIGURED_FEATURE, false))
-+                        .register(new RegistryHolderSerializer<>(Item.class, Registries.ITEM, true))
-+                )
-+        );
-+    }
-+
-+    private void applyTransformations(final NodePath[] paths, final ConfigurationNode node) throws ConfigurateException {
-+        if (paths.length > 0) {
-+            ConfigurationTransformation.Builder builder = ConfigurationTransformation.builder();
-+
-+            for (NodePath path : paths)
-+                builder.addAction(path, TransformAction.remove());
-+
-+            builder.build().apply(node);
-+        }
-+    }
-+
-+    @Override
-+    protected void applyGlobalConfigTransformations(final ConfigurationNode node) throws ConfigurateException {
-+        applyTransformations(RemovedConfigurations.REMOVED_GLOBAL_PATHS, node);
-+    }
-+
-+    @Override
-+    protected void applyWorldConfigTransformations(final ContextMap contextMap, final ConfigurationNode node) throws ConfigurateException {
-+        final ConfigurationNode version = node.node(Configuration.VERSION_FIELD);
-+        final String world = contextMap.require(WORLD_NAME);
-+
-+        if (version.virtual()) {
-+            LOGGER.warn("The Andromeda level configuration file for {} didn't have a version field, assuming latest", world);
-+            version.raw(LevelConfigurations.CURRENT_VERSION);
-+        }
-+
-+        applyTransformations(RemovedConfigurations.REMOVED_LEVEL_PATHS, node);
-+    }
-+
-+    @Override
-+    protected void applyDefaultsAwareWorldConfigTransformations(final ContextMap contextMap, final ConfigurationNode levelNode, final ConfigurationNode defaultsNode) throws ConfigurateException {
-+        final ConfigurationTransformation.Builder builder = ConfigurationTransformation.builder();
-+        DEFAULTS_AWARE_TRANSFORMATIONS.forEach(transform -> transform.apply(builder, contextMap, defaultsNode));
-+
-+        ConfigurationTransformation transformation;
++    public static void init(File configFile) {
++        CONFIG_FILE = configFile;
++        configuration = new YamlConfiguration();
 +        try {
-+            transformation = builder.build();
-+        } catch (IllegalArgumentException ignored) {
-+            return;
++            configuration.load(CONFIG_FILE);
++        } catch (IOException ignore) {
++        } catch (InvalidConfigurationException ex) {
++            Bukkit.getLogger().log(Level.SEVERE, "Could not load andromeda.yml, please correct your syntax errors", ex);
++            throw Throwables.propagate(ex);
 +        }
-+        transformation.apply(levelNode);
++        configuration.options().header(HEADER);
++        configuration.options().copyDefaults(true);
++        verbose = getBoolean("verbose", false);
++
++        commands = new HashMap<>();
++        commands.put("andromeda", new AndromedaCommand("andromeda"));
++
++        version = getInt("config-version", 1);
++        set("config-version", 1);
++
++        readConfig(AndromedaConfiguration.class, null);
++
++        Blocks.rebuildCache();
 +    }
 +
-+    @Override
-+    public LevelConfigurations createWorldConfig(final ContextMap contextMap) {
-+        final String levelName = contextMap.require(WORLD_NAME);
-+        try {
-+            return super.createWorldConfig(contextMap);
-+        } catch (IOException exception) {
-+            throw new RuntimeException(String.format("Could not create Andromeda level configuration for %s", levelName), exception);
++    protected static void log(String s) {
++        if (verbose) {
++            log(Level.INFO, s);
 +        }
 +    }
 +
-+    @Override
-+    protected boolean isConfigType(Type type) {
-+        return ConfigurationPart.class.isAssignableFrom(erase(type));
++    protected static void log(Level level, String s) {
++        Bukkit.getLogger().log(level, s);
 +    }
 +
-+    @Override
-+    protected int getWorldConfigurationCurrentVersion() {
-+        return LevelConfigurations.CURRENT_VERSION;
++    public static void registerCommands() {
++        for (Map.Entry<String, Command> entry : commands.entrySet()) {
++            MinecraftServer.getServer().server.getCommandMap().register(entry.getKey(), "Andromeda", entry.getValue());
++        }
 +    }
 +
-+    public static AndromedaConfigurations setup(final Path legacyConfigurations, final Path configurationDir) throws Exception {
-+        final Path legacy = Files.isSymbolicLink(legacyConfigurations) ? Files.readSymbolicLink(legacyConfigurations) : legacyConfigurations;
-+        final Path replacementFile = legacy.resolveSibling(legacyConfigurations.getFileName() + "-README.txt");
-+
-+        if (Files.exists(legacyConfigurations) && Files.notExists(replacementFile)) {
-+            Path path = configurationDir.toAbsolutePath();
-+            Files.createFile(replacementFile);
-+            Files.writeString(replacementFile, String.format(MOVED_NOTICE, path, path));
++    static void readConfig(Class<?> clazz, Object instance) {
++        for (Method method : clazz.getDeclaredMethods()) {
++            if (Modifier.isPrivate(method.getModifiers())) {
++                if (method.getParameterTypes().length == 0 && method.getReturnType() == Void.TYPE) {
++                    try {
++                        method.setAccessible(true);
++                        method.invoke(instance);
++                    } catch (InvocationTargetException ex) {
++                        throw Throwables.propagate(ex.getCause());
++                    } catch (Exception ex) {
++                        Bukkit.getLogger().log(Level.SEVERE, "Error invoking " + method, ex);
++                    }
++                }
++            }
 +        }
 +
 +        try {
-+            PaperConfigurations.createDirectoriesSymlinkAware(configurationDir);
-+            return new AndromedaConfigurations(configurationDir);
-+        } catch (final IOException e) {
-+            throw new RuntimeException("Could not setup Andromeda configuration files", e);
++            configuration.save(CONFIG_FILE);
++        } catch (IOException ex) {
++            Bukkit.getLogger().log(Level.SEVERE, "Could not save " + CONFIG_FILE, ex);
 +        }
 +    }
 +
-+    public void reloadConfigurations(MinecraftServer server) {
-+        try {
-+            this.initializeGlobalConfiguration(reloader(this.globalConfigClass, GlobalConfiguration.get()));
-+            this.initializeWorldDefaultsConfiguration();
-+            for (ServerLevel level : server.getAllLevels())
-+                this.createWorldConfig(PaperConfigurations.createWorldContextMap(level), reloader(this.worldConfigClass, level.andromedaLevelConfiguration()));
-+        } catch (Exception e) {
-+            throw new RuntimeException("Could not reload Andromeda configuration files", e);
++    private static void set(String path, Object val) {
++        configuration.addDefault(path, val);
++        configuration.set(path, val);
++    }
++
++    private static String getString(String path, String def) {
++        configuration.addDefault(path, def);
++        return configuration.getString(path, configuration.getString(path));
++    }
++
++    private static int getInt(String path, int def) {
++        configuration.addDefault(path, def);
++        return configuration.getInt(path, configuration.getInt(path));
++    }
++
++    private static boolean getBoolean(String path, boolean def) {
++        configuration.addDefault(path, def);
++        return configuration.getBoolean(path, configuration.getBoolean(path));
++    }
++
++    private static double getDouble(String path, double def) {
++        configuration.addDefault(path, def);
++        return configuration.getDouble(path, configuration.getDouble(path));
++    }
++
++    private static long getLong(String path, long def) {
++        configuration.addDefault(path, def);
++        return configuration.getLong(path, configuration.getLong(path));
++    }
++
++    private static <T> List getList(String path, T def) {
++        configuration.addDefault(path, def);
++        return configuration.getList(path, configuration.getList(path));
++    }
++
++    static Map<String, Object> getMap(String path, Map<String, Object> def) {
++        if (def != null && configuration.getConfigurationSection(path) == null) {
++            configuration.addDefault(path, def);
++            return def;
 +        }
++        return toMap(configuration.getConfigurationSection(path));
++    }
++
++    private static Map<String, Object> toMap(ConfigurationSection section) {
++        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
++        if (section != null) {
++            for (String key : section.getKeys(false)) {
++                Object obj = section.get(key);
++                if (obj != null) {
++                    builder.put(key, obj instanceof ConfigurationSection val ? toMap(val) : obj);
++                }
++            }
++        }
++        return builder.build();
 +    }
 +}
-diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..e72daafdacf59f789e5f409d4006c2354e047740
+index 0000000000000000000000000000000000000000..f08d6191938ed88c3158554f6a2e1333e93e18d8
 --- /dev/null
-+++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -0,0 +1,22 @@
++++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaWorldConfiguration.java
+@@ -0,0 +1,75 @@
 +package team.earendel.andromeda.configurations;
 +
-+import io.papermc.paper.configuration.Configuration;
-+import io.papermc.paper.configuration.ConfigurationPart;
-+import org.spongepowered.configurate.objectmapping.meta.Setting;
++import org.bukkit.World;
++import org.bukkit.configuration.ConfigurationSection;
++import java.util.List;
++import java.util.Map;
++import static team.earendel.andromeda.configurations.AndromedaConfiguration.log;
 +
-+@SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
-+public class GlobalConfiguration extends ConfigurationPart {
-+    static final int CURRENT_VERSION = 2;
-+    private static GlobalConfiguration instance;
++@SuppressWarnings("unused")
++public class AndromedaWorldConfiguration {
 +
-+    public static GlobalConfiguration get() {
-+        return instance;
++    private final String worldName;
++    private final World.Environment environment;
++
++    public AndromedaWorldConfiguration(String worldName, World.Environment environment) {
++        this.worldName = worldName;
++        this.environment = environment;
++        init();
 +    }
 +
-+    static void set(GlobalConfiguration instance) {
-+        GlobalConfiguration.instance = instance;
++    public void init() {
++        log("-------- World Configurations For [" + worldName + "] --------");
++        AndromedaConfiguration.readConfig(AndromedaWorldConfiguration.class, this);
 +    }
 +
-+    @Setting(Configuration.VERSION_FIELD)
-+    public int version = CURRENT_VERSION;
-+}
-diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..a76d86c797dd1e5e2469aa4fef8e1e804ec403ff
---- /dev/null
-+++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -0,0 +1,30 @@
-+package team.earendel.andromeda.configurations;
-+
-+import com.mojang.logging.LogUtils;
-+import io.papermc.paper.configuration.Configuration;
-+import io.papermc.paper.configuration.ConfigurationPart;
-+import io.papermc.paper.configuration.PaperConfigurations;
-+import net.minecraft.resources.ResourceLocation;
-+import org.slf4j.Logger;
-+import org.spigotmc.SpigotWorldConfig;
-+import org.spongepowered.configurate.objectmapping.meta.Setting;
-+
-+@SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
-+public class LevelConfigurations extends ConfigurationPart {
-+    private static final Logger LOGGER = LogUtils.getLogger();
-+    public static final int CURRENT_VERSION = 2;
-+
-+    private transient final SpigotWorldConfig spigotWorldConfig;
-+    private transient final ResourceLocation worldKey;
-+    public LevelConfigurations(SpigotWorldConfig spigotWorldConfig, ResourceLocation worldKey) {
-+        this.spigotWorldConfig = spigotWorldConfig;
-+        this.worldKey = worldKey;
++    private void set(String path, Object val) {
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, val);
++        AndromedaConfiguration.configuration.set("world-configurations.default." + path, val);
++        if (AndromedaConfiguration.configuration.get("world-configurations." + worldName + "." + path) != null) {
++            AndromedaConfiguration.configuration.addDefault("world-configurations." + worldName + "." + path, val);
++            AndromedaConfiguration.configuration.set("world-configurations." + worldName + "." + path, val);
++        }
 +    }
 +
-+    public boolean isDefault() {
-+        return this.worldKey.equals(PaperConfigurations.WORLD_DEFAULTS_KEY);
++    private ConfigurationSection getConfigurationSection(String path) {
++        ConfigurationSection section = AndromedaConfiguration.configuration.getConfigurationSection("world-configurations." + worldName + "." + path);
++        return section != null ? section : AndromedaConfiguration.configuration.getConfigurationSection("world-configurations.default." + path);
 +    }
 +
-+    @Setting(Configuration.VERSION_FIELD)
-+    public int version = CURRENT_VERSION;
-+}
-diff --git a/src/main/java/team/earendel/andromeda/configurations/RemovedConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/RemovedConfigurations.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..d73cf6f400ff05a842837c716f2d2c107fd5e687
---- /dev/null
-+++ b/src/main/java/team/earendel/andromeda/configurations/RemovedConfigurations.java
-@@ -0,0 +1,11 @@
-+package team.earendel.andromeda.configurations;
++    private String getString(String path, String def) {
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getString("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getString("world-configurations.default." + path));
++    }
 +
-+import org.spongepowered.configurate.NodePath;
++    private int getInt(String path, int def) {
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getInt("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getInt("world-configurations.default." + path));
++    }
 +
-+interface RemovedConfigurations {
++    private boolean getBoolean(String path, boolean def) {
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getBoolean("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getBoolean("world-configurations.default." + path));
++    }
 +
-+    NodePath[] REMOVED_GLOBAL_PATHS = {};
++    private double getDouble(String path, double def) {
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getDouble("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getDouble("world-configurations.default." + path));
++    }
 +
-+    NodePath[] REMOVED_LEVEL_PATHS = {};
++    private double getLong(String path, long def) {
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getLong("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getLong("world-configurations.default." + path));
++    }
 +
++    private <T> List<?> getList(String path, T def) {
++        AndromedaConfiguration.configuration.addDefault("world-configurations.default." + path, def);
++        return AndromedaConfiguration.configuration.getList("world-configurations." + worldName + "." + path, AndromedaConfiguration.configuration.getList("world-configurations.default." + path));
++    }
++
++    private Map<String, Object> getMap(String path, Map<String, Object> def) {
++        final Map<String, Object> fallback = AndromedaConfiguration.getMap("world-configurations.default." + path, def);
++        final Map<String, Object> value = AndromedaConfiguration.getMap("world-configurations." + worldName + "." + path, null);
++        return value.isEmpty() ? fallback : value;
++    }
 +}

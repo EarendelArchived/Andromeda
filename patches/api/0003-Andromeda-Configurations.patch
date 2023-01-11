@@ -5,12 +5,12 @@ Subject: [PATCH] Andromeda Configurations
 
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index e0f69edf603c2ec99bc92b16b18912272cc41bd9..6dd18dd4abeb09f27d0d04870cfb582e44c1354e 100644
+index e0f69edf603c2ec99bc92b16b18912272cc41bd9..823a5f760f9a9e7b256ecf12ac5be087536293b1 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -1971,6 +1971,13 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -1983,6 +1983,13 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
          }
-         // Paper end
+         // Purpur end
  
 +        // Andromeda start
 +        @NotNull
@@ -19,6 +19,6 @@ index e0f69edf603c2ec99bc92b16b18912272cc41bd9..6dd18dd4abeb09f27d0d04870cfb582e
 +        }
 +        // Andromeda end
 +
-         // Purpur start
-         @NotNull
-         public org.bukkit.configuration.file.YamlConfiguration getPurpurConfig() {
+         /**
+          * Sends the component to the player
+          *

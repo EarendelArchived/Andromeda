@@ -5,7 +5,7 @@ Subject: [PATCH] Port PurpurMC/Purpur#1234
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 919f7b66e2b3932ee93857a7982240d4fb7de86a..a8c878ed70845a417b8d892ff1aea1baceddb43b 100644
+index 0be544660aa5b2131cd8b985e14f1a2fda25e3b2..75e692c8b776bacb96791b083641a72cc734eb42 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -141,6 +141,23 @@ public class Explosion {

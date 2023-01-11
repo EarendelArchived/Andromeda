@@ -5,7 +5,7 @@ Subject: [PATCH] Unlock snow layer limit
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 8ac8651273f1e4683512c7beab4a2029131c60ae..86eb638e04769bb46848b279a8704bf141e717ab 100644
+index b396a329e753f42b3878736b6b14bafda02d3744..0ad3d1a3ef2b165625d472a817adc04878fc0eeb 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -926,11 +926,13 @@ public class ServerLevel extends Level implements WorldGenLevel {
