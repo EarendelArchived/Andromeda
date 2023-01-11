@@ -7,7 +7,7 @@ Original: Thor12022
 Copyright (C) 2023 Thor12022
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 84f1cdf6e4f368705547d4c5eb027c84b8f130e4..dcf62e3422144a0a70006b942a5c7ea1d4af0b43 100644
+index 84f1cdf6e4f368705547d4c5eb027c84b8f130e4..60c43441849862f3b0d25c546d0e03c55c5d9e3a 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1122,6 +1122,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -16,7 +16,7 @@ index 84f1cdf6e4f368705547d4c5eb027c84b8f130e4..dcf62e3422144a0a70006b942a5c7ea1
  
 +            // Andromeda start
 +            boolean flag1 = team.earendel.andromeda.configurations.GlobalConfiguration.get().neverTickAlone.enabled && this.getPlayerCount() == 0;
-+            boolean flag2 = team.earendel.andromeda.configurations.GlobalConfiguration.get().neverTickAlone.unsupportedSettings.JUST_DO_NOT_TICK;
++            boolean flag2 = team.earendel.andromeda.configurations.GlobalConfiguration.get().neverTickAlone.unsupportedSettings.doNotTick;
 +            if (flag1 || flag2) {
 +                this.nextTickTime = this.getNextTickTime() + 333L;
 +            }
@@ -48,7 +48,7 @@ index 84f1cdf6e4f368705547d4c5eb027c84b8f130e4..dcf62e3422144a0a70006b942a5c7ea1
                  //this.profiler.pop(); // Purpur
                  //this.endMetricsRecordingTick(); // Purpur
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 86eb638e04769bb46848b279a8704bf141e717ab..0c8adb13d1fd9b2635e296bed52fe322f60865a2 100644
+index 86eb638e04769bb46848b279a8704bf141e717ab..0b7ebce9d2a627b6035c5364399a3219e5c3fefa 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -646,6 +646,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -57,15 +57,15 @@ index 86eb638e04769bb46848b279a8704bf141e717ab..0c8adb13d1fd9b2635e296bed52fe322
      public void tick(BooleanSupplier shouldKeepTicking) {
 +        // Andromeda start
 +        if ((team.earendel.andromeda.configurations.GlobalConfiguration.get().neverTickAlone.enabled && this.getServer().getPlayerCount() == 0)
-+                || team.earendel.andromeda.configurations.GlobalConfiguration.get().neverTickAlone.unsupportedSettings.JUST_DO_NOT_TICK
++                || team.earendel.andromeda.configurations.GlobalConfiguration.get().neverTickAlone.unsupportedSettings.doNotTick
 +                || (this.andromedaLevelConfiguration().neverTickAlone.enabled && this.players.isEmpty())
-+                || this.andromedaLevelConfiguration().neverTickAlone.unsupportedSettings.JUST_DO_NOT_TICK) return;
++                || this.andromedaLevelConfiguration().neverTickAlone.unsupportedSettings.doNotTick) return;
 +        // Andromeda end
          // Paper start - optimise checkDespawn
          this.playersAffectingSpawning.clear();
          for (ServerPlayer player : this.players) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 825a71a3fed79880bc0bdd9278050987bd6f6c03..14b7caae01cd64c12b0df4de10f21ea7c085042c 100644
+index 825a71a3fed79880bc0bdd9278050987bd6f6c03..aefbef812616ecdee2d595e9faeae3bc3eb1999e 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 @@ -78,4 +78,17 @@ public class GlobalConfiguration extends ConfigurationPart {
@@ -80,14 +80,14 @@ index 825a71a3fed79880bc0bdd9278050987bd6f6c03..14b7caae01cd64c12b0df4de10f21ea7
 +
 +        public UnsupportedSettings unsupportedSettings;
 +        public class UnsupportedSettings extends ConfigurationPart {
-+            public boolean JUST_DO_NOT_TICK = false;
++            public boolean doNotTick = false;
 +        }
 +
 +    }
 +
  }
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 0c451160a19bf4fcbb4996c5e776b29eaa7d1c34..710d04666edc734f62581211a0c99534afa40efd 100644
+index 0c451160a19bf4fcbb4996c5e776b29eaa7d1c34..1604fced79c4baeb043a1c5435598391b8bb86b9 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 @@ -99,4 +99,16 @@ public class LevelConfigurations extends ConfigurationPart {
@@ -101,7 +101,7 @@ index 0c451160a19bf4fcbb4996c5e776b29eaa7d1c34..710d04666edc734f62581211a0c99534
 +
 +        public UnsupportedSettings unsupportedSettings;
 +        public class UnsupportedSettings extends ConfigurationPart {
-+            public boolean JUST_DO_NOT_TICK = false;
++            public boolean doNotTick = false;
 +        }
 +
 +    }

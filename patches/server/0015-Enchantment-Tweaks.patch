@@ -23,7 +23,7 @@ index d6c354856c71d9629828e2ddbe316306bfaf6ea6..e25aa510aa03bc32ea8da6b0e5308769
      }
  
 diff --git a/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java b/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
-index 2381f72a5e980b8659f6253054996bbcad2844fc..19be3d4782a5e3857c5a20b463bd94f8bc13d56d 100644
+index 2381f72a5e980b8659f6253054996bbcad2844fc..43b8ee4a12da8b8045c5a042ad54d554147c9404 100644
 --- a/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
 +++ b/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
 @@ -110,6 +110,18 @@ public abstract class Enchantment {
@@ -39,7 +39,7 @@ index 2381f72a5e980b8659f6253054996bbcad2844fc..19be3d4782a5e3857c5a20b463bd94f8
 +            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.axe.acceptKnockback;
 +        } else if (this instanceof LootBonusEnchantment) {
 +            if (stack.getItem() instanceof net.minecraft.world.item.TridentItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.trident.acceptLooting;
-+            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.axe.acceptFireAspect;
++            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.axe.acceptLooting;
 +        }
 +        // Andromeda end
          return this.category.canEnchant(stack.getItem());

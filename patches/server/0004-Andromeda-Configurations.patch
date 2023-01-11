@@ -325,6 +325,30 @@ index 88fbaf7011d322cec621b7fa66c432e26c586d34..a3ce01cdd3d4c97a0b4b1a3881f739ed
          // Purpur start
          @Override
          public YamlConfiguration getPurpurConfig() {
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 576cd8e20982bb20d10213b6c7a229428eec1c2f..193487b0944cd4bb200ae621c817708e873d95b5 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -166,6 +166,19 @@ public class Main {
+                         .describedAs("Jar file");
+                 // Paper end
+ 
++                // Andromeda start
++                acceptsAll(asList("andromeda-dir", "andromeda-configurations-directory"), "Directory for Andromeda configurations")
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File(io.papermc.paper.configuration.PaperConfigurations.CONFIG_DIR))
++                        .describedAs("Config directory");
++                acceptsAll(asList("andromeda", "andromeda-configurations"), "File for Andromeda configurations")
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("andromeda.yml"))
++                        .describedAs("Yml file");
++                // Andromeda end
++
+                 // Purpur Start
+                 acceptsAll(asList("purpur", "purpur-settings"), "File for purpur settings")
+                     .withRequiredArg()
 diff --git a/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java b/src/main/java/team/earendel/andromeda/commands/AndromedaCommand.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..596fa8e8269922330a390a0656afc3eff6934ff3
