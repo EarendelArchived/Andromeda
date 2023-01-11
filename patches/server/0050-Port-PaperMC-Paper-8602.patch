@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 22:58:54 +0900
+Subject: [PATCH] Port PaperMC/Paper#8602
+
+
+diff --git a/src/main/java/net/minecraft/commands/CommandSourceStack.java b/src/main/java/net/minecraft/commands/CommandSourceStack.java
+index 613b3fb0a90ef19161f0df09a014c3811e5b8c9e..8fe59cfdce08e9cdcbee1ee91f1cff253302673b 100644
+--- a/src/main/java/net/minecraft/commands/CommandSourceStack.java
++++ b/src/main/java/net/minecraft/commands/CommandSourceStack.java
+@@ -207,8 +207,12 @@ public class CommandSourceStack implements SharedSuggestionProvider, com.destroy
+ 
+     // CraftBukkit start
+     public boolean hasPermission(int i, String bukkitPermission) {
+-        // World is null when loading functions
+-        return ((this.getLevel() == null || !this.getLevel().getCraftServer().ignoreVanillaPermissions) && this.permissionLevel >= i) || this.getBukkitSender().hasPermission(bukkitPermission);
++        // Andromeda start - Port PaperMC/Paper#8602
++        if (this.source == CommandSource.NULL)
++            return this.permissionLevel >= i;
++        else
++            return (!this.getLevel().getCraftServer().ignoreVanillaPermissions && this.permissionLevel >= i) || this.getBukkitSender().hasPermission(bukkitPermission);
++        // Andromeda end
+     }
+     // CraftBukkit end
+ 

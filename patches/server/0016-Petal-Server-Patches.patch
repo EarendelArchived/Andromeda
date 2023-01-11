@@ -1,0 +1,1620 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sun, 25 Dec 2022 14:45:42 +0900
+Subject: [PATCH] Petal Server Patches
+
+SHA: cc691540fb48240f38b376f3d94c8b0db2b60d99
+
+Original: peaches94 <peachescu94@gmail.com>
+Copyright (C) 2023 Bloom-host LLC
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+[PORTED PATCHES]
+0002 - feat: async path processing
+0003 - feat: multithreaded tracker
+0004 - feat: reduce work done by game event system
+0005 - feat: reduce sensor work
+
+diff --git a/src/main/java/host/bloom/pathfinding/AsyncPath.java b/src/main/java/host/bloom/pathfinding/AsyncPath.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..db264161dfa5ef288f6d79a0031b56f95f17dd9d
+--- /dev/null
++++ b/src/main/java/host/bloom/pathfinding/AsyncPath.java
+@@ -0,0 +1,288 @@
++package host.bloom.pathfinding;
++
++import net.minecraft.core.BlockPos;
++import net.minecraft.world.entity.Entity;
++import net.minecraft.world.level.pathfinder.Node;
++import net.minecraft.world.level.pathfinder.Path;
++import net.minecraft.world.phys.Vec3;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Set;
++import java.util.function.Supplier;
++
++/**
++ * i'll be using this to represent a path that not be processed yet!
++ */
++public class AsyncPath extends Path {
++
++    /**
++     * marks whether this async path has been processed
++     */
++    private volatile boolean processed = false;
++
++    /**
++     * runnables waiting for this to be processed
++     */
++    private final List<Runnable> postProcessing = new ArrayList<>(0);
++
++    /**
++     * a list of positions that this path could path towards
++     */
++    private final Set<BlockPos> positions;
++
++    /**
++     * the supplier of the real processed path
++     */
++    private final Supplier<Path> pathSupplier;
++
++    /*
++     * Processed values
++     */
++
++    /**
++     * this is a reference to the nodes list in the parent `Path` object
++     */
++    private final List<Node> nodes;
++    /**
++     * the block we're trying to path to
++     *
++     * while processing, we have no idea where this is so consumers of `Path` should check that the path is processed before checking the target block
++     */
++    private @Nullable BlockPos target;
++    /**
++     * how far we are to the target
++     *
++     * while processing, the target could be anywhere but theoretically we're always "close" to a theoretical target so default is 0
++     */
++    private float distToTarget = 0;
++    /**
++     * whether we can reach the target
++     *
++     * while processing we can always theoretically reach the target so default is true
++     */
++    private boolean canReach = true;
++
++    public AsyncPath(@NotNull List<Node> emptyNodeList, @NotNull Set<BlockPos> positions, @NotNull Supplier<Path> pathSupplier) {
++        //noinspection ConstantConditions
++        super(emptyNodeList, null, false);
++
++        this.nodes = emptyNodeList;
++        this.positions = positions;
++        this.pathSupplier = pathSupplier;
++
++        AsyncPathProcessor.queue(this);
++    }
++
++    @Override
++    public boolean isProcessed() {
++        return this.processed;
++    }
++
++    /**
++     * returns the future representing the processing state of this path
++     * @return a future
++     */
++    public synchronized void postProcessing(@NotNull Runnable runnable) {
++        if (this.processed) {
++            runnable.run();
++        } else {
++            this.postProcessing.add(runnable);
++        }
++    }
++
++    /**
++     * an easy way to check if this processing path is the same as an attempted new path
++     *
++     * @param positions - the positions to compare against
++     * @return true if we are processing the same positions
++     */
++    public boolean hasSameProcessingPositions(final Set<BlockPos> positions) {
++        if (this.positions.size() != positions.size()) {
++            return false;
++        }
++
++        return this.positions.containsAll(positions);
++    }
++
++    /**
++     * starts processing this path
++     */
++    public synchronized void process() {
++        if (this.processed) {
++            return;
++        }
++
++        final Path bestPath = this.pathSupplier.get();
++
++        this.nodes.addAll(bestPath.nodes); // we mutate this list to reuse the logic in Path
++        this.target = bestPath.getTarget();
++        this.distToTarget = bestPath.getDistToTarget();
++        this.canReach = bestPath.canReach();
++
++        this.processed = true;
++
++        for (Runnable runnable : this.postProcessing) {
++            runnable.run();
++        }
++    }
++
++    /**
++     * if this path is accessed while it hasn't processed, just process it in-place
++     */
++    private void checkProcessed() {
++        if (!this.processed) {
++            this.process();
++        }
++    }
++
++    /*
++     * overrides we need for final fields that we cannot modify after processing
++     */
++
++    @Override
++    public @NotNull BlockPos getTarget() {
++        this.checkProcessed();
++
++        return this.target;
++    }
++
++    @Override
++    public float getDistToTarget() {
++        this.checkProcessed();
++
++        return this.distToTarget;
++    }
++
++    @Override
++    public boolean canReach() {
++        this.checkProcessed();
++
++        return this.canReach;
++    }
++
++    /*
++     * overrides to ensure we're processed first
++     */
++
++    @Override
++    public boolean isDone() {
++        return this.isProcessed() && super.isDone();
++    }
++
++    @Override
++    public void advance() {
++        this.checkProcessed();
++
++        super.advance();
++    }
++
++    @Override
++    public boolean notStarted() {
++        this.checkProcessed();
++
++        return super.notStarted();
++    }
++
++    @Nullable
++    @Override
++    public Node getEndNode() {
++        this.checkProcessed();
++
++        return super.getEndNode();
++    }
++
++    @Override
++    public Node getNode(int index) {
++        this.checkProcessed();
++
++        return super.getNode(index);
++    }
++
++    @Override
++    public void truncateNodes(int length) {
++        this.checkProcessed();
++
++        super.truncateNodes(length);
++    }
++
++    @Override
++    public void replaceNode(int index, Node node) {
++        this.checkProcessed();
++
++        super.replaceNode(index, node);
++    }
++
++    @Override
++    public int getNodeCount() {
++        this.checkProcessed();
++
++        return super.getNodeCount();
++    }
++
++    @Override
++    public int getNextNodeIndex() {
++        this.checkProcessed();
++
++        return super.getNextNodeIndex();
++    }
++
++    @Override
++    public void setNextNodeIndex(int nodeIndex) {
++        this.checkProcessed();
++
++        super.setNextNodeIndex(nodeIndex);
++    }
++
++    @Override
++    public Vec3 getEntityPosAtNode(Entity entity, int index) {
++        this.checkProcessed();
++
++        return super.getEntityPosAtNode(entity, index);
++    }
++
++    @Override
++    public BlockPos getNodePos(int index) {
++        this.checkProcessed();
++
++        return super.getNodePos(index);
++    }
++
++    @Override
++    public Vec3 getNextEntityPos(Entity entity) {
++        this.checkProcessed();
++
++        return super.getNextEntityPos(entity);
++    }
++
++    @Override
++    public BlockPos getNextNodePos() {
++        this.checkProcessed();
++
++        return super.getNextNodePos();
++    }
++
++    @Override
++    public Node getNextNode() {
++        this.checkProcessed();
++
++        return super.getNextNode();
++    }
++
++    @Nullable
++    @Override
++    public Node getPreviousNode() {
++        this.checkProcessed();
++
++        return super.getPreviousNode();
++    }
++
++    @Override
++    public boolean hasNext() {
++        this.checkProcessed();
++
++        return super.hasNext();
++    }
++}
+diff --git a/src/main/java/host/bloom/pathfinding/AsyncPathProcessor.java b/src/main/java/host/bloom/pathfinding/AsyncPathProcessor.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..421670f967568c10e1e9052d0fc25818538d3b51
+--- /dev/null
++++ b/src/main/java/host/bloom/pathfinding/AsyncPathProcessor.java
+@@ -0,0 +1,44 @@
++package host.bloom.pathfinding;
++
++import com.google.common.util.concurrent.ThreadFactoryBuilder;
++import net.minecraft.server.MinecraftServer;
++import net.minecraft.world.level.pathfinder.Path;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.Executor;
++import java.util.concurrent.Executors;
++import java.util.function.Consumer;
++
++/**
++ * used to handle the scheduling of async path processing
++ */
++public class AsyncPathProcessor {
++
++    private static final Executor mainThreadExecutor = MinecraftServer.getServer();
++    private static final Executor pathProcessingExecutor = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
++            .setNameFormat("petal-path-processor-%d")
++            .setPriority(Thread.NORM_PRIORITY - 2)
++            .build());
++
++    protected static CompletableFuture<Void> queue(@NotNull AsyncPath path) {
++        return CompletableFuture.runAsync(path::process, pathProcessingExecutor);
++    }
++
++    /**
++     * takes a possibly unprocessed path, and waits until it is completed
++     * the consumer will be immediately invoked if the path is already processed
++     * the consumer will always be called on the main thread
++     *
++     * @param path a path to wait on
++     * @param afterProcessing a consumer to be called
++     */
++    public static void awaitProcessing(@Nullable Path path, Consumer<@Nullable Path> afterProcessing) {
++        if (path != null && !path.isProcessed() && path instanceof AsyncPath asyncPath) {
++            asyncPath.postProcessing(() -> mainThreadExecutor.execute(() -> afterProcessing.accept(path)));
++        } else {
++            afterProcessing.accept(path);
++        }
++    }
++}
+diff --git a/src/main/java/host/bloom/pathfinding/NodeEvaluatorCache.java b/src/main/java/host/bloom/pathfinding/NodeEvaluatorCache.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d70c82e4b117ee3bf9df6ba322e4ae9fc99d1124
+--- /dev/null
++++ b/src/main/java/host/bloom/pathfinding/NodeEvaluatorCache.java
+@@ -0,0 +1,39 @@
++package host.bloom.pathfinding;
++
++import net.minecraft.world.level.pathfinder.NodeEvaluator;
++import org.apache.commons.lang.Validate;
++import org.jetbrains.annotations.NotNull;
++
++import java.util.Map;
++import java.util.Queue;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.concurrent.ConcurrentLinkedQueue;
++
++public class NodeEvaluatorCache {
++    private static final Map<NodeEvaluatorGenerator, ConcurrentLinkedQueue<NodeEvaluator>> threadLocalNodeEvaluators = new ConcurrentHashMap<>();
++    private static final Map<NodeEvaluator, NodeEvaluatorGenerator> nodeEvaluatorToGenerator = new ConcurrentHashMap<>();
++
++    private static @NotNull Queue<NodeEvaluator> getDequeForGenerator(@NotNull NodeEvaluatorGenerator generator) {
++        return threadLocalNodeEvaluators.computeIfAbsent(generator, (key) -> new ConcurrentLinkedQueue<>());
++    }
++
++    public static @NotNull NodeEvaluator takeNodeEvaluator(@NotNull NodeEvaluatorGenerator generator) {
++        var nodeEvaluator = getDequeForGenerator(generator).poll();
++
++        if (nodeEvaluator == null) {
++            nodeEvaluator = generator.generate();
++        }
++
++        nodeEvaluatorToGenerator.put(nodeEvaluator, generator);
++
++        return nodeEvaluator;
++    }
++
++    public static void returnNodeEvaluator(@NotNull NodeEvaluator nodeEvaluator) {
++        final var generator = nodeEvaluatorToGenerator.remove(nodeEvaluator);
++        Validate.notNull(generator, "NodeEvaluator already returned");
++
++        getDequeForGenerator(generator).offer(nodeEvaluator);
++    }
++
++}
+diff --git a/src/main/java/host/bloom/pathfinding/NodeEvaluatorGenerator.java b/src/main/java/host/bloom/pathfinding/NodeEvaluatorGenerator.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d5327cb257d63291adc8b5c60cffb4e47e1e5b0e
+--- /dev/null
++++ b/src/main/java/host/bloom/pathfinding/NodeEvaluatorGenerator.java
+@@ -0,0 +1,10 @@
++package host.bloom.pathfinding;
++
++import net.minecraft.world.level.pathfinder.NodeEvaluator;
++import org.jetbrains.annotations.NotNull;
++
++public interface NodeEvaluatorGenerator {
++
++    @NotNull NodeEvaluator generate();
++
++}
+diff --git a/src/main/java/host/bloom/tracker/MultithreadedTracker.java b/src/main/java/host/bloom/tracker/MultithreadedTracker.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d27b7224ed2bcc63386dc46c33bfb8b272d91f92
+--- /dev/null
++++ b/src/main/java/host/bloom/tracker/MultithreadedTracker.java
+@@ -0,0 +1,154 @@
++package host.bloom.tracker;
++
++import com.google.common.util.concurrent.ThreadFactoryBuilder;
++import io.papermc.paper.util.maplist.IteratorSafeOrderedReferenceSet;
++import io.papermc.paper.world.ChunkEntitySlices;
++import net.minecraft.server.MinecraftServer;
++import net.minecraft.server.level.ChunkMap;
++import net.minecraft.world.entity.Entity;
++import net.minecraft.world.level.chunk.LevelChunk;
++
++import java.util.concurrent.ConcurrentLinkedQueue;
++import java.util.concurrent.Executor;
++import java.util.concurrent.Executors;
++import java.util.concurrent.atomic.AtomicInteger;
++
++public class MultithreadedTracker {
++
++    private enum TrackerStage {
++        UPDATE_PLAYERS,
++        SEND_CHANGES
++    }
++
++    private static final int parallelism = Math.max(4, Runtime.getRuntime().availableProcessors());
++    private static final Executor trackerExecutor = Executors.newFixedThreadPool(parallelism, new ThreadFactoryBuilder()
++            .setNameFormat("petal-tracker-%d")
++            .setPriority(Thread.NORM_PRIORITY - 2)
++            .build());
++
++    private final IteratorSafeOrderedReferenceSet<LevelChunk> entityTickingChunks;
++    private final AtomicInteger taskIndex = new AtomicInteger();
++
++    private final ConcurrentLinkedQueue<Runnable> mainThreadTasks;
++    private final AtomicInteger finishedTasks = new AtomicInteger();
++
++    public MultithreadedTracker(IteratorSafeOrderedReferenceSet<LevelChunk> entityTickingChunks, ConcurrentLinkedQueue<Runnable> mainThreadTasks) {
++        this.entityTickingChunks = entityTickingChunks;
++        this.mainThreadTasks = mainThreadTasks;
++    }
++
++    public void tick() {
++        int iterator = this.entityTickingChunks.createRawIterator();
++
++        if (iterator == -1) {
++            return;
++        }
++
++        // start with updating players
++        try {
++            this.taskIndex.set(iterator);
++            this.finishedTasks.set(0);
++
++            for (int i = 0; i < parallelism; i++) {
++                trackerExecutor.execute(this::runUpdatePlayers);
++            }
++
++            while (this.taskIndex.get() < this.entityTickingChunks.getListSize()) {
++                this.runMainThreadTasks();
++                this.handleChunkUpdates(5); // assist
++            }
++
++            while (this.finishedTasks.get() != parallelism) {
++                this.runMainThreadTasks();
++            }
++
++            this.runMainThreadTasks(); // finish any remaining tasks
++        } finally {
++            this.entityTickingChunks.finishRawIterator();
++        }
++
++        // then send changes
++        iterator = this.entityTickingChunks.createRawIterator();
++
++        if (iterator == -1) {
++            return;
++        }
++
++        try {
++            do {
++                LevelChunk chunk = this.entityTickingChunks.rawGet(iterator);
++
++                if (chunk != null) {
++                    this.updateChunkEntities(chunk, TrackerStage.SEND_CHANGES);
++                }
++            } while (++iterator < this.entityTickingChunks.getListSize());
++        } finally {
++            this.entityTickingChunks.finishRawIterator();
++        }
++    }
++
++    private void runMainThreadTasks() {
++        try {
++            Runnable task;
++            while ((task = this.mainThreadTasks.poll()) != null) {
++                task.run();
++            }
++        } catch (Throwable throwable) {
++            MinecraftServer.LOGGER.warn("Tasks failed while ticking track queue", throwable);
++        }
++    }
++
++    private void runUpdatePlayers() {
++        try {
++            while (handleChunkUpdates(10));
++        } finally {
++            this.finishedTasks.incrementAndGet();
++        }
++    }
++
++    private boolean handleChunkUpdates(int tasks) {
++        int index;
++        while ((index = this.taskIndex.getAndAdd(tasks)) < this.entityTickingChunks.getListSize()) {
++            for (int i = index; i < index + tasks && i < this.entityTickingChunks.getListSize(); i++) {
++                LevelChunk chunk = this.entityTickingChunks.rawGet(i);
++                if (chunk != null) {
++                    try {
++                        this.updateChunkEntities(chunk, TrackerStage.UPDATE_PLAYERS);
++                    } catch (Throwable throwable) {
++                        MinecraftServer.LOGGER.warn("Ticking tracker failed", throwable);
++                    }
++
++                }
++            }
++
++            return true;
++        }
++
++        return false;
++    }
++
++    private void updateChunkEntities(LevelChunk chunk, TrackerStage trackerStage) {
++        final ChunkEntitySlices entitySlices = chunk.level.getEntityLookup().getChunk(chunk.locX, chunk.locZ);
++        if (entitySlices == null) {
++            return;
++        }
++
++        final Entity[] rawEntities = entitySlices.entities.getRawData();
++        final ChunkMap chunkMap = chunk.level.chunkSource.chunkMap;
++
++        for (int i = 0; i < rawEntities.length; i++) {
++            Entity entity = rawEntities[i];
++            if (entity != null) {
++                ChunkMap.TrackedEntity entityTracker = chunkMap.entityMap.get(entity.getId());
++                if (entityTracker != null) {
++                    if (trackerStage == TrackerStage.SEND_CHANGES) {
++                        entityTracker.serverEntity.sendChanges();
++                    } else if (trackerStage == TrackerStage.UPDATE_PLAYERS) {
++                        entityTracker.updatePlayers(entityTracker.entity.getPlayersInTrackRange());
++                    }
++                }
++            }
++        }
++    }
++
++}
+diff --git a/src/main/java/io/papermc/paper/util/maplist/IteratorSafeOrderedReferenceSet.java b/src/main/java/io/papermc/paper/util/maplist/IteratorSafeOrderedReferenceSet.java
+index 0fd814f1d65c111266a2b20f86561839a4cef755..95f99b315210f80d91be5f58e510b5bd0c82ce31 100644
+--- a/src/main/java/io/papermc/paper/util/maplist/IteratorSafeOrderedReferenceSet.java
++++ b/src/main/java/io/papermc/paper/util/maplist/IteratorSafeOrderedReferenceSet.java
+@@ -15,7 +15,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+ 
+     /* list impl */
+     protected E[] listElements;
+-    protected int listSize;
++    protected int listSize; public int getListSize() { return this.listSize; } // Andromeda - expose listSize
+ 
+     protected final double maxFragFactor;
+ 
+diff --git a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+index f597d65d56964297eeeed6c7e77703764178fee0..137ab301176d27bea16dff5cd2ffa491ed955a54 100644
+--- a/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
++++ b/src/main/java/io/papermc/paper/world/ChunkEntitySlices.java
+@@ -35,7 +35,7 @@ public final class ChunkEntitySlices {
+     protected final EntityCollectionBySection allEntities;
+     protected final EntityCollectionBySection hardCollidingEntities;
+     protected final Reference2ObjectOpenHashMap<Class<? extends Entity>, EntityCollectionBySection> entitiesByClass;
+-    protected final EntityList entities = new EntityList();
++    public final EntityList entities = new EntityList(); // Andromeda - protected -> public
+ 
+     public ChunkHolder.FullChunkStatus status;
+ 
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 75965afd7b4bed23a5ecf618c7f91ff5e7ffd92f..bec6491095dae48b8e28638c0aec3d2a6e8dc74b 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -195,6 +195,12 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     }
+     // Paper end - use distance map to optimise tracker
+ 
++    // Andromeda start - Petal patches (multithreaded tracker)
++    private @Nullable host.bloom.tracker.MultithreadedTracker multithreadedTracker;
++    private final java.util.concurrent.ConcurrentLinkedQueue<Runnable> trackerMainThreadTasks = new java.util.concurrent.ConcurrentLinkedQueue<>();
++    private boolean tracking = false;
++    // Andromeda end
++
+     void addPlayerToDistanceMaps(ServerPlayer player) {
+         this.playerChunkManager.addPlayer(player); // Paper - replace chunk loader
+         int chunkX = MCUtil.getChunkCoordinate(player.getX());
+@@ -1248,8 +1254,31 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         entity.tracker = null; // Paper - We're no longer tracked
+     }
+ 
++    // Andromeda start - Petal patches (multithreaded tracker)
++    public void runOnTrackerMainThread(final Runnable task) {
++        if (this.tracking) {
++            this.trackerMainThreadTasks.add(task);
++        } else {
++            task.run();
++        }
++    }
++    // Andromeda end
++
+     // Paper start - optimised tracker
+     private final void processTrackQueue() {
++        // Andromeda start
++        if (this.multithreadedTracker == null) {
++            this.multithreadedTracker = new host.bloom.tracker.MultithreadedTracker(this.level.chunkSource.entityTickingChunks, this.trackerMainThreadTasks);
++        }
++
++        this.tracking = true;
++        try {
++            this.multithreadedTracker.tick();
++        } finally {
++            this.tracking = false;
++        }
++        /*
++        // Andromeda end
+         //this.level.timings.tracker1.startTiming(); // Purpur
+         try {
+             for (TrackedEntity tracker : this.entityMap.values()) {
+@@ -1269,6 +1298,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         } finally {
+             //this.level.timings.tracker2.stopTiming(); // Purpur
+         }
++         */ // Andromeda - Petal patches
+     }
+     // Paper end - optimised tracker
+ 
+@@ -1497,10 +1527,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     public class TrackedEntity {
+ 
+         public final ServerEntity serverEntity;
+-        final Entity entity;
++        public final Entity entity; // Andromeda - package -> public
+         private final int range;
+         SectionPos lastSectionPos;
+-        public final Set<ServerPlayerConnection> seenBy = new ReferenceOpenHashSet<>(); // Paper - optimise map impl
++        public final Set<ServerPlayerConnection> seenBy = it.unimi.dsi.fastutil.objects.ReferenceSets.synchronize(new ReferenceOpenHashSet<>()); // Paper - optimise map impl // Andromeda - Petal patches (sync)
+ 
+         public TrackedEntity(Entity entity, int i, int j, boolean flag) {
+             this.serverEntity = new ServerEntity(ChunkMap.this.level, entity, j, flag, this::broadcast, this.seenBy); // CraftBukkit
+@@ -1512,7 +1542,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         // Paper start - use distance map to optimise tracker
+         com.destroystokyo.paper.util.misc.PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<ServerPlayer> lastTrackerCandidates;
+ 
+-        final void updatePlayers(com.destroystokyo.paper.util.misc.PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<ServerPlayer> newTrackerCandidates) {
++        public final void updatePlayers(com.destroystokyo.paper.util.misc.PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<ServerPlayer> newTrackerCandidates) { // Andromeda - package -> public
+             com.destroystokyo.paper.util.misc.PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<ServerPlayer> oldTrackerCandidates = this.lastTrackerCandidates;
+             this.lastTrackerCandidates = newTrackerCandidates;
+ 
+@@ -1584,7 +1614,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         }
+ 
+         public void removePlayer(ServerPlayer player) {
+-            org.spigotmc.AsyncCatcher.catchOp("player tracker clear"); // Spigot
++            //org.spigotmc.AsyncCatcher.catchOp("player tracker clear"); // Spigot // Andromeda - Petal patches (we can remove async)
+             if (this.seenBy.remove(player.connection)) {
+                 this.serverEntity.removePairing(player);
+             }
+@@ -1592,7 +1622,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         }
+ 
+         public void updatePlayer(ServerPlayer player) {
+-            org.spigotmc.AsyncCatcher.catchOp("player tracker update"); // Spigot
++            //org.spigotmc.AsyncCatcher.catchOp("player tracker update"); // Spigot // Andromeda - Petal patches (we can update async too)
+             if (player != this.entity) {
+                 // Paper start - remove allocation of Vec3D here
+                 // Vec3 vec3d = player.position().subtract(this.entity.position());
+diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
+index 0f9a3a6c05fee59c29764f0c0d7a6cb8a2a861b1..dd6a43522054a26fce1fa2793df31e15975b5493 100644
+--- a/src/main/java/net/minecraft/server/level/ServerEntity.java
++++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
+@@ -254,14 +254,18 @@ public class ServerEntity {
+ 
+     public void removePairing(ServerPlayer player) {
+         this.entity.stopSeenByPlayer(player);
++        ((ServerLevel) this.entity.level).getChunkSource().chunkMap.runOnTrackerMainThread(() -> { // Andromeda - Petal patches (ensure main thread)
+         player.connection.send(new ClientboundRemoveEntitiesPacket(new int[]{this.entity.getId()}));
++        }); // Andromeda
+     }
+ 
+     public void addPairing(ServerPlayer player) {
+         ServerGamePacketListenerImpl playerconnection = player.connection;
+ 
+         Objects.requireNonNull(player.connection);
++        ((ServerLevel) this.entity.level).getChunkSource().chunkMap.runOnTrackerMainThread(() -> { // Andromeda - Petal patches (ensure main thread)
+         this.sendPairingData(playerconnection::send, player); // CraftBukkit - add player
++        }); // Andromeda
+         this.entity.startSeenByPlayer(player);
+     }
+ 
+@@ -368,20 +372,27 @@ public class ServerEntity {
+         List<SynchedEntityData.DataValue<?>> list = datawatcher.packDirty();
+ 
+         if (list != null) {
++            ((ServerLevel) this.entity.level).getChunkSource().chunkMap.runOnTrackerMainThread(() -> { // Andromeda - Petal patches (ensure main thread)
+             this.trackedDataValues = datawatcher.getNonDefaultValues();
+             this.broadcastAndSend(new ClientboundSetEntityDataPacket(this.entity.getId(), list));
++            }); // Andromeda
+         }
+ 
+         if (this.entity instanceof LivingEntity) {
+             Set<AttributeInstance> set = ((LivingEntity) this.entity).getAttributes().getDirtyAttributes();
+ 
+             if (!set.isEmpty()) {
+-                // CraftBukkit start - Send scaled max health
+-                if (this.entity instanceof ServerPlayer) {
+-                    ((ServerPlayer) this.entity).getBukkitEntity().injectScaledMaxHealth(set, false);
+-                }
+-                // CraftBukkit end
+-                this.broadcastAndSend(new ClientboundUpdateAttributesPacket(this.entity.getId(), set));
++                // Andromeda start - Petal patches (ensure main thread)
++                final var copy = Lists.newArrayList(set);
++                ((ServerLevel) this.entity.level).getChunkSource().chunkMap.runOnTrackerMainThread(() -> {
++                    // CraftBukkit start - Send scaled max health
++                    if (this.entity instanceof ServerPlayer) {
++                        ((ServerPlayer) this.entity).getBukkitEntity().injectScaledMaxHealth(copy, false);
++                    }
++                    // CraftBukkit end
++                    this.broadcastAndSend(new ClientboundUpdateAttributesPacket(this.entity.getId(), copy));
++                });
++                // Andromeda end
+             }
+ 
+             set.clear();
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 094afd5636590608c8ec31c9fec97614dfef60db..1397b5a0f9a95682a6b09db10a53bbbda29d7f86 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -1026,20 +1026,20 @@ public abstract class LivingEntity extends Entity {
+         }
+ 
+         if (entity != null) {
+-            ItemStack itemstack = this.getItemBySlot(EquipmentSlot.HEAD);
++            //ItemStack itemstack = this.getItemBySlot(EquipmentSlot.HEAD); // Andromeda - Petal patches (only do itemstack lookup if we need to)
+             EntityType<?> entitytypes = entity.getType();
+ 
+             // Purpur start
+-            if (entitytypes == EntityType.SKELETON && itemstack.is(Items.SKELETON_SKULL)) {
++            if (entitytypes == EntityType.SKELETON && this.getItemBySlot(EquipmentSlot.HEAD).is(Items.SKELETON_SKULL)) { // Andromeda - Petal patches
+                 d0 *= entity.level.purpurConfig.skeletonHeadVisibilityPercent;
+             }
+-            else if (entitytypes == EntityType.ZOMBIE && itemstack.is(Items.ZOMBIE_HEAD)) {
++            else if (entitytypes == EntityType.ZOMBIE && this.getItemBySlot(EquipmentSlot.HEAD).is(Items.ZOMBIE_HEAD)) { // Andromeda - Petal patches
+                 d0 *= entity.level.purpurConfig.zombieHeadVisibilityPercent;
+             }
+-            else if (entitytypes == EntityType.CREEPER && itemstack.is(Items.CREEPER_HEAD)) {
++            else if (entitytypes == EntityType.CREEPER && this.getItemBySlot(EquipmentSlot.HEAD).is(Items.CREEPER_HEAD)) { // Andromeda - Petal patches
+                 d0 *= entity.level.purpurConfig.creeperHeadVisibilityPercent;
+             }
+-            else if ((entitytypes == EntityType.PIGLIN || entitytypes == EntityType.PIGLIN_BRUTE) && itemstack.is(Items.PIGLIN_HEAD)) {
++            else if ((entitytypes == EntityType.PIGLIN || entitytypes == EntityType.PIGLIN_BRUTE) && this.getItemBySlot(EquipmentSlot.HEAD).is(Items.PIGLIN_HEAD)) { // Andromeda - Petal patches
+                 d0 *= entity.level.purpurConfig.piglinHeadVisibilityPercent;
+             }
+             // Purpur end
+diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
+index 7bd4e95fcaf3855a4fe412b5898a97d7992caad3..478746a653956a7cf4c87b317831e34fe4cc888f 100644
+--- a/src/main/java/net/minecraft/world/entity/Mob.java
++++ b/src/main/java/net/minecraft/world/entity/Mob.java
+@@ -903,9 +903,10 @@ public abstract class Mob extends LivingEntity {
+         }
+         // Paper end
+         //this.level.getProfiler().push("sensing"); // Purpur
+-        this.sensing.tick();
++        //this.sensing.tick(); // Andromeda - Petal patches
+         //this.level.getProfiler().pop(); // Purpur
+         int i = this.level.getServer().getTickCount() + this.getId();
++        if (i % 10 == 0) this.sensing.tick(); // Andromeda - Petal patches (moved down)
+ 
+         if (i % 2 != 0 && this.tickCount > 1) {
+             //this.level.getProfiler().push("targetSelector"); // Purpur
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java b/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
+index fe502445a77afe7e3807afae48d7bf03f370e290..132fd2fe5c64de2b953d95a07269ceeaaf3fc96f 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
+@@ -68,8 +68,17 @@ public class AcquirePoi {
+                         io.papermc.paper.util.PoiAccess.findNearestPoiPositions(poiManager, poiPredicate, predicate2, entity.blockPosition(), 48, 48*48, PoiManager.Occupancy.HAS_SPACE, false, 5, poiposes);
+                         Set<Pair<Holder<PoiType>, BlockPos>> set = new java.util.HashSet<>(poiposes);
+                         // Paper end - optimise POI access
+-                        Path path = findPathToPois(entity, set);
+-                        if (path != null && path.canReach()) {
++                        // Andromeda start - Petal patches
++                        host.bloom.pathfinding.AsyncPathProcessor.awaitProcessing(findPathToPois(entity, set), path -> {
++                            if (path == null || !path.canReach()) {
++                                for (Pair<Holder<PoiType>, BlockPos> pair : set) {
++                                    long2ObjectMap.computeIfAbsent(pair.getSecond().asLong(), (m) -> {
++                                        return new AcquirePoi.JitteredLinearRetry(entity.level.random, time);
++                                    });
++                                }
++                                return;
++                            }
++
+                             BlockPos blockPos = path.getTarget();
+                             poiManager.getType(blockPos).ifPresent((poiType) -> {
+                                 poiManager.take(poiPredicate, (holder, blockPos2) -> {
+@@ -82,13 +91,8 @@ public class AcquirePoi {
+                                 long2ObjectMap.clear();
+                                 DebugPackets.sendPoiTicketCountPacket(world, blockPos);
+                             });
+-                        } else {
+-                            for(Pair<Holder<PoiType>, BlockPos> pair : set) {
+-                                long2ObjectMap.computeIfAbsent(pair.getSecond().asLong(), (m) -> {
+-                                    return new AcquirePoi.JitteredLinearRetry(world.random, time);
+-                                });
+-                            }
+-                        }
++                        });
++                        // Andromeda end
+ 
+                         return true;
+                     }
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java b/src/main/java/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
+index a25d86941d7ed63ac9bcd6f4be71232b0ef6a7a9..a60f3efdad00ef226d22687ee28aa24c747748ad 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
+@@ -21,6 +21,7 @@ public class MoveToTargetSink extends Behavior<Mob> {
+     private int remainingCooldown;
+     @Nullable
+     private Path path;
++    private boolean finishedProcessing; // Andromeda - Petal patches (track when path is processed)
+     @Nullable
+     private BlockPos lastTargetPos;
+     private float speedModifier;
+@@ -42,8 +43,7 @@ public class MoveToTargetSink extends Behavior<Mob> {
+             Brain<?> brain = entity.getBrain();
+             WalkTarget walkTarget = brain.getMemory(MemoryModuleType.WALK_TARGET).get();
+             boolean bl = this.reachedTarget(entity, walkTarget);
+-            if (!bl && this.tryComputePath(entity, walkTarget, world.getGameTime())) {
+-                this.lastTargetPos = walkTarget.getTarget().currentBlockPosition();
++            if (!bl) { // Andromeda - Petal pathes
+                 return true;
+             } else {
+                 brain.eraseMemory(MemoryModuleType.WALK_TARGET);
+@@ -58,6 +58,7 @@ public class MoveToTargetSink extends Behavior<Mob> {
+ 
+     @Override
+     protected boolean canStillUse(ServerLevel world, Mob entity, long time) {
++        if (!this.finishedProcessing) return true; // Andromeda - Petal patches (wait for processing)
+         if (this.path != null && this.lastTargetPos != null) {
+             Optional<WalkTarget> optional = entity.getBrain().getMemory(MemoryModuleType.WALK_TARGET);
+             PathNavigation pathNavigation = entity.getNavigation();
+@@ -81,56 +82,72 @@ public class MoveToTargetSink extends Behavior<Mob> {
+ 
+     @Override
+     protected void start(ServerLevel serverLevel, Mob mob, long l) {
+-        mob.getBrain().setMemory(MemoryModuleType.PATH, this.path);
+-        mob.getNavigation().moveTo(this.path, (double)this.speedModifier);
++        // Andromeda start - Petal patches
++        WalkTarget walkTarget = mob.getBrain().getMemory(MemoryModuleType.WALK_TARGET).get();
++
++        this.finishedProcessing = false;
++        this.lastTargetPos = walkTarget.getTarget().currentBlockPosition();
++        this.path = this.computePath(mob, walkTarget);
++        // Andromeda end
+     }
+ 
+     @Override
+     protected void tick(ServerLevel serverLevel, Mob mob, long l) {
+-        Path path = mob.getNavigation().getPath();
+-        Brain<?> brain = mob.getBrain();
+-        if (this.path != path) {
+-            this.path = path;
+-            brain.setMemory(MemoryModuleType.PATH, path);
++        // Andromeda start - Petal patches
++        if (this.path != null && !this.path.isProcessed()) return;
++        if (!this.finishedProcessing) {
++            this.finishedProcessing = true;
++
++            Brain<?> brain = mob.getBrain();
++            if (this.path != null && this.path.canReach()) {
++                brain.eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
++            } else {
++                if (!brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)) {
++                    brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, l);
++                }
++
++                Optional<WalkTarget> walkTarget = brain.getMemory(MemoryModuleType.WALK_TARGET);
++
++                if (walkTarget.isPresent()) {
++                    BlockPos blockPos = walkTarget.get().getTarget().currentBlockPosition();
++                    Vec3 vec3 = DefaultRandomPos.getPosTowards((PathfinderMob) mob, 10, 7, Vec3.atBottomCenterOf(blockPos), ((float) Math.PI / 2F));
++                    if (vec3 != null) {
++                        this.path = mob.getNavigation().createPath(vec3.x, vec3.y, vec3.z, 0);
++                        this.finishedProcessing = false;
++                        return;
++                    }
++                }
++
++                brain.eraseMemory(MemoryModuleType.WALK_TARGET);
++                this.path = null;
++                return;
++            }
++
++            brain.setMemory(MemoryModuleType.PATH, this.path);
++            mob.getNavigation().moveTo(this.path, this.speedModifier);
+         }
++        // Andromeda end
+ 
+-        if (path != null && this.lastTargetPos != null) {
++        Path path = mob.getNavigation().getPath();
++        Brain<?> brain = mob.getBrain();
++        if (path != null && this.lastTargetPos != null && brain.hasMemoryValue(MemoryModuleType.WALK_TARGET)) { // Andromeda - Petal patches
+             WalkTarget walkTarget = brain.getMemory(MemoryModuleType.WALK_TARGET).get();
+-            if (walkTarget.getTarget().currentBlockPosition().distSqr(this.lastTargetPos) > 4.0D && this.tryComputePath(mob, walkTarget, serverLevel.getGameTime())) {
+-                this.lastTargetPos = walkTarget.getTarget().currentBlockPosition();
++            if (walkTarget.getTarget().currentBlockPosition().distSqr(this.lastTargetPos) > 4.0D) { // Andromeda - Petal patches
+                 this.start(serverLevel, mob, l);
+             }
+ 
+         }
+     }
+ 
+-    private boolean tryComputePath(Mob entity, WalkTarget walkTarget, long time) {
++    private Path computePath(Mob entity, WalkTarget walkTarget) { // Andromeda - Petal patches
+         BlockPos blockPos = walkTarget.getTarget().currentBlockPosition();
+-        this.path = entity.getNavigation().createPath(blockPos, 0);
+         this.speedModifier = walkTarget.getSpeedModifier();
+         Brain<?> brain = entity.getBrain();
+         if (this.reachedTarget(entity, walkTarget)) {
+             brain.eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+-        } else {
+-            boolean bl = this.path != null && this.path.canReach();
+-            if (bl) {
+-                brain.eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+-            } else if (!brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)) {
+-                brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
+-            }
+-
+-            if (this.path != null) {
+-                return true;
+-            }
+-
+-            Vec3 vec3 = DefaultRandomPos.getPosTowards((PathfinderMob)entity, 10, 7, Vec3.atBottomCenterOf(blockPos), (double)((float)Math.PI / 2F));
+-            if (vec3 != null) {
+-                this.path = entity.getNavigation().createPath(vec3.x, vec3.y, vec3.z, 0);
+-                return this.path != null;
+-            }
+         }
+ 
+-        return false;
++        return entity.getNavigation().createPath(blockPos, 0); // Andromeda - Petal patches
+     }
+ 
+     private boolean reachedTarget(Mob entity, WalkTarget walkTarget) {
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/SetClosestHomeAsWalkTarget.java b/src/main/java/net/minecraft/world/entity/ai/behavior/SetClosestHomeAsWalkTarget.java
+index 271efbb027f6f5d69ac5bc5dc51102a1eb00ab31..aead1cc20a71ed200f3f2b09e28e1822cb4ab290 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/SetClosestHomeAsWalkTarget.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/SetClosestHomeAsWalkTarget.java
+@@ -57,19 +57,22 @@ public class SetClosestHomeAsWalkTarget {
+                             Set<Pair<Holder<PoiType>, BlockPos>> set = poiManager.findAllWithType((poiType) -> {
+                                 return poiType.is(PoiTypes.HOME);
+                             }, predicate, entity.blockPosition(), 48, PoiManager.Occupancy.ANY).collect(Collectors.toSet());
+-                            Path path = AcquirePoi.findPathToPois(entity, set);
+-                            if (path != null && path.canReach()) {
++                            // Andromeda start - Petal patches
++                            host.bloom.pathfinding.AsyncPathProcessor.awaitProcessing(AcquirePoi.findPathToPois(entity, set), path -> {
++                                if (path == null || !path.canReach() || mutableInt.getValue() < 5) {
++                                    long2LongMap.long2LongEntrySet().removeIf((entry) -> {
++                                        return entry.getLongValue() < mutableLong.getValue();
++                                    });
++                                }
++
+                                 BlockPos blockPos = path.getTarget();
+                                 Optional<Holder<PoiType>> optional2 = poiManager.getType(blockPos);
+                                 if (optional2.isPresent()) {
+                                     walkTarget.set(new WalkTarget(blockPos, speed, 1));
+                                     DebugPackets.sendPoiTicketCountPacket(world, blockPos);
+                                 }
+-                            } else if (mutableInt.getValue() < 5) {
+-                                long2LongMap.long2LongEntrySet().removeIf((entry) -> {
+-                                    return entry.getLongValue() < mutableLong.getValue();
+-                                });
+-                            }
++                            });
++                            // Andromeda end
+ 
+                             return true;
+                         } else {
+diff --git a/src/main/java/net/minecraft/world/entity/ai/navigation/AmphibiousPathNavigation.java b/src/main/java/net/minecraft/world/entity/ai/navigation/AmphibiousPathNavigation.java
+index 97bd4c9f83257c8c54694110d369d0487e4df9f9..44a222e6cdabffeb5e35a876761a565378bafbbb 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/navigation/AmphibiousPathNavigation.java
++++ b/src/main/java/net/minecraft/world/entity/ai/navigation/AmphibiousPathNavigation.java
+@@ -8,6 +8,14 @@ import net.minecraft.world.level.pathfinder.PathFinder;
+ import net.minecraft.world.phys.Vec3;
+ 
+ public class AmphibiousPathNavigation extends PathNavigation {
++    // Andromeda start - Petal patches
++    private static final host.bloom.pathfinding.NodeEvaluatorGenerator nodeEvaluatorGenerator = () -> {
++        var nodeEvaluator = new AmphibiousNodeEvaluator(false);
++        nodeEvaluator.setCanPassDoors(true);
++        return nodeEvaluator;
++    };
++    // Andromeda end
++
+     public AmphibiousPathNavigation(Mob mob, Level world) {
+         super(mob, world);
+     }
+@@ -16,7 +24,7 @@ public class AmphibiousPathNavigation extends PathNavigation {
+     protected PathFinder createPathFinder(int range) {
+         this.nodeEvaluator = new AmphibiousNodeEvaluator(false);
+         this.nodeEvaluator.setCanPassDoors(true);
+-        return new PathFinder(this.nodeEvaluator, range);
++        return new PathFinder(this.nodeEvaluator, range, nodeEvaluatorGenerator); // Andromeda - Petal patches
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java b/src/main/java/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
+index acd0b946cab86eb173e713535194d3a9347c7d48..84fd53ef582aac45fb147a97f97784091c2a6be3 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
++++ b/src/main/java/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
+@@ -12,6 +12,15 @@ import net.minecraft.world.level.pathfinder.PathFinder;
+ import net.minecraft.world.phys.Vec3;
+ 
+ public class FlyingPathNavigation extends PathNavigation {
++
++    // Andromeda start - Petal patches
++    private static final host.bloom.pathfinding.NodeEvaluatorGenerator nodeEvaluatorGenerator = () -> {
++        var nodeEvaluator = new FlyNodeEvaluator();
++        nodeEvaluator.setCanPassDoors(true);
++        return nodeEvaluator;
++    };
++    // Andromeda end
++
+     public FlyingPathNavigation(Mob entity, Level world) {
+         super(entity, world);
+     }
+@@ -20,7 +29,7 @@ public class FlyingPathNavigation extends PathNavigation {
+     protected PathFinder createPathFinder(int range) {
+         this.nodeEvaluator = new FlyNodeEvaluator();
+         this.nodeEvaluator.setCanPassDoors(true);
+-        return new PathFinder(this.nodeEvaluator, range);
++        return new PathFinder(this.nodeEvaluator, range, nodeEvaluatorGenerator); // Andromeda - Petal patches
+     }
+ 
+     @Override
+@@ -50,6 +59,8 @@ public class FlyingPathNavigation extends PathNavigation {
+             this.recomputePath();
+         }
+ 
++        if (this.path != null && !this.path.isProcessed()) return; // Andromeda - Petal patches
++
+         if (!this.isDone()) {
+             if (this.canUpdatePath()) {
+                 this.followThePath();
+diff --git a/src/main/java/net/minecraft/world/entity/ai/navigation/GroundPathNavigation.java b/src/main/java/net/minecraft/world/entity/ai/navigation/GroundPathNavigation.java
+index 80b3fd4150d749af7d584f95ee3d0b8ed664ead9..76a410d121a987f4d2de0eb31d6b0f58a35fbedb 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/navigation/GroundPathNavigation.java
++++ b/src/main/java/net/minecraft/world/entity/ai/navigation/GroundPathNavigation.java
+@@ -15,6 +15,15 @@ import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+ import net.minecraft.world.phys.Vec3;
+ 
+ public class GroundPathNavigation extends PathNavigation {
++
++    // Andromeda start - Petal patches
++    private static final host.bloom.pathfinding.NodeEvaluatorGenerator nodeEvaluatorGenerator = () -> {
++        var nodeEvaluator = new WalkNodeEvaluator();
++        nodeEvaluator.setCanPassDoors(true);
++        return nodeEvaluator;
++    };
++    // Andromeda end
++
+     private boolean avoidSun;
+ 
+     public GroundPathNavigation(Mob entity, Level world) {
+@@ -25,7 +34,7 @@ public class GroundPathNavigation extends PathNavigation {
+     protected PathFinder createPathFinder(int range) {
+         this.nodeEvaluator = new WalkNodeEvaluator();
+         this.nodeEvaluator.setCanPassDoors(true);
+-        return new PathFinder(this.nodeEvaluator, range);
++        return new PathFinder(this.nodeEvaluator, range, nodeEvaluatorGenerator); // Andromeda - Petal patches
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java
+index 2f2d9bb31194618ef5bba39cd1cbe7c4919e82c5..2cc4d06712be78776cd64eccb3bd4fee0fb3324d 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java
++++ b/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java
+@@ -151,6 +151,10 @@ public abstract class PathNavigation {
+             return null;
+         } else if (!this.canUpdatePath()) {
+             return null;
++        // Andromeda start - Petal patches (catch early if it's still processing these positions let it keep processing)
++        } else if (this.path instanceof host.bloom.pathfinding.AsyncPath asyncPath && !asyncPath.isProcessed() && asyncPath.hasSameProcessingPositions(positions)) {
++            return this.path;
++        // Andromeda end
+         } else if (this.path != null && !this.path.isDone() && positions.contains(this.targetPos)) {
+             return this.path;
+         } else {
+@@ -177,11 +181,20 @@ public abstract class PathNavigation {
+             PathNavigationRegion pathNavigationRegion = new PathNavigationRegion(this.level, blockPos.offset(-i, -i, -i), blockPos.offset(i, i, i));
+             Path path = this.pathFinder.findPath(pathNavigationRegion, this.mob, positions, followRange, distance, this.maxVisitedNodesMultiplier);
+             //this.level.getProfiler().pop(); // Purpur
+-            if (path != null && path.getTarget() != null) {
+-                this.targetPos = path.getTarget();
+-                this.reachRange = distance;
+-                this.resetStuckTimeout();
+-            }
++
++            // Andromeda start - Petal patches
++            if (!positions.isEmpty()) this.targetPos = positions.iterator().next();
++
++            host.bloom.pathfinding.AsyncPathProcessor.awaitProcessing(path, processedPath -> {
++                if (processedPath != this.path) return;
++
++                if (processedPath != null && processedPath.getTarget() != null) {
++                    this.targetPos = processedPath.getTarget();
++                    this.reachRange = distance;
++                    this.resetStuckTimeout();
++                }
++            });
++            // Andromeda end
+ 
+             return path;
+         }
+@@ -228,8 +241,8 @@ public abstract class PathNavigation {
+             if (this.isDone()) {
+                 return false;
+             } else {
+-                this.trimPath();
+-                if (this.path.getNodeCount() <= 0) {
++                if (path.isProcessed()) this.trimPath(); // Andromeda - Petal patches (only trim if processed)
++                if (path.isProcessed() && this.path.getNodeCount() <= 0) { // Andromeda - Petal patches (only check node count if processed)
+                     return false;
+                 } else {
+                     this.speedModifier = speed;
+@@ -253,6 +266,8 @@ public abstract class PathNavigation {
+             this.recomputePath();
+         }
+ 
++        if (this.path != null && !this.path.isProcessed()) return; // Andromeda - Petal patches (skip pathfinding if we're still processing)
++
+         if (!this.isDone()) {
+             if (this.canUpdatePath()) {
+                 this.followThePath();
+@@ -278,6 +293,7 @@ public abstract class PathNavigation {
+     }
+ 
+     protected void followThePath() {
++        if (!this.path.isProcessed()) return; // Andromeda - Petal patches
+         Vec3 vec3 = this.getTempMobPos();
+         this.maxDistanceToWaypoint = this.mob.getBbWidth() > 0.75F ? this.mob.getBbWidth() / 2.0F : 0.75F - this.mob.getBbWidth() / 2.0F;
+         Vec3i vec3i = this.path.getNextNodePos();
+@@ -433,7 +449,7 @@ public abstract class PathNavigation {
+     public boolean shouldRecomputePath(BlockPos pos) {
+         if (this.hasDelayedRecomputation) {
+             return false;
+-        } else if (this.path != null && !this.path.isDone() && this.path.getNodeCount() != 0) {
++        } else if (this.path != null && this.path.isProcessed() && !this.path.isDone() && this.path.getNodeCount() != 0) { // Andromeda - Petal patches
+             Node node = this.path.getEndNode();
+             Vec3 vec3 = new Vec3(((double)node.x + this.mob.getX()) / 2.0D, ((double)node.y + this.mob.getY()) / 2.0D, ((double)node.z + this.mob.getZ()) / 2.0D);
+             return pos.closerToCenterThan(vec3, (double)(this.path.getNodeCount() - this.path.getNextNodeIndex()));
+diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java
+index 8db20db72cd51046213625fac46c35854c59ec5d..15b343d25bbf9100b2f750c86c2b41d57dd9e2cb 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java
++++ b/src/main/java/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java
+@@ -57,20 +57,26 @@ public class NearestBedSensor extends Sensor<Mob> {
+             java.util.List<Pair<Holder<PoiType>, BlockPos>> poiposes = new java.util.ArrayList<>();
+             // don't ask me why it's unbounded. ask mojang.
+             io.papermc.paper.util.PoiAccess.findAnyPoiPositions(poiManager, type -> type.is(PoiTypes.HOME), predicate, entity.blockPosition(), 48, PoiManager.Occupancy.ANY, false, Integer.MAX_VALUE, poiposes);
+-            Path path = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(poiposes));
++
++            // Andromeda start - Petal patches (await on path async)
++            Path possiblePath = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(poiposes));
+             // Paper end - optimise POI access
+-            if (path != null && path.canReach()) {
++            host.bloom.pathfinding.AsyncPathProcessor.awaitProcessing(possiblePath, path -> {
++                if (path == null || !path.canReach()) {
++                    this.batchCache.long2LongEntrySet().removeIf((entry) -> {
++                        return entry.getLongValue() < this.lastUpdate;
++                    });
++                    return;
++                }
++
+                 BlockPos blockPos = path.getTarget();
+                 Optional<Holder<PoiType>> optional = poiManager.getType(blockPos);
+                 if (optional.isPresent()) {
+                     entity.getBrain().setMemory(MemoryModuleType.NEAREST_BED, blockPos);
+                 }
+-            } else if (this.triedCount < 5) {
+-                this.batchCache.long2LongEntrySet().removeIf((entry) -> {
+-                    return entry.getLongValue() < this.lastUpdate;
+-                });
+-            }
+ 
++            });
++            // Andromeda end
+         }
+     }
+ }
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Bee.java b/src/main/java/net/minecraft/world/entity/animal/Bee.java
+index 87bd7991a81a2e30ecfccb60e614d7f13acd3744..57dd39ec02c5c4e335bca5fa3732aea6101b1bdf 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Bee.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Bee.java
+@@ -1149,7 +1149,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+                         } else {
+                             Bee.this.pathfindRandomlyTowards(Bee.this.hivePos);
+                         }
+-                    } else {
++                    } else if (navigation.getPath() != null && navigation.getPath().isProcessed()) { // Andromeda - Petal patches (check processing)
+                         boolean flag = this.pathfindDirectlyTowards(Bee.this.hivePos);
+ 
+                         if (!flag) {
+@@ -1211,7 +1211,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+             } else {
+                 Path pathentity = Bee.this.navigation.getPath();
+ 
+-                return pathentity != null && pathentity.getTarget().equals(pos) && pathentity.canReach() && pathentity.isDone();
++                return pathentity != null && pathentity.isProcessed() && pathentity.getTarget().equals(pos) && pathentity.canReach() && pathentity.isDone(); // Andromeda - Petal patches (ensure path is processed)
+             }
+         }
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java b/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
+index fe1f01d7aa27907298dd2e97e6b4d4fa9c507628..aeebe3b3ea879025bda89fda716db6fb124af2ef 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
++++ b/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
+@@ -468,6 +468,14 @@ public class Frog extends Animal implements VariantHolder<FrogVariant> {
+     }
+ 
+     static class FrogPathNavigation extends AmphibiousPathNavigation {
++        // Andromeda start - Petal patches
++        private static final host.bloom.pathfinding.NodeEvaluatorGenerator nodeEvaluatorGenerator = () -> {
++            var nodeEvaluator = new Frog.FrogNodeEvaluator(true);
++            nodeEvaluator.setCanPassDoors(true);
++            return nodeEvaluator;
++        };
++        // Andromeda end
++
+         FrogPathNavigation(Frog frog, Level world) {
+             super(frog, world);
+         }
+@@ -476,7 +484,7 @@ public class Frog extends Animal implements VariantHolder<FrogVariant> {
+         protected PathFinder createPathFinder(int range) {
+             this.nodeEvaluator = new Frog.FrogNodeEvaluator(true);
+             this.nodeEvaluator.setCanPassDoors(true);
+-            return new PathFinder(this.nodeEvaluator, range);
++            return new PathFinder(this.nodeEvaluator, range, nodeEvaluatorGenerator); // Andromeda - Petal patches
+         }
+     }
+ }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Drowned.java b/src/main/java/net/minecraft/world/entity/monster/Drowned.java
+index 68e31cf561f3d76bce6fa4324a75594c776f8964..58d637877fb6bb5fb5c9beeadbd013ba310f7daf 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Drowned.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Drowned.java
+@@ -288,7 +288,7 @@ public class Drowned extends Zombie implements RangedAttackMob {
+     protected boolean closeToNextPos() {
+         Path pathentity = this.getNavigation().getPath();
+ 
+-        if (pathentity != null) {
++        if (pathentity != null && pathentity.isProcessed()) { // Andromeda - Petal patches (ensure path is processed)
+             BlockPos blockposition = pathentity.getTarget();
+ 
+             if (blockposition != null) {
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
+index 163e63e3c538c7c1c75ed634896db9d8c00416f3..1bdecc1a037633706ec5cf15f839b85f36b99c25 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
+@@ -73,6 +73,13 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
+         return false;
+     }
+ 
++    // Andromeda start
++    @Override
++    public boolean listensToEvent(GameEvent event, GameEvent.Context context) {
++        return !this.isRemoved() && event == GameEvent.ENTITY_DIE && context.sourceEntity() instanceof LivingEntity;
++    }
++    // Andromeda end
++
+     private void tryAwardItSpreadsAdvancement(LivingEntity deadEntity) {
+         LivingEntity entityliving1 = deadEntity.getLastHurtByMob();
+ 
+diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+index 79bf9c277fe98df176113de39360fb34ad917577..58210b0fe8d77d0906da46e25863f2a6b20a1919 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -84,7 +84,11 @@ public class LevelChunk extends ChunkAccess {
+     private Supplier<ChunkHolder.FullChunkStatus> fullStatus;
+     @Nullable
+     private LevelChunk.PostLoadProcessor postLoad;
+-    private final Int2ObjectMap<GameEventListenerRegistry> gameEventListenerRegistrySections;
++    // Andromeda start
++    private final GameEventListenerRegistry[] gameEventListenerRegistrySections;
++    private static int getGameEventSectionIndex(int sectionIndex) { return sectionIndex + 2; }
++    private static int getGameEventSectionLength(int sectionCount) { return sectionCount + 4; }
++    // Andromeda end
+     private final LevelChunkTicks<Block> blockTicks;
+     private final LevelChunkTicks<Fluid> fluidTicks;
+ 
+@@ -113,7 +117,7 @@ public class LevelChunk extends ChunkAccess {
+         this.tickersInLevel = Maps.newHashMap();
+         this.clientLightReady = false;
+         this.level = (ServerLevel) world; // CraftBukkit - type
+-        this.gameEventListenerRegistrySections = new Int2ObjectOpenHashMap();
++        this.gameEventListenerRegistrySections = new GameEventListenerRegistry[getGameEventSectionLength(this.sections.length)]; // Andromeda - Petal patches
+         Heightmap.Types[] aheightmap_type = Heightmap.Types.values();
+         int j = aheightmap_type.length;
+ 
+@@ -446,9 +450,19 @@ public class LevelChunk extends ChunkAccess {
+         if (world instanceof ServerLevel) {
+             ServerLevel worldserver = (ServerLevel) world;
+ 
+-            return (GameEventListenerRegistry) this.gameEventListenerRegistrySections.computeIfAbsent(ySectionCoord, (j) -> {
+-                return new EuclideanGameEventListenerRegistry(worldserver);
+-            });
++            // Andromeda start - Petal patches
++            int sectionIndex = getGameEventSectionIndex(this.getSectionIndexFromSectionY(ySectionCoord));
++            if (sectionIndex < 0 || sectionIndex >= this.gameEventListenerRegistrySections.length) {
++                return GameEventListenerRegistry.NOOP;
++            }
++
++            var dispatcher = this.gameEventListenerRegistrySections[sectionIndex];
++            if (dispatcher == null) {
++                dispatcher = this.gameEventListenerRegistrySections[sectionIndex] = new EuclideanGameEventListenerRegistry(worldserver);
++            }
++
++            return dispatcher;
++            // Andromeda end
+         } else {
+             return super.getListenerRegistry(ySectionCoord);
+         }
+@@ -812,7 +826,7 @@ public class LevelChunk extends ChunkAccess {
+ 
+                 gameeventlistenerregistry.unregister(gameeventlistener);
+                 if (gameeventlistenerregistry.isEmpty()) {
+-                    this.gameEventListenerRegistrySections.remove(i);
++                    this.gameEventListenerRegistrySections[getGameEventSectionIndex(this.getSectionIndexFromSectionY(i))] = null; // Andromeda - Petal patches
+                 }
+             }
+         }
+diff --git a/src/main/java/net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.java b/src/main/java/net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.java
+index 878a42695ecedf0c3f2e6310e3ce44c6b6c36858..0612acd7b80d5ec6427366b7460218d893e3b8dd 100644
+--- a/src/main/java/net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.java
++++ b/src/main/java/net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.java
+@@ -12,8 +12,8 @@ import net.minecraft.world.phys.Vec3;
+ 
+ public class EuclideanGameEventListenerRegistry implements GameEventListenerRegistry {
+     private final List<GameEventListener> listeners = Lists.newArrayList();
+-    private final Set<GameEventListener> listenersToRemove = Sets.newHashSet();
+-    private final List<GameEventListener> listenersToAdd = Lists.newArrayList();
++    //private final Set<GameEventListener> listenersToRemove = Sets.newHashSet(); // Andromeda - Petal patches (not necessary)
++    //private final List<GameEventListener> listenersToAdd = Lists.newArrayList(); // Andromeda - Petal patches (not necessary)
+     private boolean processing;
+     private final ServerLevel level;
+ 
+@@ -29,7 +29,7 @@ public class EuclideanGameEventListenerRegistry implements GameEventListenerRegi
+     @Override
+     public void register(GameEventListener listener) {
+         if (this.processing) {
+-            this.listenersToAdd.add(listener);
++            throw new java.util.ConcurrentModificationException(); // Andromeda - Petal patches (disallow concurrent modification)
+         } else {
+             this.listeners.add(listener);
+         }
+@@ -40,7 +40,7 @@ public class EuclideanGameEventListenerRegistry implements GameEventListenerRegi
+     @Override
+     public void unregister(GameEventListener listener) {
+         if (this.processing) {
+-            this.listenersToRemove.add(listener);
++            throw new java.util.ConcurrentModificationException(); // Andromeda - Petal patches (disallow concurrent modification)
+         } else {
+             this.listeners.remove(listener);
+         }
+@@ -57,7 +57,7 @@ public class EuclideanGameEventListenerRegistry implements GameEventListenerRegi
+ 
+             while(iterator.hasNext()) {
+                 GameEventListener gameEventListener = iterator.next();
+-                if (this.listenersToRemove.remove(gameEventListener)) {
++                if (false) { // Andromeda - Petal patches (disallow concurrent modification)
+                     iterator.remove();
+                 } else {
+                     Optional<Vec3> optional = getPostableListenerPosition(this.level, pos, gameEventListener);
+@@ -71,6 +71,7 @@ public class EuclideanGameEventListenerRegistry implements GameEventListenerRegi
+             this.processing = false;
+         }
+ 
++        /* // Andromeda - disallow concurrent modification
+         if (!this.listenersToAdd.isEmpty()) {
+             this.listeners.addAll(this.listenersToAdd);
+             this.listenersToAdd.clear();
+@@ -80,6 +81,7 @@ public class EuclideanGameEventListenerRegistry implements GameEventListenerRegi
+             this.listeners.removeAll(this.listenersToRemove);
+             this.listenersToRemove.clear();
+         }
++         */ // Andromeda - disallow concurrent modification
+ 
+         return bl;
+     }
+diff --git a/src/main/java/net/minecraft/world/level/gameevent/GameEventDispatcher.java b/src/main/java/net/minecraft/world/level/gameevent/GameEventDispatcher.java
+index 11349f02d453c78e1cf0db8b89042b9023aa02bb..a59f38003d005e53c52dfe0633a99e1fa3fc7f69 100644
+--- a/src/main/java/net/minecraft/world/level/gameevent/GameEventDispatcher.java
++++ b/src/main/java/net/minecraft/world/level/gameevent/GameEventDispatcher.java
+@@ -45,6 +45,7 @@ public class GameEventDispatcher {
+         int k1 = SectionPos.blockToSectionCoord(blockposition.getZ() + i);
+         List<GameEvent.ListenerInfo> list = new ArrayList();
+         GameEventListenerRegistry.ListenerVisitor gameeventlistenerregistry_a = (gameeventlistener, vec3d1) -> {
++            if (!gameeventlistener.listensToEvent(event, emitter)) return; // Andromeda - Petal patches (if they don't listen, ignore)
+             if (gameeventlistener.getDeliveryMode() == GameEventListener.DeliveryMode.BY_DISTANCE) {
+                 list.add(new GameEvent.ListenerInfo(event, emitterPos, emitter, gameeventlistener, vec3d1));
+             } else {
+diff --git a/src/main/java/net/minecraft/world/level/gameevent/GameEventListener.java b/src/main/java/net/minecraft/world/level/gameevent/GameEventListener.java
+index a6689c03777c2b4b79dcafcae5d70c949519cd8e..2983c9192f57079a32814b2ce61682cf38fa1038 100644
+--- a/src/main/java/net/minecraft/world/level/gameevent/GameEventListener.java
++++ b/src/main/java/net/minecraft/world/level/gameevent/GameEventListener.java
+@@ -14,6 +14,12 @@ public interface GameEventListener {
+         return GameEventListener.DeliveryMode.UNSPECIFIED;
+     }
+ 
++    // Andromeda start - Petal patches (add check for seeing if this listener cares about an event)
++    default boolean listensToEvent(net.minecraft.world.level.gameevent.GameEvent event, net.minecraft.world.level.gameevent.GameEvent.Context context) {
++        return true;
++    }
++    // Andromeda end
++
+     public static enum DeliveryMode {
+         UNSPECIFIED,
+         BY_DISTANCE;
+diff --git a/src/main/java/net/minecraft/world/level/gameevent/vibrations/VibrationListener.java b/src/main/java/net/minecraft/world/level/gameevent/vibrations/VibrationListener.java
+index 3288837a406539c4a22464524ffb2e727c6ad32b..b1f2d486b7435f66425988ae93a815e06ac4e310 100644
+--- a/src/main/java/net/minecraft/world/level/gameevent/vibrations/VibrationListener.java
++++ b/src/main/java/net/minecraft/world/level/gameevent/vibrations/VibrationListener.java
+@@ -225,6 +225,13 @@ public class VibrationListener implements GameEventListener {
+         return true;
+     }
+ 
++    // Andromeda start - Petal patches
++    @Override
++    public boolean listensToEvent(GameEvent event, GameEvent.Context context) {
++        return this.currentVibration == null && event.is(this.config.getListenableEvents());
++    }
++    // Andromeda end
++
+     public interface VibrationListenerConfig {
+ 
+         default TagKey<GameEvent> getListenableEvents() {
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/Path.java b/src/main/java/net/minecraft/world/level/pathfinder/Path.java
+index 2a335f277bd0e4b8ad0f60d8226eb8aaa80a871f..ab3d096208168821bea24e5927a74998eeb4bef4 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/Path.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/Path.java
+@@ -30,6 +30,17 @@ public class Path {
+         this.reached = reachesTarget;
+     }
+ 
++    // Andromeda start - Petal patches
++    /**
++     * checks if the path is completely processed in the case of it being computed async
++     *
++     * @return true if the path is processed
++     */
++    public boolean isProcessed() {
++        return true;
++    }
++    // Andromeda end
++
+     public void advance() {
+         ++this.nextNodeIndex;
+     }
+@@ -104,6 +115,8 @@ public class Path {
+     }
+ 
+     public boolean sameAs(@Nullable Path o) {
++        if (o == this) return true; // petal - short circuit
++
+         if (o == null) {
+             return false;
+         } else if (o.nodes.size() != this.nodes.size()) {
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+index a8af51a25b0f99c3a64d9150fdfcd6b818aa7581..3d5fa3ad31aafdb1677748c70d80b762a22afba3 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
+@@ -25,36 +25,76 @@ public class PathFinder {
+     private static final boolean DEBUG = false;
+     private final BinaryHeap openSet = new BinaryHeap();
+ 
+-    public PathFinder(NodeEvaluator pathNodeMaker, int range) {
++    private final @Nullable host.bloom.pathfinding.NodeEvaluatorGenerator nodeEvaluatorGenerator; // Andromeda - Petal patches (we use this later to generate an evaluator)
++
++    public PathFinder(NodeEvaluator pathNodeMaker, int range, @Nullable host.bloom.pathfinding.NodeEvaluatorGenerator nodeEvaluatorGenerator) { // Andromeda - Petal patches
+         this.nodeEvaluator = pathNodeMaker;
+         this.maxVisitedNodes = range;
++    // Andromeda start - Petal patches
++        this.nodeEvaluatorGenerator = nodeEvaluatorGenerator;
++    }
++
++    public PathFinder(NodeEvaluator pathNodeMaker, int range) {
++        this(pathNodeMaker, range, null);
+     }
++    // Andromeda end
+ 
+     @Nullable
+     public Path findPath(PathNavigationRegion world, Mob mob, Set<BlockPos> positions, float followRange, int distance, float rangeMultiplier) {
+-        this.openSet.clear();
+-        this.nodeEvaluator.prepare(world, mob);
+-        Node node = this.nodeEvaluator.getStart();
++        // Andromeda start - Petal patches
++        //this.openSet.clear();
++        var nodeEvaluator = this.nodeEvaluatorGenerator == null ? this.nodeEvaluator : host.bloom.pathfinding.NodeEvaluatorCache.takeNodeEvaluator(this.nodeEvaluatorGenerator);
++        nodeEvaluator.prepare(world, mob);
++        Node node = nodeEvaluator.getStart();
++        // Andromeda end
+         if (node == null) {
++            if (this.nodeEvaluatorGenerator != null) host.bloom.pathfinding.NodeEvaluatorCache.returnNodeEvaluator(nodeEvaluator); // Andromeda - Petal patches
++
+             return null;
+         } else {
+             // Paper start - remove streams - and optimize collection
+             List<Map.Entry<Target, BlockPos>> map = Lists.newArrayList();
+             for (BlockPos pos : positions) {
+-                map.add(new java.util.AbstractMap.SimpleEntry<>(this.nodeEvaluator.getGoal(pos.getX(), pos.getY(), pos.getZ()), pos));
++                map.add(new java.util.AbstractMap.SimpleEntry<>(nodeEvaluator.getGoal(pos.getX(), pos.getY(), pos.getZ()), pos)); // Andromeda - Petal patches
+             }
+             // Paper end
+-            Path path = this.findPath(world.getProfiler(), node, map, followRange, distance, rangeMultiplier);
+-            this.nodeEvaluator.done();
+-            return path;
++
++            // Andromeda start - Petal patches
++            if (this.nodeEvaluatorGenerator == null) {
++                // run sync :(
++                return this.findPath(world.getProfiler(), node, map, followRange, distance, rangeMultiplier);
++            }
++
++            return new host.bloom.pathfinding.AsyncPath(Lists.newArrayList(), positions, () -> {
++                try {
++                    return this.processPath(nodeEvaluator, node, map, followRange, distance, rangeMultiplier);
++                } finally {
++                    nodeEvaluator.done();
++                    host.bloom.pathfinding.NodeEvaluatorCache.returnNodeEvaluator(nodeEvaluator);
++                }
++            });
++            // Andromeda end
+         }
+     }
+ 
+-    @Nullable
+     // Paper start - optimize collection
+     private Path findPath(ProfilerFiller profiler, Node startNode, List<Map.Entry<Target, BlockPos>> positions, float followRange, int distance, float rangeMultiplier) {
+         //profiler.push("find_path"); // Purpur
+         //profiler.markForCharting(MetricCategory.PATH_FINDING); // Purpur
++
++        // Andromeda start - Petal patches
++        try {
++            return this.processPath(this.nodeEvaluator, startNode, positions, followRange, distance, rangeMultiplier);
++        } finally {
++            this.nodeEvaluator.done();
++        }
++    }
++    // petal end
++
++    private synchronized @org.jetbrains.annotations.NotNull Path processPath(NodeEvaluator nodeEvaluator, Node startNode, List<Map.Entry<Target, BlockPos>> positions, float followRange, int distance, float rangeMultiplier) { // petal - sync to only use the caching functions in this class on a single thread
++        org.apache.commons.lang3.Validate.isTrue(!positions.isEmpty());
++        // Andromeda end
++
+         // Set<Target> set = positions.keySet();
+         startNode.g = 0.0F;
+         startNode.h = this.getBestH(startNode, positions); // Paper - optimize collection
+@@ -91,7 +131,7 @@ public class PathFinder {
+             }
+ 
+             if (!(node.distanceTo(startNode) >= followRange)) {
+-                int k = this.nodeEvaluator.getNeighbors(this.neighbors, node);
++                int k = nodeEvaluator.getNeighbors(this.neighbors, node); // Andromeda - Petal patches
+ 
+                 for(int l = 0; l < k; ++l) {
+                     Node node2 = this.neighbors[l];
+@@ -123,6 +163,7 @@ public class PathFinder {
+             if (best == null || comparator.compare(path, best) < 0)
+                 best = path;
+         }
++
+         return best;
+         // Paper end
+     }

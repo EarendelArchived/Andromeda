@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 6 Jan 2023 19:54:53 +0900
+Subject: [PATCH] ktp API Patches
+
+SHA: a570796fd006c6465df797f29ecf54949ed2a8cc
+
+Original: Bjarne Koll <lynxplay101@gmail.com>
+Copyright (C) 2023 lynxplay
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+[PORTED PATCHES]
+0006 - Optimize spigot event bus
+
+diff --git a/src/main/java/org/bukkit/plugin/RegisteredListener.java b/src/main/java/org/bukkit/plugin/RegisteredListener.java
+index 3b3d9642a8d63798dc28f2f8df77f0466451cbff..6119e882e07f8870376cb571442845c72c499731 100644
+--- a/src/main/java/org/bukkit/plugin/RegisteredListener.java
++++ b/src/main/java/org/bukkit/plugin/RegisteredListener.java
+@@ -62,8 +62,8 @@ public class RegisteredListener {
+      * @throws EventException If an event handler throws an exception.
+      */
+     public void callEvent(@NotNull final Event event) throws EventException {
+-        if (event instanceof Cancellable) {
+-            if (((Cancellable) event).isCancelled() && isIgnoringCancelled()) {
++        if (isIgnoringCancelled()) { // Andromeda
++            if (event instanceof Cancellable && ((Cancellable) event).isCancelled()) { // Andromeda
+                 return;
+             }
+         }
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index 758f83b14ecdbcd4f0b20aa62ef21354ca574e30..9de75d5c3d1f838f62539a17f24156ff7310a177 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -666,9 +666,13 @@ public final class SimplePluginManager implements PluginManager {
+     @Override
+     public void callEvent(@NotNull Event event) {
+         // Paper - replace callEvent by merging to below method
+-        if (event.isAsynchronous() && server.isPrimaryThread()) {
++        // Andromeda start
++        final boolean isAsync = event.isAsynchronous();
++        final boolean isPrimary = server.isPrimaryThread();
++        if (isAsync && isPrimary) {
+             throw new IllegalStateException(event.getEventName() + " may only be triggered asynchronously.");
+-        } else if (!event.isAsynchronous() && !server.isPrimaryThread() && !server.isStopping() ) {
++        } else if (!isAsync && !isPrimary && !server.isStopping() ) {
++        // Andromeda end
+             throw new IllegalStateException(event.getEventName() + " may only be triggered synchronously.");
+         }
+ 

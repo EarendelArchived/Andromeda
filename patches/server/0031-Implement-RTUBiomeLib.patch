@@ -1,0 +1,139 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 6 Jan 2023 21:34:21 +0900
+Subject: [PATCH] Implement RTUBiomeLib
+
+Original: IPECTER <ipectert@gmail.com>
+Copyright (C) 2023 RTU Developments
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftRegionAccessor.java b/src/main/java/org/bukkit/craftbukkit/CraftRegionAccessor.java
+index 09be3f188f9710fa71c5db67023e654739721f21..87fe6da114b49f3d4fa4fe6fa7daae78834f3690 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftRegionAccessor.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftRegionAccessor.java
+@@ -214,6 +214,18 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
+         return CraftBlock.biomeBaseToBiome(this.getHandle().registryAccess().registryOrThrow(Registries.BIOME), this.getHandle().getNoiseBiome(x >> 2, y >> 2, z >> 2));
+     }
+ 
++    // Andromeda start
++    @Override
++    public String getBiomeName(int x, int y, int z) {
++        BlockPos pos = new BlockPos(x, y, z);
++        net.minecraft.world.level.chunk.LevelChunk chunk = this.getHandle().getMinecraftWorld().getChunkAt(pos);
++        net.minecraft.resources.ResourceLocation key = this.getHandle().getMinecraftWorld().getServer().registryAccess().registryOrThrow(Registries.BIOME)
++                .getKey(chunk.getNoiseBiome(pos.getX() >> 2, pos.getY() >> 2, pos.getZ() >> 2).value());
++        if (key != null) return key.toString();
++        return null;
++    }
++    // Andromeda end
++
+     // Paper start
+     @Override
+     public Biome getComputedBiome(int x, int y, int z) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index d06d2733e52a67a693f4fbea267fad61bc39d1bd..e5f7d5233bef68ad120a53756e1a1e6677fbe595 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -212,6 +212,10 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+         final List<Biome> possibleBiomes = biomeSource.possibleBiomes().stream()
+             .map(biome -> CraftBlock.biomeBaseToBiome(biomeRegistry, biome))
+             .toList();
++        // Andromeda start
++        final List<String> possibleBiomesNames = this.getHandle().getServer().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.BIOME)
++                .keySet().stream().map(key -> key.toString()).collect(Collectors.toList());
++        // Andromeda end
+         return new BiomeProvider() {
+             @Override
+             public Biome getBiome(final org.bukkit.generator.WorldInfo worldInfo, final int x, final int y, final int z) {
+@@ -222,6 +226,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+             public List<Biome> getBiomes(final org.bukkit.generator.WorldInfo worldInfo) {
+                 return possibleBiomes;
+             }
++
++            // Andromeda start
++            @Override
++            public List<String> getBiomesNames(final org.bukkit.generator.WorldInfo worldInfo) {
++                return possibleBiomesNames;
++            }
++            // Andromeda end
+         };
+     }
+     // Paper end
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
+index 350cbf64c17938021002d5fd67176c44b398231e..66aa41894dff05eef7aea6f520acec33702a01ca 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
+@@ -343,6 +343,13 @@ public class CraftBlock implements Block {
+         return this.getWorld().getBiome(this.getX(), this.getY(), this.getZ());
+     }
+ 
++    // Andromeda start
++    @Override
++    public String getBiomeName() {
++        return this.getWorld().getBiomeName(this.getX(), this.getY(), this.getZ());
++    }
++    // Andromeda end
++
+     // Paper start
+     @Override
+     public Biome getComputedBiome() {
+diff --git a/src/main/java/org/bukkit/craftbukkit/generator/CraftLimitedRegion.java b/src/main/java/org/bukkit/craftbukkit/generator/CraftLimitedRegion.java
+index b01904021bd4f485aaf03d1d7634b56f134d3099..7d06634aba5f95bfca2f66cf54fe7afd7843fdc0 100644
+--- a/src/main/java/org/bukkit/craftbukkit/generator/CraftLimitedRegion.java
++++ b/src/main/java/org/bukkit/craftbukkit/generator/CraftLimitedRegion.java
+@@ -166,6 +166,14 @@ public class CraftLimitedRegion extends CraftRegionAccessor implements LimitedRe
+         return super.getBiome(x, y, z);
+     }
+ 
++    // Andromeda start
++    @Override
++    public String getBiomeName(int x, int y, int z) {
++        Preconditions.checkArgument(this.isInRegion(x, y, z), "Coordinates %s, %s, %s are not in the region", x, y, z);
++        return super.getBiomeName(x, y, z);
++    }
++    // Andromeda end
++
+     // Paper start
+     @Override
+     public Biome getComputedBiome(int x, int y, int z) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/generator/CraftWorldInfo.java b/src/main/java/org/bukkit/craftbukkit/generator/CraftWorldInfo.java
+index 5dbd1a6d314ebbb072cb61360ca5c1043f47a38d..217e622c85669a53adfe7979e616230a48b12fad 100644
+--- a/src/main/java/org/bukkit/craftbukkit/generator/CraftWorldInfo.java
++++ b/src/main/java/org/bukkit/craftbukkit/generator/CraftWorldInfo.java
+@@ -79,6 +79,10 @@ public class CraftWorldInfo implements WorldInfo {
+         final java.util.List<org.bukkit.block.Biome> possibleBiomes = CraftWorldInfo.this.vanillaChunkGenerator.getBiomeSource().possibleBiomes().stream()
+             .map(biome -> org.bukkit.craftbukkit.block.CraftBlock.biomeBaseToBiome(biomeRegistry, biome))
+             .toList();
++        // Andromeda start
++        final java.util.List<String> possibleBiomesNames = this.registryAccess.registryOrThrow(net.minecraft.core.registries.Registries.BIOME)
++                .keySet().stream().map(key -> key.toString()).collect(java.util.stream.Collectors.toList());
++        // Andromeda end
+         return new org.bukkit.generator.BiomeProvider() {
+             @Override
+             public org.bukkit.block.Biome getBiome(final WorldInfo worldInfo, final int x, final int y, final int z) {
+@@ -90,6 +94,13 @@ public class CraftWorldInfo implements WorldInfo {
+             public java.util.List<org.bukkit.block.Biome> getBiomes(final org.bukkit.generator.WorldInfo worldInfo) {
+                 return possibleBiomes;
+             }
++
++            // Andromeda start
++            @Override
++            public java.util.List<String> getBiomesNames(final org.bukkit.generator.WorldInfo worldInfo) {
++                return possibleBiomesNames;
++            }
++            // Andromeda end
+         };
+     }
+     // Paper end

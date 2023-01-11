@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 19:50:12 +0900
+Subject: [PATCH] Port PaperMC/Paper#8744
+
+
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
+index 0554afa72ae6d2f01886916031c8b90b0d45eb52..eecff013863a6aecbd3e807fb3a098c89fee4288 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
+@@ -198,6 +198,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
+     }
+ 
+     private boolean trySummonWarden(ServerLevel world) {
++        if (world.andromedaLevelConfiguration().entity.monster.warden.spawnReasonToNatural) return this.warningLevel >= 4 && SpawnUtil.trySpawnMob(EntityType.WARDEN, MobSpawnType.TRIGGERED, world, this.getBlockPos(), 20, 5, 6, SpawnUtil.Strategy.ON_TOP_OF_COLLIDER, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL, null).isPresent(); // Andromeda - Port PaperMC/Paper#8744
+         return this.warningLevel < 4 ? false : SpawnUtil.trySpawnMob(EntityType.WARDEN, MobSpawnType.TRIGGERED, world, this.getBlockPos(), 20, 5, 6, SpawnUtil.Strategy.ON_TOP_OF_COLLIDER).isPresent();
+     }
+ 
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 9e7fd624ce046129e63994f2737cca2079f97be6..4bf70b1839c3dd09f18c0ab2b0766fa74ea75b39 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -112,4 +112,19 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+     }
+ 
++    public Entity entity;
++    public class Entity extends ConfigurationPart {
++
++        public Monster monster;
++        public class Monster extends ConfigurationPart {
++
++            public Warden warden;
++            public class Warden extends ConfigurationPart{
++                public boolean spawnReasonToNatural = false;
++            }
++
++        }
++
++    }
++
+ }

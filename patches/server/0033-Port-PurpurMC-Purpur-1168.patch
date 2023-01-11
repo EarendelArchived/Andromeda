@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 17:37:25 +0900
+Subject: [PATCH] Port PurpurMC/Purpur#1168
+
+
+diff --git a/src/main/java/net/minecraft/network/FriendlyByteBuf.java b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
+index 314318a21b6fa9e827945d8996c6ed0f9679a4eb..1b271896213f40b007a87ebbfe44e5c774db6994 100644
+--- a/src/main/java/net/minecraft/network/FriendlyByteBuf.java
++++ b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
+@@ -638,7 +638,13 @@ public class FriendlyByteBuf extends ByteBuf {
+             if (hasItemSerializeEvent) {
+                 var event = new org.purpurmc.purpur.event.packet.NetworkItemSerializeEvent(stack.asBukkitCopy());
+                 event.callEvent();
+-                stack = ItemStack.fromBukkitCopy(event.getItemStack());
++                // Andromeda start - Port PurpurMC/Purpur#1168
++                ItemStack newStack = ItemStack.fromBukkitCopy(event.getItemStack());
++                if (org.purpurmc.purpur.PurpurConfig.fixNetworkSerializedItemsInCreative && !ItemStack.matches(stack, newStack)) {
++                    stack.save(newStack.getOrCreateTagElement("Purpur.OriginalItem"));
++                }
++                stack = newStack;
++                // Andromeda end
+             }
+             // Purpur end
+             Item item = stack.getItem();
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 3951481cee311002714d68bd4b979c78d3f6e6c9..caa4e27f02274107402c3b250ad41d9a5ea8b9eb 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -3443,6 +3443,13 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                 }
+             }
+ 
++            // Andromeda start - Port PurpurMC/Purpur#1168
++            if (org.purpurmc.purpur.PurpurConfig.fixNetworkSerializedItemsInCreative) {
++                var tag = itemstack.getTagElement("Purpur.OriginalItem");
++                if (tag != null) itemstack = ItemStack.of(tag);
++            }
++            // Andromeda end
++
+             boolean flag1 = packet.getSlotNum() >= 1 && packet.getSlotNum() <= 45;
+             boolean flag2 = itemstack.isEmpty() || itemstack.getDamageValue() >= 0 && itemstack.getCount() <= 64 && !itemstack.isEmpty();
+             if (flag || (flag1 && !ItemStack.matches(this.player.inventoryMenu.getSlot(packet.getSlotNum()).getItem(), packet.getItem()))) { // Insist on valid slot
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+index 93785c8b47bddea5bad01d9c600be771d5cffe0a..19f5d635d16aaeadd7a6acdc9ab39429067b23d3 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+@@ -633,4 +633,11 @@ public class PurpurConfig {
+             block.fallDistanceMultiplier = fallDistanceMultiplier.floatValue();
+         });
+     }
++
++    // Andromeda start - Port PurpurMC/Purpur#1168
++    public static boolean fixNetworkSerializedItemsInCreative = false;
++    private static void fixNetworkSerializedCreativeItems() {
++        fixNetworkSerializedItemsInCreative = getBoolean("settings.fix-network-serialized-items-in-creative", fixNetworkSerializedItemsInCreative);
++    }
++    // Andromeda end
+ }

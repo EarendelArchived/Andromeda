@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sun, 8 Jan 2023 12:20:14 +0900
+Subject: [PATCH] Port PaperMC/Paper#8372
+
+
+diff --git a/src/main/java/io/papermc/paper/command/subcommands/EntityCommand.java b/src/main/java/io/papermc/paper/command/subcommands/EntityCommand.java
+index a38a0c11c9e12aeff73d792368e1a69a856376d4..c929f9e7b8860987c53c515c29b29d58cabea895 100644
+--- a/src/main/java/io/papermc/paper/command/subcommands/EntityCommand.java
++++ b/src/main/java/io/papermc/paper/command/subcommands/EntityCommand.java
+@@ -103,7 +103,7 @@ public final class EntityCommand implements PaperSubcommand {
+                 ChunkPos chunk = e.chunkPosition();
+                 info.left++;
+                 info.right.put(chunk, info.right.getOrDefault(chunk, 0) + 1);
+-                if (!chunkProviderServer.isPositionTicking(e) || e instanceof net.minecraft.world.entity.Marker) { // Markers aren't ticked.
++                if (!chunkProviderServer.isPositionTicking(e) || (e instanceof net.minecraft.world.entity.Marker && !world.paperConfig().entities.tickMarkers)) { // Andromeda - Port PaperMC/Paper#8372
+                     nonEntityTicking.merge(key, 1, Integer::sum);
+                 }
+             });
+diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+index 619883100becdc2390413022640ee4ccc4dbeb29..af7e78f75095c598b5cf46e94408b25e177bfa15 100644
+--- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+@@ -113,6 +113,7 @@ public class WorldConfiguration extends ConfigurationPart {
+ 
+     public class Entities extends ConfigurationPart {
+         public boolean entitiesTargetWithFollowRange = false;
++        public boolean tickMarkers = false; // Andromeda - Port PaperMC/Paper#8372
+         public MobEffects mobEffects;
+ 
+         public class MobEffects extends ConfigurationPart {
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index fc279373f4df87ea0a26ff372e3886b936710b84..d9f939800e6f0c8731a8627d8318aa28122aa735 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -2604,7 +2604,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         }
+ 
+         public void onTickingStart(Entity entity) {
+-            if (entity instanceof net.minecraft.world.entity.Marker) return; // Paper - Don't tick markers
++            if (entity instanceof net.minecraft.world.entity.Marker && !paperConfig().entities.tickMarkers) return; // Paper - Don't tick markers
+             ServerLevel.this.entityTickList.add(entity);
+         }
+ 
+diff --git a/src/main/java/org/spigotmc/ActivationRange.java b/src/main/java/org/spigotmc/ActivationRange.java
+index 665625c69b93a2568b1f2218a0db39da435d8c99..a1308ccdaccc47698d03c3c160957044c388fa78 100644
+--- a/src/main/java/org/spigotmc/ActivationRange.java
++++ b/src/main/java/org/spigotmc/ActivationRange.java
+@@ -218,7 +218,7 @@ public class ActivationRange
+             // Paper end
+ 
+             // Paper start
+-            java.util.List<Entity> entities = world.getEntities((Entity)null, maxBB, (e) -> !(e instanceof net.minecraft.world.entity.Marker)); // Don't tick markers
++            java.util.List<Entity> entities = world.getEntities((Entity)null, maxBB, (e) -> (e instanceof net.minecraft.world.entity.Marker && world.paperConfig().entities.tickMarkers)); // Don't tick markers // Andromeda - Port PaperMC/Paper#8372
+             for (int i = 0; i < entities.size(); i++) {
+                 Entity entity = entities.get(i);
+                 ActivationRange.activateEntity(entity);

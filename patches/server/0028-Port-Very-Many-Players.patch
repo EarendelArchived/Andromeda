@@ -1,0 +1,73 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 6 Jan 2023 17:37:48 +0900
+Subject: [PATCH] Port Very Many Players
+
+Original: ishland <ishlandmc@yeah.net>
+Copyright (C) 2023 RelativityMC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 0ec4cb1c721b85b25ba0f4eac48e8d13113441f0..c623f36c7628ebfcff0915d7c34757a39048475e 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -399,6 +399,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+     public boolean freezeLocked = false; // Paper - Freeze Tick Lock API
+     public boolean collidingWithWorldBorder; // Paper
+     public @Nullable Boolean immuneToFire = null; // Purpur - Fire immune API
++    private boolean boundingBoxChanged = false; // Andromeda - Port VMP
+ 
+     public void setOrigin(@javax.annotation.Nonnull Location location) {
+         this.origin = location.toVector();
+@@ -1036,6 +1037,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+     // Paper end - detailed watchdog information
+ 
+     public void move(MoverType movementType, Vec3 movement) {
++        // Andromeda start - Port VMP
++        if (!boundingBoxChanged && movement.equals(Vec3.ZERO) && this.level.andromedaLevelConfiguration().veryManyPlayers.skipEntityMoveIfNoMovement) {
++            boundingBoxChanged = false;
++            return;
++        }
++        // Andromeda end
+         // Paper start - detailed watchdog information
+         io.papermc.paper.util.TickThread.ensureTickThread("Cannot move an entity off-main");
+         synchronized (this.posLock) {
+@@ -3847,6 +3854,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+     }
+ 
+     public final void setBoundingBox(AABB boundingBox) {
++        if (!this.bb.equals(boundingBox) && this.level.andromedaLevelConfiguration().veryManyPlayers.skipEntityMoveIfNoMovement) boundingBoxChanged = true; // Andromeda - Port VMP
+         // CraftBukkit start - block invalid bounding boxes
+         double minX = boundingBox.minX,
+                 minY = boundingBox.minY,
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 8265845110fa9472b5a528d1075fbcab14e6ae1c..9d2f0aac4f18ae54588994e66867d03c26d93a9a 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -80,4 +80,9 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+     }
+ 
++    public VeryManyPlayers veryManyPlayers;
++    public class VeryManyPlayers extends ConfigurationPart {
++        public boolean skipEntityMoveIfNoMovement = true;
++    }
++
+ }

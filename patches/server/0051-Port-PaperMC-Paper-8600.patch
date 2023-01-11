@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 22:59:41 +0900
+Subject: [PATCH] Port PaperMC/Paper#8600
+
+
+diff --git a/src/main/java/net/minecraft/world/item/RecordItem.java b/src/main/java/net/minecraft/world/item/RecordItem.java
+index 4c6f60cc1269ed0315b7e5a54235b9c95d1f039c..40f6c889a9a86ae15f4229cad21fdcbe336c6799 100644
+--- a/src/main/java/net/minecraft/world/item/RecordItem.java
++++ b/src/main/java/net/minecraft/world/item/RecordItem.java
+@@ -43,7 +43,7 @@ public class RecordItem extends Item {
+             ItemStack itemstack = context.getItemInHand();
+ 
+             if (!world.isClientSide) {
+-                if (true) return InteractionResult.SUCCESS; // CraftBukkit - handled in ItemStack
++                if (true) return InteractionResult.sidedSuccess(world.isClientSide); // CraftBukkit - handled in ItemStack // Andromeda - Port PaperMC/Paper#8600
+                 ((JukeboxBlock) Blocks.JUKEBOX).setRecord(context.getPlayer(), world, blockposition, iblockdata, itemstack);
+                 world.levelEvent((Player) null, 1010, blockposition, Item.getId(this));
+                 itemstack.shrink(1);

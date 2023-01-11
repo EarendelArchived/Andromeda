@@ -1,0 +1,79 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Thu, 22 Dec 2022 20:14:27 +0900
+Subject: [PATCH] Rubia Server Patches
+
+SHA: 43a96ce87b8caf649f0fb73bc672b13886b82e58
+
+Original: Irochi <me@irochi.moe>
+Copyright (C) 2023 Irochi Moe
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+[PORTED PATCHES]
+0007 - Toggleable offline mode warning
+0008 - Allow any characters in username
+
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index fdcfed33902f1bcbc78556512b9f01d95f412f1b..148aa2de79ed515532b255404c0dc44ec15c8602 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -315,6 +315,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
+         // CraftBukkit end
+ 
++        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().consoleLogs.offlineWarnings) // Andromeda - Rubia Patches
+         if (!this.usesAuthentication()) {
+             DedicatedServer.LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
+             DedicatedServer.LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
+@@ -327,7 +328,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+                 DedicatedServer.LOGGER.warn("You will not be offered any support as long as the server allows offline-mode players to join."); // Purpur
+             }
+             // Spigot end
+-            DedicatedServer.LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
++            DedicatedServer.LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the \"server.properties\" file or set \"offline-warning\" to \"false\" in the \"andromeda.yml\" file."); // Andromeda - Rubia Patches
+         }
+ 
+ 
+diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+index f7f085a2dc5dc8d09bc665a371afac04b0e118fc..1d3c9cfdea9b606f47b7783bdf3064adfd796467 100644
+--- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -239,6 +239,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+     @Override
+     public void handleHello(ServerboundHelloPacket packet) {
+         Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet", new Object[0]);
++        if (!team.earendel.andromeda.configurations.GlobalConfiguration.get().rubiaPorts.allowAnyUsername) // Andromeda - Rubia Patches
+         Validate.validState(ServerLoginPacketListenerImpl.isValidUsername(packet.name()), "Invalid characters in username", new Object[0]);
+         // Paper start - validate usernames
+         if (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode() && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.performUsernameValidation) {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index e72daafdacf59f789e5f409d4006c2354e047740..5fae009c978110663281234286ba05200587fbcf 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -19,4 +19,14 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+     @Setting(Configuration.VERSION_FIELD)
+     public int version = CURRENT_VERSION;
++
++    public RubiaPorts rubiaPorts;
++    public class RubiaPorts extends ConfigurationPart {
++        public boolean allowAnyUsername = false;
++    }
++
++    public ConsoleLogs consoleLogs;
++    public class ConsoleLogs extends ConfigurationPart {
++        public boolean offlineWarnings = true;
++    }
+ }

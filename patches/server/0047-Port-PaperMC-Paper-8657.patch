@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 22:46:29 +0900
+Subject: [PATCH] Port PaperMC/Paper#8657
+
+
+diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
+index 60c48aff048eee397a931fa3956e8593f27731d2..c0efc522db09b143867a4cfcbc2c64e5deef0277 100644
+--- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
++++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
+@@ -752,6 +752,13 @@ public interface DispenseItemBehavior {
+             protected ItemStack execute(BlockSource pointer, ItemStack stack) {
+                 ServerLevel worldserver = pointer.getLevel();
+ 
++                // Andromeda start - Port PaperMC/Paper#8657
++                Direction enumdirection = (Direction) pointer.getBlockState().getValue(DispenserBlock.FACING);
++                BlockPos blockposition = pointer.getPos().relative(enumdirection);
++                BlockState iblockdata = worldserver.getBlockState(blockposition);
++                if (BaseFireBlock.canBePlacedAt(worldserver, blockposition, enumdirection) || CampfireBlock.canLight(iblockdata) || CandleBlock.canLight(iblockdata) || CandleCakeBlock.canLight(iblockdata) || iblockdata.getBlock() instanceof TntBlock) {
++                // Andromeda end
++
+                 // CraftBukkit start
+                 org.bukkit.block.Block bukkitBlock = worldserver.getWorld().getBlockAt(pointer.getPos().getX(), pointer.getPos().getY(), pointer.getPos().getZ());
+                 CraftItemStack craftItem = CraftItemStack.asCraftMirror(stack); // Paper - ignore stack size on damageable items
+@@ -775,11 +782,9 @@ public interface DispenseItemBehavior {
+                     }
+                 }
+                 // CraftBukkit end
++                } // Andromeda - Port PaperMC/Paper#8657
+ 
+                 this.setSuccess(true);
+-                Direction enumdirection = (Direction) pointer.getBlockState().getValue(DispenserBlock.FACING);
+-                BlockPos blockposition = pointer.getPos().relative(enumdirection);
+-                BlockState iblockdata = worldserver.getBlockState(blockposition);
+ 
+                 if (BaseFireBlock.canBePlacedAt(worldserver, blockposition, enumdirection)) {
+                     // CraftBukkit start - Ignition by dispensing flint and steel
+@@ -813,6 +818,10 @@ public interface DispenseItemBehavior {
+                 this.setSuccess(true);
+                 ServerLevel worldserver = pointer.getLevel();
+                 BlockPos blockposition = pointer.getPos().relative((Direction) pointer.getBlockState().getValue(DispenserBlock.FACING));
++                // Andromeda start - Port PaperMC/Paper#8657
++                final BlockState blockState = worldserver.getBlockState(blockposition);
++                if ((blockState.getBlock() instanceof net.minecraft.world.level.block.BonemealableBlock bonemealableBlock && bonemealableBlock.isValidBonemealTarget(worldserver, blockposition, blockState, worldserver.isClientSide)) || (blockState.is(Blocks.WATER) && blockState.getFluidState().getAmount() == 8)) {
++                // Andromeda end
+                 // CraftBukkit start
+                 org.bukkit.block.Block block = worldserver.getWorld().getBlockAt(pointer.getPos().getX(), pointer.getPos().getY(), pointer.getPos().getZ());
+                 CraftItemStack craftItem = CraftItemStack.asCraftMirror(stack.copyWithCount(1)); // Paper - single item in event
+@@ -835,6 +844,7 @@ public interface DispenseItemBehavior {
+                         return stack;
+                     }
+                 }
++                } // Andromeda - Port PaperMC/Paper#8657
+ 
+                 worldserver.captureTreeGeneration = true;
+                 // CraftBukkit end

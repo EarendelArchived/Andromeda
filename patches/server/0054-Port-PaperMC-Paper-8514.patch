@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sun, 8 Jan 2023 11:41:16 +0900
+Subject: [PATCH] Port PaperMC/Paper#8514
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 525638bbd27f1ac59e59a6c6b2f4bfeaa5cbd7bc..ac40fefcd11132d9f865c249ed18a3ace6ea40f2 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1175,6 +1175,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         targetLocation.setPitch(pitch);
+ 
+         org.bukkit.util.Vector direction = targetLocation.getDirection();
++        direction.multiply(9999999); // Andromeda - Port PaperMC/Paper#8514
+         targetLocation.add(direction);
+         this.lookAt(targetLocation, io.papermc.paper.entity.LookAnchor.EYES);
+         // Paper end

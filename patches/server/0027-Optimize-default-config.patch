@@ -1,0 +1,287 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 6 Jan 2023 16:22:35 +0900
+Subject: [PATCH] Optimize default config
+
+Original: YouHaveTrouble/minecraft-optimization
+(https://github.com/YouHaveTrouble/minecraft-optimization)
+
+Copyright (C) 2023 YouHaveTrouble
+
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+index e2d6ae8baa43fe0c4b59d386b5b66ab16a1910ee..d1ad2c4808176efedfb1d23bf299cc3637c963af 100644
+--- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+@@ -211,7 +211,7 @@ public class PufferfishConfig {
+     public static int maxProjectileLoadsPerProjectile;
+     private static void projectileLoading() {
+         maxProjectileLoadsPerTick = getInt("projectile.max-loads-per-tick", 10, "Controls how many chunks are allowed", "to be sync loaded by projectiles in a tick.");
+-        maxProjectileLoadsPerProjectile = getInt("projectile.max-loads-per-projectile", 10, "Controls how many chunks a projectile", "can load in its lifetime before it gets", "automatically removed.");
++        maxProjectileLoadsPerProjectile = getInt("projectile.max-loads-per-projectile", 8, "Controls how many chunks a projectile", "can load in its lifetime before it gets", "automatically removed."); // Andromeda
+ 
+         setComment("projectile", "Optimizes projectile settings");
+     }
+@@ -224,7 +224,7 @@ public class PufferfishConfig {
+     public static int activationDistanceMod;
+ 
+     private static void dynamicActivationOfBrains() throws IOException {
+-        dearEnabled = getBoolean("dab.enabled", "activation-range.enabled", false); // Purpur
++        dearEnabled = getBoolean("dab.enabled", "activation-range.enabled", true); // Purpur // Andromeda
+         startDistance = getInt("dab.start-distance", "activation-range.start-distance", 12,
+                 "This value determines how far away an entity has to be",
+                 "from the player to start being effected by DEAR.");
+@@ -232,7 +232,7 @@ public class PufferfishConfig {
+         maximumActivationPrio = getInt("dab.max-tick-freq", "activation-range.max-tick-freq", 20,
+                 "This value defines how often in ticks, the furthest entity",
+                 "will get their pathfinders and behaviors ticked. 20 = 1s");
+-        activationDistanceMod = getInt("dab.activation-dist-mod", "activation-range.activation-dist-mod", 8,
++        activationDistanceMod = getInt("dab.activation-dist-mod", "activation-range.activation-dist-mod", 7, // Andromeda
+                 "This value defines how much distance modifies an entity's",
+                 "tick frequency. freq = (distanceToPlayer^2) / (2^value)",
+                 "If you want further away entities to tick less often, use 7.",
+@@ -268,16 +268,16 @@ public class PufferfishConfig {
+     
+     public static boolean throttleInactiveGoalSelectorTick;
+ 	private static void inactiveGoalSelectorThrottle() {
+-		getBoolean("inactive-goal-selector-throttle", "inactive-goal-selector-disable", false, // Purpur
++		getBoolean("inactive-goal-selector-throttle", "inactive-goal-selector-disable", true, // Purpur // Andromeda
+ 				"Throttles the AI goal selector in entity inactive ticks.",
+ 				"This can improve performance by a few percent, but has minor gameplay implications.");
+ 	}
+ 
+ 
+-    public static boolean disableMethodProfiler;
++    public static boolean disableMethodProfiler = true; // Andromeda
+ 	public static boolean disableOutOfOrderChat;
+     private static void miscSettings() {
+-		disableMethodProfiler = getBoolean("misc.disable-method-profiler", true);
++		//disableMethodProfiler = getBoolean("misc.disable-method-profiler", true); // Andromeda
+ 		disableOutOfOrderChat = getBoolean("misc.disable-out-of-order-chat", false);
+         setComment("misc", "Settings for things that don't belong elsewhere");
+     }
+diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+index 4532f3a0d74feae0a1249b53e1bfbc18a8808b32..619883100becdc2390413022640ee4ccc4dbeb29 100644
+--- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+@@ -84,15 +84,28 @@ public class WorldConfiguration extends ConfigurationPart {
+ 
+         public class AntiXray extends ConfigurationPart {
+             public boolean enabled = false;
+-            public EngineMode engineMode = EngineMode.HIDE;
++            public EngineMode engineMode = EngineMode.OBFUSCATE;
+             public int maxBlockHeight = 64;
+             public int updateRadius = 2;
+             public boolean lavaObscures = false;
+-            public boolean usePermission = false;
+-            public List<String> hiddenBlocks = List.of("copper_ore", "deepslate_copper_ore", "gold_ore", "deepslate_gold_ore", "iron_ore", "deepslate_iron_ore",
+-                "coal_ore", "deepslate_coal_ore", "lapis_ore", "deepslate_lapis_ore", "mossy_cobblestone", "obsidian", "chest", "diamond_ore", "deepslate_diamond_ore",
+-                "redstone_ore", "deepslate_redstone_ore", "clay", "emerald_ore", "deepslate_emerald_ore", "ender_chest"); // TODO update type to List<Block>
+-            public List<String> replacementBlocks = List.of("stone", "oak_planks", "deepslate"); // TODO update type to List<Block>
++            public boolean usePermission = true; // Andromeda
++            // Andromeda start
++            public List<String> hiddenBlocks = List.of(
++                    "air",
++                    "copper_ore", "deepslate_copper_ore", "raw_copper_block",
++                    "diamond_ore", "deepslate_diamond_ore",
++                    "gold_ore", "deepslate_gold_ore",
++                    "iron_ore", "deepslate_iron_ore", "raw_iron_block",
++                    "lapis_ore", "deepslate_lapis_ore",
++                    "redstone_ore", "deepslate_redstone_ore"); // TODO update type to List<Block>
++            public List<String> replacementBlocks = List.of(
++                    "chest", "oak_planks",
++                    "amethyst_block", "budding_amethyst",
++                    "coal_ore", "deepslate_coal_ore", "emerald_ore", "deepslate_emerald_ore",
++                    "andesite", "calcite", "deepslate", "diorite", "granite", "smooth_basalt", "stone", "tuff",
++                    "dirt", "gravel"
++            ); // TODO update type to List<Block>
++            // Andromeda end
+         }
+     }
+ 
+@@ -133,7 +146,7 @@ public class WorldConfiguration extends ConfigurationPart {
+             @MergeMap
+             public Reference2IntMap<MobCategory> spawnLimits = Util.make(new Reference2IntOpenHashMap<>(NaturalSpawner.SPAWNING_CATEGORIES.length), map -> Arrays.stream(NaturalSpawner.SPAWNING_CATEGORIES).forEach(mobCategory -> map.put(mobCategory, -1)));
+             @MergeMap
+-            public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(category.getNoDespawnDistance(), category.getDespawnDistance())));
++            public Map<MobCategory, DespawnRange> despawnRanges = Arrays.stream(MobCategory.values()).collect(Collectors.toMap(Function.identity(), category -> new DespawnRange(30, 56))); // Andromeda
+ 
+             @ConfigSerializable
+             public record DespawnRange(@Required int soft, @Required int hard) {
+@@ -317,7 +330,7 @@ public class WorldConfiguration extends ConfigurationPart {
+     public class Environment extends ConfigurationPart {
+         public boolean disableThunder = false;
+         public boolean disableIceAndSnow = false;
+-        public boolean optimizeExplosions = false;
++        public boolean optimizeExplosions = true; // Andromeda
+         public boolean disableExplosionKnockback = false;
+         public boolean generateFlatBedrock = false;
+         public FrostedIce frostedIce;
+@@ -397,9 +410,9 @@ public class WorldConfiguration extends ConfigurationPart {
+     public class Collisions extends ConfigurationPart {
+         public boolean onlyPlayersCollide = false;
+         public boolean allowVehicleCollisions = true;
+-        public boolean fixClimbingBypassingCrammingRule = false;
++        public boolean fixClimbingBypassingCrammingRule = true; // Andromeda
+         @RequiresSpigotInitialization(MaxEntityCollisionsInitializer.class)
+-        public int maxEntityCollisions = 8;
++        public int maxEntityCollisions = 2; // Andromeda
+         public boolean allowPlayerCrammingDamage = false;
+     }
+ 
+@@ -407,18 +420,32 @@ public class WorldConfiguration extends ConfigurationPart {
+ 
+     public class Chunks extends ConfigurationPart {
+         public AutosavePeriod autoSaveInterval = AutosavePeriod.def();
+-        public int maxAutoSaveChunksPerTick = 24;
++        public int maxAutoSaveChunksPerTick = 8; // Andromeda
+         public int fixedChunkInhabitedTime = -1;
+-        public boolean preventMovingIntoUnloadedChunks = false;
++        public boolean preventMovingIntoUnloadedChunks = true; // Andromeda
+         public Duration delayChunkUnloadsBy = Duration.of("10s");
+         public Reference2IntMap<EntityType<?>> entityPerChunkSaveLimit = Util.make(new Reference2IntOpenHashMap<>(BuiltInRegistries.ENTITY_TYPE.size()), map -> {
+             map.defaultReturnValue(-1);
+-            map.put(EntityType.EXPERIENCE_ORB, -1);
+-            map.put(EntityType.SNOWBALL, -1);
+-            map.put(EntityType.ENDER_PEARL, -1);
+-            map.put(EntityType.ARROW, -1);
+-            map.put(EntityType.FIREBALL, -1);
+-            map.put(EntityType.SMALL_FIREBALL, -1);
++            // Andromeda start
++            map.put(EntityType.AREA_EFFECT_CLOUD, 8);
++            map.put(EntityType.ARROW, 16);
++            map.put(EntityType.DRAGON_FIREBALL, 3);
++            map.put(EntityType.EGG, 8);
++            map.put(EntityType.ENDER_PEARL, 8);
++            map.put(EntityType.EXPERIENCE_BOTTLE, 3);
++            map.put(EntityType.EXPERIENCE_ORB, 16);
++            map.put(EntityType.EYE_OF_ENDER, 8);
++            map.put(EntityType.FIREBALL, 8);
++            map.put(EntityType.FIREWORK_ROCKET, 8);
++            map.put(EntityType.LLAMA_SPIT, 3);
++            map.put(EntityType.POTION, 8);
++            map.put(EntityType.SHULKER_BULLET, 8);
++            map.put(EntityType.SMALL_FIREBALL, 8);
++            map.put(EntityType.SNOWBALL, 8);
++            map.put(EntityType.SPECTRAL_ARROW, 16);
++            map.put(EntityType.TRIDENT, 16);
++            map.put(EntityType.WITHER_SKULL, 4);
++            // Andromeda end
+         });
+     }
+ 
+@@ -432,11 +459,22 @@ public class WorldConfiguration extends ConfigurationPart {
+     public TickRates tickRates;
+ 
+     public class TickRates extends ConfigurationPart {
+-        public int grassSpread = 1;
++        public int grassSpread = 4; // Andromeda
+         public int containerUpdate = 1;
+-        public int mobSpawner = 1;
+-        public Table<EntityType<?>, String, Integer> sensor = Util.make(HashBasedTable.create(), table -> table.put(EntityType.VILLAGER, "secondarypoisensor", 40));
+-        public Table<EntityType<?>, String, Integer> behavior = Util.make(HashBasedTable.create(), table -> table.put(EntityType.VILLAGER, "validatenearbypoi", -1));
++        public int mobSpawner = 2; // Andromeda
++        // Andromeda start
++        public Table<EntityType<?>, String, Integer> behavior = Util.make(HashBasedTable.create(), table -> {
++            table.put(EntityType.VILLAGER, "validatenearbypoi", 60);
++            table.put(EntityType.VILLAGER, "acquirepoi", 120);
++        });
++        public Table<EntityType<?>, String, Integer> sensor = Util.make(HashBasedTable.create(), table -> {
++            table.put(EntityType.VILLAGER, "secondarypoisensor", 80);
++            table.put(EntityType.VILLAGER, "nearestbedsensor", 80);
++            table.put(EntityType.VILLAGER, "villagerbabiessensor", 40);
++            table.put(EntityType.VILLAGER, "playersensor", 40);
++            table.put(EntityType.VILLAGER, "nearestlivingentitysensor", 40);
++        });
++        // Andromeda end
+     }
+ 
+     @Setting(FeatureSeedsGeneration.FEATURE_SEEDS_KEY)
+@@ -460,7 +498,7 @@ public class WorldConfiguration extends ConfigurationPart {
+         public int lightQueueSize = 20;
+         public boolean updatePathfindingOnBlockUpdate = true;
+         public boolean showSignClickCommandFailureMsgsToPlayer = false;
+-        public RedstoneImplementation redstoneImplementation = RedstoneImplementation.VANILLA;
++        public RedstoneImplementation redstoneImplementation = RedstoneImplementation.ALTERNATE_CURRENT; // Andromeda
+         public boolean disableEndCredits = false;
+         public float maxLeashDistance = 10f;
+         public boolean disableSprintInterruptionOnAttack = false;
+diff --git a/src/main/java/io/papermc/paper/configuration/type/fallback/ArrowDespawnRate.java b/src/main/java/io/papermc/paper/configuration/type/fallback/ArrowDespawnRate.java
+index 24763d3d270c29c95e0b3e85111145234f660a62..f76590fe30a031494fea8ab04675eece308ba13d 100644
+--- a/src/main/java/io/papermc/paper/configuration/type/fallback/ArrowDespawnRate.java
++++ b/src/main/java/io/papermc/paper/configuration/type/fallback/ArrowDespawnRate.java
+@@ -29,6 +29,7 @@ public class ArrowDespawnRate extends FallbackValue.Int {
+ 
+     @Override
+     protected int fallback() {
++        if (true) return 100; // Andromeda
+         return this.get(FallbackValue.SPIGOT_WORLD_CONFIG).arrowDespawnRate;
+     }
+ 
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+index 5134fed0cd0eedbe0c2177bce91b978b20061517..60f95e607cc6d4020bfb3b08393d333f697fa169 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+@@ -120,7 +120,7 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+         this.levelName = this.get("level-name", "world");
+         this.serverPort = this.get("server-port", 25565);
+         this.announcePlayerAchievements = this.getLegacyBoolean("announce-player-achievements");
+-        this.enableQuery = this.get("enable-query", false);
++        this.enableQuery = this.get("enable-query", true); // Andromeda
+         this.queryPort = this.get("query.port", 25565);
+         this.enableRcon = this.get("enable-rcon", false);
+         this.rconPort = this.get("rcon.port", 25575);
+@@ -129,15 +129,15 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+         this.allowNether = this.get("allow-nether", true);
+         this.spawnMonsters = this.get("spawn-monsters", true);
+         this.useNativeTransport = this.get("use-native-transport", true);
+-        this.enableCommandBlock = this.get("enable-command-block", false);
+-        this.spawnProtection = this.get("spawn-protection", 16);
++        this.enableCommandBlock = this.get("enable-command-block", true); // Andromeda
++        this.spawnProtection = this.get("spawn-protection", 0); // Andromeda
+         this.opPermissionLevel = this.get("op-permission-level", 4);
+         this.functionPermissionLevel = this.get("function-permission-level", 2);
+         this.maxTickTime = this.get("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
+         this.maxChainedNeighborUpdates = this.get("max-chained-neighbor-updates", 1000000);
+         this.rateLimitPacketsPerSecond = this.get("rate-limit", 0);
+-        this.viewDistance = this.get("view-distance", 10);
+-        this.simulationDistance = this.get("simulation-distance", 10);
++        this.viewDistance = this.get("view-distance", 7); // Andromeda
++        this.simulationDistance = this.get("simulation-distance", 4); // Andromeda
+         this.maxPlayers = this.get("max-players", 20);
+         this.networkCompressionThreshold = this.get("network-compression-threshold", 256);
+         this.broadcastRconToOps = this.get("broadcast-rcon-to-ops", true);
+@@ -155,7 +155,7 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+         this.textFilteringConfig = this.get("text-filtering-config", "");
+         this.playerIdleTimeout = this.getMutable("player-idle-timeout", 0);
+         this.whiteList = this.getMutable("white-list", false);
+-        this.enforceSecureProfile = this.get("enforce-secure-profile", true);
++        this.enforceSecureProfile = this.get("enforce-secure-profile", false); // Andromeda
+         String s = this.get("level-seed", "");
+         boolean flag = this.get("generate-structures", true);
+         long i = WorldOptions.parseSeed(s).orElse(WorldOptions.randomSeed());
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+index c88f9ade3db7118bb0b7e4c3c841ac1dee0ed4a0..93785c8b47bddea5bad01d9c600be771d5cffe0a 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+@@ -240,7 +240,7 @@ public class PurpurConfig {
+         laggingThreshold = getDouble("settings.lagging-threshold", laggingThreshold);
+     }
+ 
+-    public static boolean useAlternateKeepAlive = false;
++    public static boolean useAlternateKeepAlive = true; // Andromeda
+     private static void useAlternateKeepAlive() {
+         useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
+     }
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+index 96a8e6d4459ad5654aadcd8e9f71c1997b2d68e9..f6b8ac1efad6e2cf70f6078530092856ac3df857 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+@@ -420,7 +420,7 @@ public class PurpurWorldConfig {
+     public boolean playerInvulnerableWhileAcceptingResourcePack = false;
+     public String playerDeathExpDropEquation = "expLevel * 7";
+     public int playerDeathExpDropMax = 100;
+-    public boolean teleportIfOutsideBorder = false;
++    public boolean teleportIfOutsideBorder = true; // Andromeda
+     public boolean teleportOnNetherCeilingDamage = false;
+     public boolean totemOfUndyingWorksInInventory = false;
+     public boolean playerFixStuckPortal = false;

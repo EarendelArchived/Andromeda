@@ -1,0 +1,109 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 00:12:38 +0900
+Subject: [PATCH] Implement Never Tick Alone
+
+Original: Thor12022
+Copyright (C) 2023 Thor12022
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 84f1cdf6e4f368705547d4c5eb027c84b8f130e4..dcf62e3422144a0a70006b942a5c7ea1d4af0b43 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1122,6 +1122,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 throw new IllegalStateException("Failed to initialize server");
+             }
+ 
++            // Andromeda start
++            boolean flag1 = team.earendel.andromeda.configurations.GlobalConfiguration.get().neverTickAlone.enabled && this.getPlayerCount() == 0;
++            boolean flag2 = team.earendel.andromeda.configurations.GlobalConfiguration.get().neverTickAlone.unsupportedSettings.JUST_DO_NOT_TICK;
++            if (flag1 || flag2) {
++                this.nextTickTime = this.getNextTickTime() + 333L;
++            }
++            else
++            // Andromeda end
+             this.nextTickTime = Util.getMillis();
+             this.status.setDescription(Component.literal(this.motd));
+             this.status.setVersion(new ServerStatus.Version(SharedConstants.getCurrentVersion().getName(), SharedConstants.getCurrentVersion().getProtocolVersion()));
+@@ -1202,13 +1210,19 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 this.tickServer(this::haveTime);
+                 //this.profiler.popPush("nextTickWait"); // Purpur
+                 this.mayHaveDelayedTasks = true;
+-                    // Purpur start - tps catchup
++                // Andromeda start
++                // Purpur start - tps catchup
++                if (flag1 || flag2)
++                    this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 333L, this.nextTickTime);
++                else {
+                     if (org.purpurmc.purpur.PurpurConfig.tpsCatchup) {
+                         this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 50L, this.nextTickTime);
+                     } else {
+                         this.delayedTasksMaxNextTickTime = this.nextTickTime = curTime / 1000000L + 50L;
+                     }
+-                    // Purpur end - tps catchup
++                }
++                // Purpur end - tps catchup
++                // Andromeda end
+                 this.waitUntilNextTick();
+                 //this.profiler.pop(); // Purpur
+                 //this.endMetricsRecordingTick(); // Purpur
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 86eb638e04769bb46848b279a8704bf141e717ab..0c8adb13d1fd9b2635e296bed52fe322f60865a2 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -646,6 +646,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
+     }
+ 
+     public void tick(BooleanSupplier shouldKeepTicking) {
++        // Andromeda start
++        if ((team.earendel.andromeda.configurations.GlobalConfiguration.get().neverTickAlone.enabled && this.getServer().getPlayerCount() == 0)
++                || team.earendel.andromeda.configurations.GlobalConfiguration.get().neverTickAlone.unsupportedSettings.JUST_DO_NOT_TICK
++                || (this.andromedaLevelConfiguration().neverTickAlone.enabled && this.players.isEmpty())
++                || this.andromedaLevelConfiguration().neverTickAlone.unsupportedSettings.JUST_DO_NOT_TICK) return;
++        // Andromeda end
+         // Paper start - optimise checkDespawn
+         this.playersAffectingSpawning.clear();
+         for (ServerPlayer player : this.players) {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index 825a71a3fed79880bc0bdd9278050987bd6f6c03..14b7caae01cd64c12b0df4de10f21ea7c085042c 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -78,4 +78,17 @@ public class GlobalConfiguration extends ConfigurationPart {
+         }
+ 
+     }
++
++    public NeverTickAlone neverTickAlone;
++    public class NeverTickAlone extends ConfigurationPart {
++
++        public boolean enabled = false;
++
++        public UnsupportedSettings unsupportedSettings;
++        public class UnsupportedSettings extends ConfigurationPart {
++            public boolean JUST_DO_NOT_TICK = false;
++        }
++
++    }
++
+ }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 0c451160a19bf4fcbb4996c5e776b29eaa7d1c34..710d04666edc734f62581211a0c99534afa40efd 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -99,4 +99,16 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+     }
+ 
++    public NeverTickAlone neverTickAlone;
++    public class NeverTickAlone extends ConfigurationPart {
++
++        public boolean enabled = false;
++
++        public UnsupportedSettings unsupportedSettings;
++        public class UnsupportedSettings extends ConfigurationPart {
++            public boolean JUST_DO_NOT_TICK = false;
++        }
++
++    }
++
+ }

@@ -1,0 +1,121 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 6 Jan 2023 19:37:13 +0900
+Subject: [PATCH] KeYi Server Patches
+
+SHA: 7901bda172e545e59fc9540b60ec1441bd484c20
+
+Original: nostalgic853 <yuu8583@proton.me>
+Copyright (C) 2023 KeYiMC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+[PORTED PATCHES]
+0005 - Options of warnings
+0006 - Add an option for tripwire duping
+0007 - Add an option for spigot item merging mechanism
+0023 - Fast item merging raytracing
+
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index feb340869b744310fdda04276806519bfc7b193c..c8f9b66662c6271d84e8a92fa3d6e6afb3daf1fd 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -180,6 +180,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         }
+ 
+         // Paper start - detect running as root
++        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().consoleLogs.rootUserWarnings) // Andromeda
+         if (io.papermc.paper.util.ServerEnvironment.userIsRootOrAdmin()) {
+             DedicatedServer.LOGGER.warn("****************************");
+             DedicatedServer.LOGGER.warn("YOU ARE RUNNING THIS SERVER AS AN ADMINISTRATIVE OR ROOT USER. THIS IS NOT ADVISED.");
+diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+index 9c3db8f774e5c11df18d2c317c874e8ac26e7f8e..04dbb0954144efce57593819f3be1c6dcacaf923 100644
+--- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+@@ -262,12 +262,12 @@ public class ItemEntity extends Entity {
+                     // Paper Start - Fix items merging through walls
+                         if (this.level.paperConfig().fixes.fixItemsMergingThroughWalls) {
+                             // Pufferfish start - skip the allocations
+-                            /*
++                            if (!level.andromedaLevelConfiguration().keyiPorts.unsupportedSettings.usePufferfishItemMergeRaytrace) { // Andromeda
+                             net.minecraft.world.level.ClipContext rayTrace = new net.minecraft.world.level.ClipContext(this.position(), entityitem.position(),
+                                 net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, this);
+                             net.minecraft.world.phys.BlockHitResult rayTraceResult = level.clip(rayTrace);
+                             if (rayTraceResult.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) continue;
+-                             */
++                            } else // Andromeda
+                             if (level.rayTraceDirect(this.position(), entityitem.position(), net.minecraft.world.phys.shapes.CollisionContext.of(this)) ==
+                                 net.minecraft.world.phys.HitResult.Type.BLOCK) continue;
+                             // Pufferfish end
+@@ -294,7 +294,7 @@ public class ItemEntity extends Entity {
+         ItemStack itemstack1 = other.getItem();
+ 
+         if (Objects.equals(this.getOwner(), other.getOwner()) && ItemEntity.areMergable(itemstack, itemstack1)) {
+-            if (true || itemstack1.getCount() < itemstack.getCount()) { // Spigot
++            if (this.level.andromedaLevelConfiguration().keyiPorts.unsupportedSettings.useSpigotItemMergeMechanism || itemstack1.getCount() < itemstack.getCount()) { // Spigot // Andromeda
+                 ItemEntity.merge(this, itemstack, other, itemstack1);
+             } else {
+                 ItemEntity.merge(other, itemstack1, this, itemstack);
+diff --git a/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java b/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
+index 004dce26ff073f1de52a84cd425c4f60fdab5e50..1d3e95591b4a16ffee3c1767f9b7853b6d31ac02 100644
+--- a/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
+@@ -147,6 +147,7 @@ public class TripWireHookBlock extends Block {
+                 boolean flag7 = (Boolean) iblockdata2.getValue(TripWireBlock.POWERED);
+ 
+                 flag5 |= flag6 && flag7;
++                if (world.andromedaLevelConfiguration().keyiPorts.unsupportedSettings.fixTripWireDuping) // Andromeda
+                 if (k != i || !tripWireBeingRemoved || !flag6) // Paper - don't update the tripwire again if being removed and not disarmed
+                 aiblockdata[k] = iblockdata2;
+                 if (k == i) {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index db0f5ac6520b008aa05506549ff5b2cf70a12610..825a71a3fed79880bc0bdd9278050987bd6f6c03 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -29,6 +29,7 @@ public class GlobalConfiguration extends ConfigurationPart {
+     public ConsoleLogs consoleLogs;
+     public class ConsoleLogs extends ConfigurationPart {
+         public boolean offlineWarnings = true;
++        public boolean rootUserWarnings = true;
+     }
+ 
+     public Enchantments enchantments;
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 9d2f0aac4f18ae54588994e66867d03c26d93a9a..0c451160a19bf4fcbb4996c5e776b29eaa7d1c34 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -85,4 +85,18 @@ public class LevelConfigurations extends ConfigurationPart {
+         public boolean skipEntityMoveIfNoMovement = true;
+     }
+ 
++    public KeYiPorts keyiPorts;
++    public class KeYiPorts extends ConfigurationPart {
++
++        public UnsupportedSettings unsupportedSettings;
++        public class UnsupportedSettings extends ConfigurationPart {
++
++            public boolean fixTripWireDuping = true;
++            public boolean useSpigotItemMergeMechanism = true;
++            public boolean usePufferfishItemMergeRaytrace = true;
++
++        }
++
++    }
++
+ }

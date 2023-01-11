@@ -899,10 +899,10 @@ index 0000000000000000000000000000000000000000..ef41931d5668751354bab6b7d4d52a89
 +}
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d9500bd87d96f1c42f4eddf0e5d7aa86ff574480
+index 0000000000000000000000000000000000000000..e72daafdacf59f789e5f409d4006c2354e047740
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -0,0 +1,30 @@
+@@ -0,0 +1,22 @@
 +package team.earendel.andromeda.configurations;
 +
 +import io.papermc.paper.configuration.Configuration;
@@ -910,11 +910,11 @@ index 0000000000000000000000000000000000000000..d9500bd87d96f1c42f4eddf0e5d7aa86
 +import org.spongepowered.configurate.objectmapping.meta.Setting;
 +
 +@SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
-+public class GlobalConfiguration {
++public class GlobalConfiguration extends ConfigurationPart {
 +    static final int CURRENT_VERSION = 2;
 +    private static GlobalConfiguration instance;
 +
-+    static GlobalConfiguration get() {
++    public static GlobalConfiguration get() {
 +        return instance;
 +    }
 +
@@ -924,21 +924,13 @@ index 0000000000000000000000000000000000000000..d9500bd87d96f1c42f4eddf0e5d7aa86
 +
 +    @Setting(Configuration.VERSION_FIELD)
 +    public int version = CURRENT_VERSION;
-+
-+    public GlobalDummyPart globalDummyPart;
-+
-+    public class GlobalDummyPart extends ConfigurationPart {
-+
-+        int globalDummyValue = 0;
-+
-+    }
 +}
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..3b9cff66da699d7fa990d4540976b1a212cfc2ff
+index 0000000000000000000000000000000000000000..a76d86c797dd1e5e2469aa4fef8e1e804ec403ff
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,30 @@
 +package team.earendel.andromeda.configurations;
 +
 +import com.mojang.logging.LogUtils;
@@ -968,10 +960,6 @@ index 0000000000000000000000000000000000000000..3b9cff66da699d7fa990d4540976b1a2
 +
 +    @Setting(Configuration.VERSION_FIELD)
 +    public int version = CURRENT_VERSION;
-+
-+    public class WorldDummyPart extends ConfigurationPart {
-+        int worldDummyValue = 0;
-+    }
 +}
 diff --git a/src/main/java/team/earendel/andromeda/configurations/RemovedConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/RemovedConfigurations.java
 new file mode 100644

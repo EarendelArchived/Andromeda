@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 22:13:17 +0900
+Subject: [PATCH] Port PaperMC/Paper#8707
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index bec6491095dae48b8e28638c0aec3d2a6e8dc74b..fcc0f17c288242eb5547470003c4ea79dc0307c4 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -728,18 +728,14 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         if (!nbt.isEmpty()) {
+             // CraftBukkit start - these are spawned serialized (DefinedStructure) and we don't call an add event below at the moment due to ordering complexities
+             world.addWorldGenChunkEntities(EntityType.loadEntitiesRecursive(nbt, world).filter((entity) -> {
+-                boolean needsRemoval = false;
+-                net.minecraft.server.dedicated.DedicatedServer server = world.getCraftServer().getServer();
+-                if (!server.areNpcsEnabled() && entity instanceof net.minecraft.world.entity.npc.Npc) {
++                // Andromeda start - Port PaperMC/Paper#8707
++                if (world.shouldDiscardEntityInWorld(entity)) {
+                     entity.discard();
+-                    needsRemoval = true;
+-                }
+-                if (!server.isSpawningAnimals() && (entity instanceof net.minecraft.world.entity.animal.Animal || entity instanceof net.minecraft.world.entity.animal.WaterAnimal)) {
+-                    entity.discard();
+-                    needsRemoval = true;
++                    return false;
+                 }
+                 checkDupeUUID(world, entity); // Paper
+-                return !needsRemoval;
++                return true;
++                // Andromeda end
+             }));
+             // CraftBukkit end
+         }
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 0c8adb13d1fd9b2635e296bed52fe322f60865a2..45d5577be39c1045eb80c87ae45cf5ca42a64c9c 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -846,6 +846,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         return !this.server.isSpawningAnimals() && (entity instanceof Animal || entity instanceof WaterAnimal) ? true : !this.server.areNpcsEnabled() && entity instanceof Npc;
+     }
+ 
++    // Andromeda start - Port PaperMC/Paper#8707
++    public boolean shouldDiscardEntityInWorld(Entity entity) {
++        return !this.getChunkSource().spawnFriendlies && (entity instanceof Animal || entity instanceof WaterAnimal) || !this.server.areNpcsEnabled() && entity instanceof Npc;
++    }
++    // Andromeda end
++
+     private void wakeUpAllPlayers() {
+         this.sleepStatus.removeAllSleepers();
+         (this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList())).forEach((entityplayer) -> { // CraftBukkit - decompile error
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index b65c39645aa437fdb1ac745ec18bba11f63f092d..7f52fbc30d1c9e3e416109cda427145d1221ce30 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -636,17 +636,14 @@ public class CraftEventFactory {
+         return event;
+     }
+ 
+-    public static boolean doEntityAddEventCalling(Level world, Entity entity, SpawnReason spawnReason) {
++    public static boolean doEntityAddEventCalling(ServerLevel world, Entity entity, SpawnReason spawnReason) { // Andromeda - Port PaperMC/Paper#8707
+         if (entity == null) return false;
+ 
+         org.bukkit.event.Cancellable event = null;
+         if (entity instanceof net.minecraft.world.entity.LivingEntity && !(entity instanceof ServerPlayer)) {
+-            boolean isAnimal = entity instanceof Animal || entity instanceof WaterAnimal || entity instanceof AbstractGolem;
+-            boolean isMonster = entity instanceof Monster || entity instanceof Ghast || entity instanceof Slime;
+-            boolean isNpc = entity instanceof Npc;
+ 
+             if (spawnReason != SpawnReason.CUSTOM) {
+-                if (isAnimal && !world.getWorld().getAllowAnimals() || isMonster && !world.getWorld().getAllowMonsters() || isNpc && !world.getCraftServer().getServer().areNpcsEnabled()) {
++                if (world.shouldDiscardEntityInWorld(entity)) { // Andromeda - Port PaperMC/Paper#8707
+                     entity.discard();
+                     return false;
+                 }
