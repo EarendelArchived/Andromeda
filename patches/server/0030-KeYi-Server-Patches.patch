@@ -33,17 +33,45 @@ SOFTWARE.
 0023 - Fast item merging raytracing
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index feb340869b744310fdda04276806519bfc7b193c..c8f9b66662c6271d84e8a92fa3d6e6afb3daf1fd 100644
+index feb340869b744310fdda04276806519bfc7b193c..07a5b1767e73caa0c70295b31cab2eb8c7d7f4e6 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -180,6 +180,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -179,16 +179,6 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+             DedicatedServer.LOGGER.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
          }
  
-         // Paper start - detect running as root
+-        // Paper start - detect running as root
+-        if (io.papermc.paper.util.ServerEnvironment.userIsRootOrAdmin()) {
+-            DedicatedServer.LOGGER.warn("****************************");
+-            DedicatedServer.LOGGER.warn("YOU ARE RUNNING THIS SERVER AS AN ADMINISTRATIVE OR ROOT USER. THIS IS NOT ADVISED.");
+-            DedicatedServer.LOGGER.warn("YOU ARE OPENING YOURSELF UP TO POTENTIAL RISKS WHEN DOING THIS.");
+-            DedicatedServer.LOGGER.warn("FOR MORE INFORMATION, SEE https://madelinemiller.dev/blog/root-minecraft-server/");
+-            DedicatedServer.LOGGER.warn("****************************");
+-        }
+-        // Paper end
+-
+         DedicatedServer.LOGGER.info("Loading properties");
+         DedicatedServerProperties dedicatedserverproperties = this.settings.getProperties();
+ 
+@@ -331,6 +321,18 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+             DedicatedServer.LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the \"server.properties\" file or set \"offline-warning\" to \"false\" in the \"andromeda.yml\" file."); // Andromeda - Rubia Patches
+         }
+ 
++        // Andromeda start - Moved down
++        // Paper start - detect running as root
 +        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().consoleLogs.rootUserWarnings) // Andromeda
-         if (io.papermc.paper.util.ServerEnvironment.userIsRootOrAdmin()) {
-             DedicatedServer.LOGGER.warn("****************************");
-             DedicatedServer.LOGGER.warn("YOU ARE RUNNING THIS SERVER AS AN ADMINISTRATIVE OR ROOT USER. THIS IS NOT ADVISED.");
++            if (io.papermc.paper.util.ServerEnvironment.userIsRootOrAdmin()) {
++                DedicatedServer.LOGGER.warn("****************************");
++                DedicatedServer.LOGGER.warn("YOU ARE RUNNING THIS SERVER AS AN ADMINISTRATIVE OR ROOT USER. THIS IS NOT ADVISED.");
++                DedicatedServer.LOGGER.warn("YOU ARE OPENING YOURSELF UP TO POTENTIAL RISKS WHEN DOING THIS.");
++                DedicatedServer.LOGGER.warn("FOR MORE INFORMATION, SEE https://madelinemiller.dev/blog/root-minecraft-server/");
++                DedicatedServer.LOGGER.warn("****************************");
++            }
++        // Paper end
++        // Andromeda end
+ 
+         if (!OldUsersConverter.serverReadyAfterUserconversion(this)) {
+             return false;
 diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
 index 9c3db8f774e5c11df18d2c317c874e8ac26e7f8e..04dbb0954144efce57593819f3be1c6dcacaf923 100644
 --- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
