@@ -188,6 +188,37 @@ index cea4447aad2d64db56a76e4ba180dc7326d2e13b..3325e688c6bf1bfc14569cbf9e6b1981
              while (this.getRunningThread().isAlive()) {
                  this.getRunningThread().stop();
                  try {
+diff --git a/src/main/java/net/minecraft/server/gui/MinecraftServerGui.java b/src/main/java/net/minecraft/server/gui/MinecraftServerGui.java
+index c07918aa1ed2469ad7a76a0add60ab648ff7f421..3a98106f8b26a55d17681f94e365f1340b1d3449 100644
+--- a/src/main/java/net/minecraft/server/gui/MinecraftServerGui.java
++++ b/src/main/java/net/minecraft/server/gui/MinecraftServerGui.java
+@@ -51,7 +51,7 @@ public class MinecraftServerGui extends JComponent {
+             ;
+         }
+ 
+-        final JFrame jframe = new JFrame("Minecraft server");
++        final JFrame jframe = new JFrame("Andromeda"); // Andromeda
+         final MinecraftServerGui servergui = new MinecraftServerGui(server);
+ 
+         jframe.setDefaultCloseOperation(2);
+@@ -59,7 +59,7 @@ public class MinecraftServerGui extends JComponent {
+         jframe.pack();
+         jframe.setLocationRelativeTo((Component) null);
+         jframe.setVisible(true);
+-        jframe.setName("Minecraft server"); // Paper
++        jframe.setName("Andromeda"); // Paper // Andromeda
+ 
+         // Paper start - Add logo as frame image
+         try {
+@@ -71,7 +71,7 @@ public class MinecraftServerGui extends JComponent {
+         jframe.addWindowListener(new WindowAdapter() {
+             public void windowClosing(WindowEvent windowevent) {
+                 if (!servergui.isClosing.getAndSet(true)) {
+-                    jframe.setTitle("Minecraft server - shutting down!");
++                    jframe.setTitle("Andromeda - shutting down"); // Andromeda
+                     server.halt(true);
+                     servergui.runFinalizers();
+                 }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
 index a9289072b048095330ea32d7c965e8dda61a36fc..2e5f1a231213340bc0084ba8d3478dce9bde3606 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
