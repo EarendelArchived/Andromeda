@@ -1,0 +1,87 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Amaury Rousseau <kinrar@kinrar.io>
+Date: Sun, 19 Dec 2021 19:00:02 +0100
+Subject: [PATCH] Implement canSeePlayerEntities API
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 52071101c16ae84f69f1a00857b4895f328f6edd..544698b125594fbacb7ca2ad4ee2c2881d7aac53 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -165,6 +165,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     private final ConversationTracker conversationTracker = new ConversationTracker();
+     private final Set<String> channels = new HashSet<String>();
+     private final Map<UUID, Set<WeakReference<Plugin>>> hiddenEntities = new HashMap<>();
++    private final Set<WeakReference<Plugin>> hideAllPlugins = new HashSet<>();
+     private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
+     private int hash = 0;
+     private double health = 20;
+@@ -1845,9 +1846,68 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     @Override
+     public boolean canSee(org.bukkit.entity.Entity entity) {
++        if(entity instanceof Player && !canSeePlayerEntities())
++            return false;
++
+         return !this.hiddenEntities.containsKey(entity.getUniqueId());
+     }
+ 
++    @Override
++    public void hidePlayerEntities(Plugin plugin) {
++        Validate.notNull(plugin, "Plugin cannot be null");
++        Validate.isTrue(plugin.isEnabled(), "Plugin attempted to hide player entities while disabled");
++        if (getHandle().connection == null) return;
++
++        if(!hideAllPlugins.isEmpty()) {
++            // Some plugins are already hiding player entities. Just mark that this
++            // plugin wants it too and end.
++            hideAllPlugins.add(getPluginWeakReference(plugin));
++            return;
++        }
++        hideAllPlugins.add(getPluginWeakReference(plugin));
++
++        var tracker = getHandle().getLevel().getChunkSource().chunkMap;
++        for(var other : getHandle().getLevel().players()) {
++            unregisterEntity(other);
++            var entry = tracker.entityMap.get(other.getId());
++            if(entry != null) {
++                entry.removePlayer(getHandle());
++            }
++        }
++    }
++
++    @Override
++    public void showPlayerEntities(Plugin plugin) {
++        Validate.notNull(plugin, "Plugin cannot be null");
++        if (getHandle().connection == null) return;
++
++        if(hideAllPlugins.isEmpty()) return; // Player entities aren't hidden
++        hideAllPlugins.remove(getPluginWeakReference(plugin));
++        if(!hideAllPlugins.isEmpty()) return; // Some other plugins still want the player entities hidden
++
++        var tracker = getHandle().getLevel().getChunkSource().chunkMap;
++        for(var other : getHandle().getLevel().players()) {
++            if(!hiddenEntities.containsKey(other.getUUID())) { // Other might still be hidden using hidePlayer
++            if(canSeePlayerEntities()) { // Papyrus
++                var entry = tracker.entityMap.get(other.getId());
++                if (entry != null && !entry.seenBy.contains(getHandle().connection)) {
++                    entry.updatePlayer(getHandle());
++                }
++            }
++            }
++        }
++    }
++
++    @Override
++    public boolean canSeePlayerEntities() {
++        return hideAllPlugins.isEmpty();
++    }
++
++    @Override
++    public boolean canSeePlayerEntity(Player player) {
++        return canSee(player);
++    }
++
+     @Override
+     public Map<String, Object> serialize() {
+         Map<String, Object> result = new LinkedHashMap<String, Object>();

@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Fri, 23 Dec 2022 15:40:22 +0100
+Subject: [PATCH] Fix MC-31819
+
+License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+Gale - https://galemc.org
+
+This patch is based on the following patch:
+"Fix hunger saturation depleting on peaceful"
+By: etil2jz <81570777+etil2jz@users.noreply.github.com>
+As part of: Mirai (https://github.com/etil2jz/Mirai)
+Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+
+* Mirai description *
+
+The food saturation value is depleted on peaceful, even though
+the displayed hunger bar never goes down. Hunger (or any related value, including saturation)
+should not go down on peaceful. See https://bugs.mojang.com/browse/MC-31819.
+
+diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
+index 0dcae10fd05a8fe963fdedda8199aa09dc717c9a..328a232a517789f2b619debe99b7c43d55be1940 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Player.java
++++ b/src/main/java/net/minecraft/world/entity/player/Player.java
+@@ -1900,6 +1900,11 @@ public abstract class Player extends LivingEntity {
+     }
+ 
+     public void causeFoodExhaustion(float f, EntityExhaustionEvent.ExhaustionReason reason) {
++        // Gale start - Mirai - fix MC-31819
++        if (this.level.galeConfig().gameplayMechanics.fixes.mc31819 && this.level.getDifficulty() == Difficulty.PEACEFUL) {
++            return;
++        }
++        // Gale end - Mirai - fix MC-31819
+         // CraftBukkit end
+         if (!this.abilities.invulnerable) {
+             if (!this.level.isClientSide) {
+diff --git a/src/main/java/org/galemc/gale/configuration/GaleWorldConfiguration.java b/src/main/java/org/galemc/gale/configuration/GaleWorldConfiguration.java
+index 9254430412c59860d56cae6e46f8f64a3d1e2c87..d190b3ab4ed9f0c183932d235f9f7752a6177f31 100644
+--- a/src/main/java/org/galemc/gale/configuration/GaleWorldConfiguration.java
++++ b/src/main/java/org/galemc/gale/configuration/GaleWorldConfiguration.java
+@@ -284,6 +284,11 @@ public class GaleWorldConfiguration extends ConfigurationPart {
+             public boolean mc110386 = true;
+             // Gale end - Mirai - fix MC-110386
+ 
++            // Gale start - Mirai - fix MC-31819
++            @Setting("mc-31819")
++            public boolean mc31819 = true;
++            // Gale end - Mirai - fix MC-31819
++
+         }
+ 
+     }

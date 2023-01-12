@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: willies952002 <admin@domnian.com>
+Date: Sun, 2 Jan 2022 10:10:22 -0500
+Subject: [PATCH] Add methods to get a raid's id and to cancel it
+
+
+diff --git a/src/main/java/org/bukkit/Raid.java b/src/main/java/org/bukkit/Raid.java
+index 420f2e67bbd0896c542d16c4d666114926a482c4..c5ead8b035b8847c1473136e531525fd8bcb4aef 100644
+--- a/src/main/java/org/bukkit/Raid.java
++++ b/src/main/java/org/bukkit/Raid.java
+@@ -110,6 +110,11 @@ public interface Raid {
+     @NotNull
+     List<Raider> getRaiders();
+ 
++    // PaperDragon start
++    int getId();
++    void cancel();
++    // PaperDragon end
++
+     /**
+      * Represents the status of a {@link Raid}.
+      */

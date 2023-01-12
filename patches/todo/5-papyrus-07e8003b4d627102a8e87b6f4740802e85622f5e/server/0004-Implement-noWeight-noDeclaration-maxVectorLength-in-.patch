@@ -1,0 +1,91 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Indhi Rousseau <contact@thekinrar.fr>
+Date: Sun, 14 Mar 2021 18:40:25 +0100
+Subject: [PATCH] Implement noWeight, noDeclaration, maxVectorLength in
+ Minecart
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+index eec7d7a5b558830111831792c42665724613af23..08bd0491f0a41f08cfdab3c87874ea724315c93a 100644
+--- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
++++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+@@ -108,6 +108,12 @@ public abstract class AbstractMinecart extends Entity {
+     public double maxSpeed = 0.4D;
+     // CraftBukkit end
+ 
++    // Papyrus start
++    public double maxVectorLength = 2.0D;
++    public boolean noDeceleration;
++    public boolean noWeight;
++    // Papyrus end
++
+     protected AbstractMinecart(EntityType<?> type, Level world) {
+         super(type, world);
+         this.blocksBuilding = true;
+@@ -573,7 +579,7 @@ public abstract class AbstractMinecart extends Entity {
+             d5 = -d5;
+         }
+ 
+-        double d8 = Math.min(2.0D, vec3d1.horizontalDistance());
++        double d8 = Math.min(maxVectorLength, vec3d1.horizontalDistance()); // Papyrus
+ 
+         vec3d1 = new Vec3(d8 * d4 / d6, vec3d1.y, d8 * d5 / d6);
+         this.setDeltaMovement(vec3d1);
+@@ -625,7 +631,7 @@ public abstract class AbstractMinecart extends Entity {
+         d0 = d11 + d4 * d15;
+         d2 = d12 + d5 * d15;
+         this.setPos(d0, d1, d2);
+-        d16 = this.isVehicle() ? 0.75D : 1.0D;
++        d16 = this.isVehicle() && !noWeight ? 0.75D : 1.0D; // Papyrus
+         d17 = this.getMaxSpeed();
+         vec3d1 = this.getDeltaMovement();
+         this.move(MoverType.SELF, new Vec3(Mth.clamp(d16 * vec3d1.x, -d17, d17), 0.0D, Mth.clamp(d16 * vec3d1.z, -d17, d17)));
+@@ -703,6 +709,7 @@ public abstract class AbstractMinecart extends Entity {
+ 
+     protected void applyNaturalSlowdown() {
+         double d0 = this.isVehicle() || !this.slowWhenEmpty ? 0.997D : 0.96D; // CraftBukkit - add !this.slowWhenEmpty
++        if(noDeceleration) d0 = 1; // Papyrus
+         Vec3 vec3d = this.getDeltaMovement();
+ 
+         vec3d = vec3d.multiply(d0, 0.0D, d0);
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecart.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecart.java
+index 067fcc1f44d59dd675a9cc5485234c87366ffe10..3ba79a529b1df094a87b7e450815c332f9ff8b32 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecart.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecart.java
+@@ -136,4 +136,36 @@ public abstract class CraftMinecart extends CraftVehicle implements Minecart {
+     public int getDisplayBlockOffset() {
+         return this.getHandle().getDisplayOffset();
+     }
++
++    // Papyrus start
++    @Override
++    public void setMaxVectorLength(double maxVectorLength) {
++        getHandle().maxVectorLength = maxVectorLength;
++    }
++
++    @Override
++    public double getMaxVectorLength() {
++        return getHandle().maxVectorLength;
++    }
++
++    @Override
++    public void setNoDeceleration(boolean noDeceleration) {
++        getHandle().noDeceleration = noDeceleration;
++    }
++
++    @Override
++    public boolean getNoDeceleration() {
++        return getHandle().noDeceleration;
++    }
++
++    @Override
++    public void setNoWeight(boolean noWeight) {
++        getHandle().noWeight = noWeight;
++    }
++
++    @Override
++    public boolean getNoWeight() {
++        return getHandle().noWeight;
++    }
++    // Papyrus end
+ }

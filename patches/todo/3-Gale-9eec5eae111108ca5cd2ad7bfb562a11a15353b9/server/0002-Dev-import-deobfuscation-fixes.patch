@@ -1,0 +1,120 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Tue, 29 Nov 2022 15:16:54 +0100
+Subject: [PATCH] Dev import deobfuscation fixes
+
+License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+Gale - https://galemc.org
+
+diff --git a/src/main/java/net/minecraft/server/network/TextFilterClient.java b/src/main/java/net/minecraft/server/network/TextFilterClient.java
+index e0c6783071b1a6ff841842f8a88a990d0fe83180..4b3d2280326c7eeda4952c36edff141cbff90e16 100644
+--- a/src/main/java/net/minecraft/server/network/TextFilterClient.java
++++ b/src/main/java/net/minecraft/server/network/TextFilterClient.java
+@@ -98,38 +98,44 @@ public class TextFilterClient implements AutoCloseable {
+                     URL uRL2 = getEndpoint(uRI, jsonObject2, "join", "v1/join");
+                     URL uRL3 = getEndpoint(uRI, jsonObject2, "leave", "v1/leave");
+                     TextFilterClient.JoinOrLeaveEncoder joinOrLeaveEncoder = (profile) -> {
+-                        JsonObject jsonObject = new JsonObject();
+-                        jsonObject.addProperty("server", string2);
+-                        jsonObject.addProperty("room", string3);
+-                        jsonObject.addProperty("user_id", profile.getId().toString());
+-                        jsonObject.addProperty("user_display_name", profile.getName());
+-                        return jsonObject;
++                        // Gale start - dev import deobfuscation fixes
++                        JsonObject jsonObject1 = new JsonObject();
++                        jsonObject1.addProperty("server", string2);
++                        jsonObject1.addProperty("room", string3);
++                        jsonObject1.addProperty("user_id", profile.getId().toString());
++                        jsonObject1.addProperty("user_display_name", profile.getName());
++                        return jsonObject1;
++                        // Gale end - dev import deobfuscation fixes
+                     };
+                     TextFilterClient.MessageEncoder messageEncoder;
+                     if (bl) {
+                         messageEncoder = (profile, message) -> {
+-                            JsonObject jsonObject = new JsonObject();
+-                            jsonObject.addProperty("rule", i);
+-                            jsonObject.addProperty("server", string2);
+-                            jsonObject.addProperty("room", string3);
+-                            jsonObject.addProperty("player", profile.getId().toString());
+-                            jsonObject.addProperty("player_display_name", profile.getName());
+-                            jsonObject.addProperty("text", message);
+-                            jsonObject.addProperty("language", "*");
+-                            return jsonObject;
++                            // Gale start - dev import deobfuscation fixes
++                            JsonObject jsonObject1 = new JsonObject();
++                            jsonObject1.addProperty("rule", i);
++                            jsonObject1.addProperty("server", string2);
++                            jsonObject1.addProperty("room", string3);
++                            jsonObject1.addProperty("player", profile.getId().toString());
++                            jsonObject1.addProperty("player_display_name", profile.getName());
++                            jsonObject1.addProperty("text", message);
++                            jsonObject1.addProperty("language", "*");
++                            return jsonObject1;
++                            // Gale end - dev import deobfuscation fixes
+                         };
+                     } else {
+                         String string5 = String.valueOf(i);
+                         messageEncoder = (profile, message) -> {
+-                            JsonObject jsonObject = new JsonObject();
+-                            jsonObject.addProperty("rule_id", string5);
+-                            jsonObject.addProperty("category", string2);
+-                            jsonObject.addProperty("subcategory", string3);
+-                            jsonObject.addProperty("user_id", profile.getId().toString());
+-                            jsonObject.addProperty("user_display_name", profile.getName());
+-                            jsonObject.addProperty("text", message);
+-                            jsonObject.addProperty("language", "*");
+-                            return jsonObject;
++                            // Gale start - dev import deobfuscation fixes
++                            JsonObject jsonObject1 = new JsonObject();
++                            jsonObject1.addProperty("rule_id", string5);
++                            jsonObject1.addProperty("category", string2);
++                            jsonObject1.addProperty("subcategory", string3);
++                            jsonObject1.addProperty("user_id", profile.getId().toString());
++                            jsonObject1.addProperty("user_display_name", profile.getName());
++                            jsonObject1.addProperty("text", message);
++                            jsonObject1.addProperty("language", "*");
++                            return jsonObject1;
++                            // Gale end - dev import deobfuscation fixes
+                         };
+                     }
+ 
+diff --git a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+index 50a9f33aa31e9273c7c52d4bb2b02f0f884f7ba5..19779298b2b2ecbe30f9308dad1d80379220387a 100644
+--- a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
++++ b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+@@ -58,7 +58,7 @@ public class ClassInstanceMultiMap<T> extends AbstractCollection<T> {
+         if (!this.baseClass.isAssignableFrom(type)) {
+             throw new IllegalArgumentException("Don't know how to search for " + type);
+         } else {
+-            List<? extends T> list = this.byClass.computeIfAbsent(type, (typeClass) -> {
++            List list = this.byClass.computeIfAbsent(type, (typeClass) -> { // Gale - dev import deobfuscation fixes
+                 return this.allInstances.stream().filter(typeClass::isInstance).collect(Collectors.toList());
+             });
+             return Collections.unmodifiableCollection(list);
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Zoglin.java b/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
+index 5956a7759964f5e4939f062e93714fba64f53141..51ad507a3b625201ecca50bd92f8f089f3b4d60a 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
+@@ -182,7 +182,7 @@ public class Zoglin extends Monster implements Enemy, HoglinBase {
+ 
+     @Override
+     public Brain<Zoglin> getBrain() {
+-        return super.getBrain();
++        return (Brain<Zoglin>) super.getBrain(); // Gale - dev import deobfuscation fixes
+     }
+ 
+     protected void updateActivity() {
+diff --git a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
+index ac75c54e897565e340b66823caeed92ba1d1641a..e44eec821eaa1cd77569814000d4aa36253fb13d 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
++++ b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
+@@ -70,7 +70,7 @@ public class PiglinBrute extends AbstractPiglin {
+ 
+     @Override
+     public Brain<PiglinBrute> getBrain() {
+-        return super.getBrain();
++        return (Brain<PiglinBrute>) super.getBrain(); // Gale - dev import deobfuscation fixes
+     }
+ 
+     @Override

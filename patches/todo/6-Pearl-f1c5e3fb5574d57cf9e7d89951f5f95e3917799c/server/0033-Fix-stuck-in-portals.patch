@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: William Blake Galbreath <Blake.Galbreath@GMail.com>
+Date: Thu, 14 Jan 2021 16:48:10 -0600
+Subject: [PATCH] Fix stuck in portals
+
+Original code by PurpurMC, licensed under MIT License
+You can find the original code on https://github.com/PurpurMC/Purpur
+
+diff --git a/src/main/java/me/minhh2792/pearl/PearlConfig.java b/src/main/java/me/minhh2792/pearl/PearlConfig.java
+index 13d5fe7411a709b33dde8ff9a8f6e7006f92708a..ebbf7b631309e80300f991426c50deef7f7a12aa 100644
+--- a/src/main/java/me/minhh2792/pearl/PearlConfig.java
++++ b/src/main/java/me/minhh2792/pearl/PearlConfig.java
+@@ -210,4 +210,9 @@ public class PearlConfig {
+ 		org.bukkit.event.inventory.InventoryType.ENDER_CHEST.setDefaultSize(enderChestSixRows ? 54 : 27);
+ 		enderChestPermissionRows = getBoolean("blocks.ender_chest.use-permissions-for-rows", enderChestPermissionRows);
+ 	}
++
++	public static boolean playerFixStuckInPortal = false;
++	private static void playerFixStuckInPortal() {
++		playerFixStuckInPortal = getBoolean("gameplay-mechanics.player.fix-stuck-in-portal", false);
++	}
+ }
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 46def5d84bbb64242a8a7520eca57b0f0270d508..54e5832e7c73ada05ad3849cb5086798458a9961 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -1154,6 +1154,7 @@ public class ServerPlayer extends Player {
+                 playerlist.sendPlayerPermissionLevel(this);
+                 worldserver1.removePlayerImmediately(this, Entity.RemovalReason.CHANGED_DIMENSION);
+                 this.unsetRemoved();
++                this.portalPos = net.minecraft.server.MCUtil.toBlockPosition(exit); // Purpur
+ 
+                 // CraftBukkit end
+                 this.setLevel(worldserver);
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 8542a26068a0ddaed9f886e7d572c5b578c0e438..566d7da6056318329d8a0b9bbe26932c9e104a2f 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -2867,12 +2867,15 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+         return Vec3.directionFromRotation(this.getRotationVector());
+     }
+ 
++    public BlockPos portalPos = BlockPos.ZERO; // Purpur
+     public void handleInsidePortal(BlockPos pos) {
+         if (this.isOnPortalCooldown()) {
++            if (!(me.minhh2792.pearl.PearlConfig.playerFixStuckInPortal && this instanceof Player && !pos.equals(portalPos))) // Purpur
+             this.setPortalCooldown();
+         } else {
+             if (!this.level.isClientSide && !pos.equals(this.portalEntrancePos)) {
+                 this.portalEntrancePos = pos.immutable();
++                portalPos = BlockPos.ZERO; // Purpur
+             }
+ 
+             this.isInsidePortal = true;

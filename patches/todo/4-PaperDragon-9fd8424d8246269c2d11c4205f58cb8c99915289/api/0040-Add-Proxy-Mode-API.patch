@@ -1,0 +1,106 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: willies952002 <admin@domnian.com>
+Date: Sun, 3 Jul 2016 18:48:29 -0400
+Subject: [PATCH] Add Proxy Mode API
+
+A server can be in one of four modes:
+* Offline Bungeecord
+* Online Bungeecord
+* Offline Velocity
+* Online Velocity
+* None (No Proxy)
+
+diff --git a/src/main/java/com/domnian/paperdragon/ProxyMode.java b/src/main/java/com/domnian/paperdragon/ProxyMode.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..843abce6e0da9ff308ddd33dc4d8034fee7d8b7a
+--- /dev/null
++++ b/src/main/java/com/domnian/paperdragon/ProxyMode.java
+@@ -0,0 +1,52 @@
++package com.domnian.paperdragon;
++
++public enum ProxyMode {
++
++    /**
++     * The server is not running behind any known and supported proxy
++     */
++    NONE,
++
++    /**
++     * The server is running behind a Bungeecord proxy, set to offline (unauthenticated) mode
++     */
++    BUNGEECORD_OFFLINE,
++
++    /**
++     * The server is running behind a Bungeecord proxy, set to online (authenticated) mode
++     */
++    BUNGEECORD_ONLINE,
++
++    /**
++     * The server is running behind a Velocity proxy, set to offline (unauthenticated) mode
++     */
++    VELOCITY_OFFLINE,
++
++    /**
++     * The server is running behind a Velcity proxy, set to online (authenticated) mode
++     */
++    VELOCITY_ONLINE,
++
++    /**
++     * @deprecated Internal Use Only
++     */
++    @Deprecated
++    UNKNOWN;
++
++    public boolean isProxy() {
++        return this != NONE && this != UNKNOWN;
++    }
++
++    public boolean isOnlineMode() {
++        return this == BUNGEECORD_ONLINE || this == VELOCITY_ONLINE;
++    }
++
++    public boolean isBungee() {
++        return this == BUNGEECORD_OFFLINE || this == BUNGEECORD_ONLINE;
++    }
++
++    public boolean isVelocity() {
++        return this == VELOCITY_OFFLINE || this == VELOCITY_ONLINE;
++    }
++
++}
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index 232c08c9a588d957d90f198ce479e57615c6e650..35223b2d2829b7c34952f3cc30f98ffc61251329 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -2462,4 +2462,14 @@ public final class Bukkit {
+     public static Server.Spigot spigot() {
+         return server.spigot();
+     }
++
++    // PaperDragon start
++    /**
++     * Get what proxy mode the server is operating in
++     */
++    @NotNull
++    public static com.domnian.paperdragon.ProxyMode getProxyMode() {
++        return server.getProxyMode();
++    }
++    // PaperDragon end
+ }
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index d6ef8140e432c7e0c440f263c920e6d0541f03b2..29dae928dfc8b3186997b795e3dbb29ed98b352c 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -2144,4 +2144,12 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+      */
+     @NotNull org.bukkit.potion.PotionBrewer getPotionBrewer();
+     // Paper end
++
++    // PaperDragon start
++    /**
++     * Get what proxy mode the server is operating in
++     */
++    @NotNull
++    com.domnian.paperdragon.ProxyMode getProxyMode();
++    // PaperDragon end
+ }

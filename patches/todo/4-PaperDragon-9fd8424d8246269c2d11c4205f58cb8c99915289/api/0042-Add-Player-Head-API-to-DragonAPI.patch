@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: willies952002 <admin@domnian.com>
+Date: Sun, 10 Dec 2017 13:48:21 -0500
+Subject: [PATCH] Add Player Head API to DragonAPI
+
+Used to create Player heads w/o the Annoying Boilerplate
+
+diff --git a/src/main/java/com/domnian/paperdragon/api/DAPI_Heads.java b/src/main/java/com/domnian/paperdragon/api/DAPI_Heads.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..9bc4ee9bda7ec799d4077958d437b691b4f57c06
+--- /dev/null
++++ b/src/main/java/com/domnian/paperdragon/api/DAPI_Heads.java
+@@ -0,0 +1,23 @@
++package com.domnian.paperdragon.api;
++
++import org.bukkit.inventory.ItemStack;
++
++public interface DAPI_Heads {
++
++    /**
++     * Get a Player Skull From Their Username
++     *
++     * @param name A Player's Name
++     * @return The Given Player's Skull
++     */
++    ItemStack getSkullFromName(String name);
++
++    /**
++     * Get a Player Skull From Their Minecraft Texture Hash
++     *
++     * @param hash The Value that Comes After "http://textures.minecraft.net/texture/" In a Player's Skin Link
++     * @return A Player Skull That Has The Skin From "http://textures.minecraft.net/texture/[hash]"
++     */
++    ItemStack getSkullFromTexture(String hash);
++
++}
+diff --git a/src/main/java/com/domnian/paperdragon/api/DragonAPI.java b/src/main/java/com/domnian/paperdragon/api/DragonAPI.java
+index fee56553d71f9e59aa6d985ed4900e0a78dd8617..a0a041f5b42d80c3f16213eeda569b8b83642e2d 100644
+--- a/src/main/java/com/domnian/paperdragon/api/DragonAPI.java
++++ b/src/main/java/com/domnian/paperdragon/api/DragonAPI.java
+@@ -32,5 +32,6 @@ public abstract class DragonAPI {
+     public static DAPI_Misc misc;
+     public static DAPI_Meta meta;
+     public static DAPI_Chat chat;
++    public static DAPI_Heads heads;
+ 
+ }

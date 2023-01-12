@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Thu, 22 Dec 2022 15:47:39 +0100
+Subject: [PATCH] Server thread priority environment variable
+
+License: AGPL-3.0 (https://www.gnu.org/licenses/agpl-3.0.html)
+Gale - https://galemc.org
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 14324218723ed43f34a2ce5de9b51cb40d7bf667..eb951c9fda85d9620d3038a3db22d578db45e878 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -194,6 +194,8 @@ import co.aikar.timings.MinecraftTimings; // Paper
+ 
+ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements CommandSource, AutoCloseable {
+ 
++    public static final int SERVER_THREAD_PRIORITY = Integer.getInteger("gale.thread.priority.server", 8); // Gale - server thread priority environment variable
++
+     private static MinecraftServer SERVER; // Paper
+     public static final Logger LOGGER = LogUtils.getLogger();
+     public static final String VANILLA_BRAND = "vanilla";
+@@ -317,7 +319,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         S s0 = serverFactory.apply(thread); // CraftBukkit - decompile error
+ 
+         atomicreference.set(s0);
+-        thread.setPriority(Thread.NORM_PRIORITY+2); // Paper - boost priority
++        thread.setPriority(SERVER_THREAD_PRIORITY); // Gale - server thread priority environment variable
+         thread.start();
+         return s0;
+     }

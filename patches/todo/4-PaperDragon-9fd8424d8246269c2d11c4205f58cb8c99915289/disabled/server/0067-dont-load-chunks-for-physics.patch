@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Mon, 16 Mar 2020 03:07:02 -0400
+Subject: [PATCH] dont load chunks for physics
+
+
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index 6f49e29b55a14d9b67485e6da566a65147fda97f..ebc13da318ee6e2a4d270ad4aaafd5e8ec828e08 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -757,7 +757,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+ 
+     public void neighborChanged(BlockPos pos, Block sourceBlock, BlockPos neighborPos) {
+         if (!this.isClientSide) {
+-            BlockState iblockdata = this.getBlockState(pos);
++            BlockState iblockdata = this.getBlockStateIfLoaded(pos); // PaperDragon
++            if (iblockdata == null) return; // PaperDragon
+ 
+             try {
+                 // CraftBukkit start
+diff --git a/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java b/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
+index 7f83c9390823b42fc30d04e1d3222e2825eaad50..e434d53391c69fc2f97eb02dee8aafaa8d0347e3 100644
+--- a/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
++++ b/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -987,7 +987,8 @@ public abstract class BlockBehaviour {
+                 Direction enumdirection = aenumdirection[l];
+ 
+                 blockposition_mutableblockposition.setWithOffset(pos, enumdirection);
+-                BlockState iblockdata = world.getBlockState(blockposition_mutableblockposition);
++                BlockState iblockdata = world.getBlockStateIfLoaded(blockposition_mutableblockposition); // PaperDragon
++                if (iblockdata == null) { continue; } // PaperDragon
+                 BlockState iblockdata1 = iblockdata.updateShape(enumdirection.getOpposite(), this.asState(), world, blockposition_mutableblockposition, pos);
+ 
+                 Block.updateOrDestroy(iblockdata, iblockdata1, world, blockposition_mutableblockposition, flags, maxUpdateDepth);

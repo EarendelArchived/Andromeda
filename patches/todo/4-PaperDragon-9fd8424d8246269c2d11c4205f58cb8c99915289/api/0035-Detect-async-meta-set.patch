@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Sat, 30 Jun 2018 03:06:49 -0400
+Subject: [PATCH] Detect async meta set
+
+
+diff --git a/src/main/java/com/domnian/paperdragon/api/meta/MetaMap.java b/src/main/java/com/domnian/paperdragon/api/meta/MetaMap.java
+index b3a41279ec2b6e0a544052112f036afd96c4c4cc..a63455405c7c23db9b556606d2b5a0e1f5f59c9e 100644
+--- a/src/main/java/com/domnian/paperdragon/api/meta/MetaMap.java
++++ b/src/main/java/com/domnian/paperdragon/api/meta/MetaMap.java
+@@ -23,6 +23,7 @@
+ 
+ package com.domnian.paperdragon.api.meta;
+ 
++import org.bukkit.Bukkit;
+ import org.jetbrains.annotations.Contract;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+@@ -31,6 +32,7 @@ import java.util.HashMap;
+ 
+ public class MetaMap <K extends MetaKey> extends HashMap<String, Object> {
+ 
++    public boolean allowAsync = false;
+     public MetaMap() {
+         super(0);
+     }
+@@ -140,6 +142,16 @@ public class MetaMap <K extends MetaKey> extends HashMap<String, Object> {
+         return put(key.key(), value);
+     }
+ 
++    @Override
++    @Nullable
++    public Object put(@NotNull String key, @Nullable Object value) {
++        if (!allowAsync && !Bukkit.isPrimaryThread() && !Bukkit.getServer().isStopping()) {
++            Bukkit.getLogger().severe("Asynchronous Meta Set: " + key + " - " + (value != null ? value : "null"));
++            new IllegalStateException().printStackTrace();
++        }
++        return super.put(key, value);
++    }
++
+     public boolean containsKey(@NotNull K key) {
+         return containsKey(key.key());
+     }

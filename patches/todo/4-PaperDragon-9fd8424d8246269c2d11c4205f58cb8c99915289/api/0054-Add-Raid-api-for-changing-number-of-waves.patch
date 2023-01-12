@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: chickeneer <emcchickeneer@gmail.com>
+Date: Sat, 6 Jun 2020 21:16:57 -0500
+Subject: [PATCH] Add Raid api for changing number of waves
+
+
+diff --git a/src/main/java/org/bukkit/Raid.java b/src/main/java/org/bukkit/Raid.java
+index 983a8c20a06d2b509602b27f49c090598b8ecc42..420f2e67bbd0896c542d16c4d666114926a482c4 100644
+--- a/src/main/java/org/bukkit/Raid.java
++++ b/src/main/java/org/bukkit/Raid.java
+@@ -85,6 +85,7 @@ public interface Raid {
+      * @return number of waves
+      */
+     int getTotalWaves();
++    void setTotalWaves(int total); // PaperDragon
+ 
+     /**
+      * Gets the sum of all raider's health.
+diff --git a/src/main/java/org/bukkit/event/raid/RaidTriggerEvent.java b/src/main/java/org/bukkit/event/raid/RaidTriggerEvent.java
+index 128e43cf12205f82f2b119a773208502cdccfdd4..43f16aec53861aa9469316e061ae9676a8ce071a 100644
+--- a/src/main/java/org/bukkit/event/raid/RaidTriggerEvent.java
++++ b/src/main/java/org/bukkit/event/raid/RaidTriggerEvent.java
+@@ -18,11 +18,19 @@ public class RaidTriggerEvent extends RaidEvent implements Cancellable {
+     private final Player player;
+     private boolean cancel;
+ 
+-    public RaidTriggerEvent(@NotNull Raid raid, @NotNull World world, @NotNull Player player) {
++    // PaperDragon start
++    private final boolean firstTrigger;
++    public RaidTriggerEvent(@NotNull Raid raid, @NotNull World world, @NotNull Player player, boolean firstTrigger) {
+         super(raid, world);
+         this.player = player;
++        this.firstTrigger = firstTrigger;
+     }
+ 
++    public boolean isFirstTrigger() {
++        return firstTrigger;
++    }
++    // PaperDragon end
++
+     /**
+      * Returns the player who triggered the raid.
+      *

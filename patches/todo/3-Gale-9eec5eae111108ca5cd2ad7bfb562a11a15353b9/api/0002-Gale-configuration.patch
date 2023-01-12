@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Wed, 23 Nov 2022 21:03:04 +0100
+Subject: [PATCH] Gale configuration
+
+License: MIT (https://opensource.org/licenses/MIT)
+Gale - https://galemc.org
+
+This patch is based on the following patch:
+"Timings v2"
+By: Aikar <aikar@aikar.co>
+As part of: Paper (https://github.com/PaperMC/Paper)
+Licensed under: MIT (https://opensource.org/licenses/MIT)
+
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 2204336d8800311b65e894739ab1b27273e7c6f2..aec6ef7197ed8caec451954727c1f7149491d3f9 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -1969,6 +1969,15 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+         {
+             throw new UnsupportedOperationException("Not supported yet.");
+         }
++
++        // Gale start - Gale configuration - API
++        @NotNull
++        public org.bukkit.configuration.file.YamlConfiguration getGaleConfig()
++        {
++            throw new UnsupportedOperationException("Not supported yet.");
++        }
++        // Gale end - Gale configuration - API
++
+         // Paper end
+ 
+         /**

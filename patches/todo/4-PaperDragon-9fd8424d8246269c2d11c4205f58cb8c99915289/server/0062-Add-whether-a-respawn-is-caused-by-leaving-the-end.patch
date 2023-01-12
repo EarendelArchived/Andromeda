@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: chickeneer <emcchickeneer@gmail.com>
+Date: Tue, 17 Mar 2020 12:25:11 -0500
+Subject: [PATCH] Add whether a respawn is caused by leaving the end
+
+
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index 65def2b4e3c35ee82bfc89514c0628116637c5f1..58f068aa6a237d4e0b015c2e574bef0ceb33dfe2 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -88,6 +88,7 @@ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.border.BorderChangeListener;
+ import net.minecraft.world.level.border.WorldBorder;
+ import net.minecraft.world.level.dimension.DimensionType;
++import net.minecraft.world.level.dimension.LevelStem; // PaperDragon
+ import net.minecraft.world.level.storage.LevelData;
+ import net.minecraft.world.level.storage.LevelResource;
+ import net.minecraft.world.level.storage.PlayerDataStorage;
+@@ -931,7 +932,8 @@ public abstract class PlayerList {
+             }
+ 
+             Player respawnPlayer = entityplayer1.getBukkitEntity();
+-            PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(respawnPlayer, location, isBedSpawn && !isAnchorSpawn, isAnchorSpawn, com.google.common.collect.ImmutableSet.<org.bukkit.event.player.PlayerRespawnEvent.RespawnFlag>builder().add(respawnFlags)); // Paper - Fix anchor respawn acting as a bed respawn from the end portal
++            boolean isEndPortal = worldserver.getTypeKey() == LevelStem.OVERWORLD && entityplayer.level.getTypeKey() == LevelStem.END; // PaperDragon
++            PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(respawnPlayer, location, isBedSpawn && !isAnchorSpawn, isAnchorSpawn, isEndPortal, com.google.common.collect.ImmutableSet.<org.bukkit.event.player.PlayerRespawnEvent.RespawnFlag>builder().add(respawnFlags)); // Paper - Fix anchor respawn acting as a bed respawn from the end portal // PaperDragon - add isLeavingEnd
+             this.cserver.getPluginManager().callEvent(respawnEvent);
+             // Spigot Start
+             if (entityplayer.connection.isDisconnected()) {

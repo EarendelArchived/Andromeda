@@ -1,0 +1,142 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Indhi Rousseau <contact@thekinrar.fr>
+Date: Fri, 1 Nov 2019 01:32:27 +0000
+Subject: [PATCH] Implement PapyrusVersionFetcher
+
+
+diff --git a/src/main/java/fr/thekinrar/papyrus/PapyrusVersionFetcher.java b/src/main/java/fr/thekinrar/papyrus/PapyrusVersionFetcher.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d5e5729d8b051898e325905aee2fc109513cd13a
+--- /dev/null
++++ b/src/main/java/fr/thekinrar/papyrus/PapyrusVersionFetcher.java
+@@ -0,0 +1,108 @@
++package fr.thekinrar.papyrus;
++
++import com.destroystokyo.paper.VersionHistoryManager;
++import com.destroystokyo.paper.util.VersionFetcher;
++import com.google.common.base.Charsets;
++import com.google.common.io.Resources;
++import com.google.gson.Gson;
++import com.google.gson.JsonObject;
++import com.google.gson.JsonSyntaxException;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.TextComponent;
++import net.kyori.adventure.text.format.NamedTextColor;
++import net.kyori.adventure.text.format.TextDecoration;
++import org.bukkit.Bukkit;
++
++import java.io.BufferedReader;
++import java.io.IOException;
++import java.net.URL;
++
++public class PapyrusVersionFetcher implements VersionFetcher {
++    private static final java.util.regex.Pattern VER_PATTERN = java.util.regex.Pattern.compile("^([0-9\\.]*)\\-.*R"); // R is an anchor, will always give '-R' at end
++    private static String mcVer;
++
++    @Override
++    public long getCacheTime() {
++        return 720000;
++    }
++
++    @Override
++    public Component getVersionMessage(String serverVersion) {
++        String[] parts = serverVersion.substring("git-Papyrus-".length()).split("[-\\s]");
++        Component updateMessage = getUpdateStatusMessage("TheKinrar/Papyrus", parts[0]);
++        Component history = getHistory();
++
++        return history != null ? TextComponent.ofChildren(updateMessage, Component.newline(), history) : updateMessage;
++    }
++
++    private static String getMinecraftVersion() {
++        if (mcVer == null) {
++            java.util.regex.Matcher matcher = VER_PATTERN.matcher(org.bukkit.Bukkit.getBukkitVersion());
++            if (matcher.find()) {
++                String result = matcher.group();
++                mcVer = result.substring(0, result.length() - 2); // strip 'R' anchor and trailing '-'
++            } else {
++                org.bukkit.Bukkit.getLogger().warning("Unable to match version to pattern! Report to Papyrus!");
++                org.bukkit.Bukkit.getLogger().warning("Pattern: " + VER_PATTERN.toString());
++                org.bukkit.Bukkit.getLogger().warning("Version: " + org.bukkit.Bukkit.getBukkitVersion());
++            }
++        }
++
++        return mcVer;
++    }
++
++    private static Component getUpdateStatusMessage(String repo, String versionInfo) {
++        int distance;
++        try {
++            int jenkinsBuild = Integer.parseInt(versionInfo);
++            distance = fetchDistanceFromSiteApi(jenkinsBuild, getMinecraftVersion());
++        } catch (NumberFormatException ignored) {
++            distance = -1;
++        }
++
++        switch (distance) {
++            case -1:
++                return Component.text("Error obtaining version information", NamedTextColor.YELLOW);
++            case 0:
++                return Component.text("You are running the latest version", NamedTextColor.GREEN);
++            case -2:
++                return Component.text("Unknown version", NamedTextColor.YELLOW);
++            default:
++                return Component.text("You are " + distance + " version(s) behind", NamedTextColor.YELLOW);
++        }
++    }
++
++    private static int fetchDistanceFromSiteApi(int jenkinsBuild, String siteApiVersion) {
++        if (siteApiVersion == null) { return -1; }
++        try {
++            try (BufferedReader reader = Resources.asCharSource(
++                    new URL("https://jenkins.atlanti.se/job/Papyrus-" + siteApiVersion + "/lastStableBuild/api/json"),
++                    Charsets.UTF_8
++            ).openBufferedStream()) {
++                JsonObject json = new Gson().fromJson(reader, JsonObject.class);
++                int latest = json.get("number").getAsInt();
++                return latest - jenkinsBuild;
++            } catch (JsonSyntaxException ex) {
++                ex.printStackTrace();
++                return -1;
++            }
++        } catch (IOException e) {
++            e.printStackTrace();
++            return -1;
++        }
++    }
++
++    private Component getHistory() {
++        final VersionHistoryManager.VersionData data = VersionHistoryManager.INSTANCE.getVersionData();
++        if (data == null) {
++            return null;
++        }
++
++        final String oldVersion = data.getOldVersion();
++        if (oldVersion == null) {
++            return null;
++        }
++
++        return Component.text("Previous version: " + oldVersion, NamedTextColor.GRAY, TextDecoration.ITALIC);
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
+index 17336102d37a5ab05c3b3c93fcf46961d0ffa7e2..ed5ba3475ff93955d1944784d12b85ef1d3692c4 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
+@@ -21,6 +21,8 @@ import java.util.Map;
+ import java.util.Map.Entry;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
++
++import fr.thekinrar.papyrus.PapyrusVersionFetcher;
+ import net.minecraft.SharedConstants;
+ import net.minecraft.advancements.critereon.DeserializationContext;
+ import net.minecraft.core.registries.BuiltInRegistries;
+@@ -433,7 +435,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
+ 
+     @Override
+     public com.destroystokyo.paper.util.VersionFetcher getVersionFetcher() {
+-        return new com.destroystokyo.paper.PaperVersionFetcher();
++        return new PapyrusVersionFetcher();
+     }
+ 
+     @Override

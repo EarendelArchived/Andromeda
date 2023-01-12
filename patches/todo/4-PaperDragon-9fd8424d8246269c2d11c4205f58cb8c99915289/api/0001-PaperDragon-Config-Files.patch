@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: willies952002 <admin@domnian.com>
+Date: Fri, 10 Jun 2016 11:22:21 -0400
+Subject: [PATCH] PaperDragon Config Files
+
+
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index e43fef0152468944d8a33036344a43e95fe58476..d6ef8140e432c7e0c440f263c920e6d0541f03b2 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -1969,6 +1969,13 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+         }
+         // Paper end
+ 
++        // PaperDragon start
++        @NotNull
++        public org.bukkit.configuration.file.YamlConfiguration getDragonConfig() {
++            throw new UnsupportedOperationException("Not supported yet.");
++        }
++        // PaperDragon end
++
+         /**
+          * Sends the component to the player
+          *

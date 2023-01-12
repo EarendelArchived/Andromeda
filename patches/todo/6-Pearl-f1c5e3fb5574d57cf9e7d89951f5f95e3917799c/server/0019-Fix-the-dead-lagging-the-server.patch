@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: William Blake Galbreath <blake.galbreath@gmail.com>
+Date: Fri, 6 Mar 2020 13:37:26 -0600
+Subject: [PATCH] Fix the dead lagging the server
+
+Original code by PurpurMC, licensed under MIT License
+You can find the original code on https://github.com/PurpurMC/Purpur
+
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 18be18c6960d8580c7ae8da86eb7b797e5086997..8542a26068a0ddaed9f886e7d572c5b578c0e438 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -1875,6 +1875,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+         this.yRotO = this.getYRot();
+         this.xRotO = this.getXRot();
+         this.setYHeadRot(yaw); // Paper - Update head rotation
++        if (valid && !this.isRemoved()) level.getChunk((int) Math.floor(this.getX()) >> 4, (int) Math.floor(this.getZ()) >> 4); // CraftBukkit // Paper // Purpur
+     }
+ 
+     public void absMoveTo(double x, double y, double z) {
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 18c17a195897b209db545e0661c193ed4b02afc1..7e098e6653bb727e53a689450924fcb9c892de25 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -2967,7 +2967,7 @@ public abstract class LivingEntity extends Entity {
+             }
+         }
+ 
+-        this.aiStep();
++        if (!this.isRemoved()) this.aiStep(); // Purpur
+         double d0 = this.getX() - this.xo;
+         double d1 = this.getZ() - this.zo;
+         float f = (float) (d0 * d0 + d1 * d1);
