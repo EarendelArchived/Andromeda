@@ -63,9 +63,18 @@ index bf03124f2519bec3d0523155cb8ea118147be7e3..7bdf8ee3560706ec13df4e43f2bacdd6
  
                  return stack;
 diff --git a/src/main/java/net/minecraft/world/item/ArmorItem.java b/src/main/java/net/minecraft/world/item/ArmorItem.java
-index 26ed7bc8bc76b81b3cb47784de158febb5719a81..eab2828ef278ac6c53211d4fb59ba45b2eb4ff61 100644
+index 26ed7bc8bc76b81b3cb47784de158febb5719a81..5f2902c5e3ada99d462f14928568d06c3d48e866 100644
 --- a/src/main/java/net/minecraft/world/item/ArmorItem.java
 +++ b/src/main/java/net/minecraft/world/item/ArmorItem.java
+@@ -37,7 +37,7 @@ public class ArmorItem extends Item implements Wearable {
+     public static final DispenseItemBehavior DISPENSE_ITEM_BEHAVIOR = new DefaultDispenseItemBehavior() {
+         @Override
+         protected ItemStack execute(BlockSource pointer, ItemStack stack) {
+-            return ArmorItem.dispenseArmor(pointer, stack) ? stack : super.execute(pointer, stack);
++            return ArmorItem.dispenseArmor(pointer, stack, null) ? stack : super.execute(pointer, stack); // Andromeda - Port PaperMC/Paper#8524
+         }
+     };
+     protected final EquipmentSlot slot;
 @@ -47,7 +47,14 @@ public class ArmorItem extends Item implements Wearable {
      protected final ArmorMaterial material;
      private final Multimap<Attribute, AttributeModifier> defaultModifiers;
