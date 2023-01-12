@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Wed, 11 Jan 2023 23:46:22 +0900
+Subject: [PATCH] Port PaperMC/Paper#8780
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index b270321d17b51beb314b8858d28d97b802f990b5..c09e81af44276def11b13b2daa17e0b505304f65 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -1610,7 +1610,7 @@ public abstract class LivingEntity extends Entity {
+             this.level.getCraftServer().getPluginManager().callEvent(event);
+ 
+             if (!event.isCancelled()) {
+-                if (!itemstack1.isEmpty()) {
++                if (!itemstack1.isEmpty() && itemstack != null) { // Andromeda - Port PaperMC/Paper#8780
+                     itemstack1.shrink(1);
+                 }
+                 if (itemstack != null && this instanceof ServerPlayer) {

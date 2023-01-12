@@ -5,7 +5,7 @@ Subject: [PATCH] Add configuration to disable not secure chat marker
 
 
 diff --git a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
-index 309fe1162db195c7c3c94d785d6aa2700e42b08a..117bc521209c736727bab90aae70e95ac304967d 100644
+index 309fe1162db195c7c3c94d785d6aa2700e42b08a..a7aec3c9c810b34cd20d883deaa5ffbf82f82c9b 100644
 --- a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
 +++ b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
 @@ -352,7 +352,7 @@ public final class ChatProcessor {
@@ -13,12 +13,12 @@ index 309fe1162db195c7c3c94d785d6aa2700e42b08a..117bc521209c736727bab90aae70e95a
          private void sendToServer(final ChatType.Bound chatType, final @Nullable Function<Audience, net.minecraft.network.chat.Component> msgFunction) {
              final PlayerChatMessage toConsoleMessage = msgFunction == null ? ChatProcessor.this.message : ChatProcessor.this.message.withUnsignedContent(msgFunction.apply(ChatProcessor.this.server.console));
 -            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : "Not Secure");
-+            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) || !team.earendel.andromeda.configurations.AndromedaConfiguration.notSecurePrefix ? null : "Not Secure"); // Andromeda
++            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) || !team.earendel.andromeda.configurations.GlobalConfiguration.get().consoleLogs.notSecureChatMarker ? null : "Not Secure"); // Andromeda
          }
      }
  
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index c71d6655b63aa27eb4043d60385a2e737f5c2631..4dfb851b8691adc0271852f26ec2dd57a9366a04 100644
+index a93e7140f8b7b1f93dfb4e275534e5ac7ab54a3e..88e675eb3e79b8f82cb7b40998010f2b209ed5fd 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -1417,7 +1417,7 @@ public abstract class PlayerList {
@@ -26,23 +26,19 @@ index c71d6655b63aa27eb4043d60385a2e737f5c2631..4dfb851b8691adc0271852f26ec2dd57
      public void broadcastChatMessage(PlayerChatMessage message, Predicate<ServerPlayer> shouldSendFiltered, @Nullable ServerPlayer sender, ChatType.Bound params, @Nullable Function<net.kyori.adventure.audience.Audience, Component> unsignedFunction) {
          // Paper end
 -        boolean flag = this.verifyChatTrusted(message);
-+        boolean flag = this.verifyChatTrusted(message) || !team.earendel.andromeda.configurations.AndromedaConfiguration.notSecurePrefix; // Andromeda
++        boolean flag = this.verifyChatTrusted(message) || !team.earendel.andromeda.configurations.GlobalConfiguration.get().consoleLogs.notSecureChatMarker; // Andromeda
  
          this.server.logChatMessage((unsignedFunction == null ? Component.literal(message.signedContent()) : unsignedFunction.apply(this.server.console)), params, flag ? null : "Not Secure"); // Paper
          OutgoingChatMessage outgoingchatmessage = OutgoingChatMessage.create(message);
-diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-index 5e2b31f00fe5fe60fb588d4b13a864cf1d9f6e3c..d56ef5c5547a6c3ff98cd20d7b1e65837d3ee8e5 100644
---- a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-+++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfiguration.java
-@@ -163,9 +163,11 @@ public class AndromedaConfiguration {
- 
-     public static boolean offlineWarning = true;
-     public static boolean rootUserWarning = true;
-+    public static boolean notSecurePrefix = false;
-     private static void logSettings() {
-         offlineWarning = getBoolean("options.server.logging.offline-warning", offlineWarning);
-         rootUserWarning = getBoolean("options.server.logging.root-warning", rootUserWarning);
-+        notSecurePrefix = getBoolean("options.server.logging.not-secure-prefix", notSecurePrefix);
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index 2adf2403d9bb21e82eaa26c677582576a4332371..e45c29985b80b7abfebce35d0b11e09a89bbf5e5 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -30,6 +30,7 @@ public class GlobalConfiguration extends ConfigurationPart {
+     public class ConsoleLogs extends ConfigurationPart {
+         public boolean offlineWarnings = true;
+         public boolean rootUserWarnings = true;
++        public boolean notSecureChatMarker = true;
      }
  
-     public static boolean mixableWeaponEnchantment = false;
+     public Enchantments enchantments;
