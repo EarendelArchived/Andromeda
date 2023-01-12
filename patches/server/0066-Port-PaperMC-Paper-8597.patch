@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Thu, 12 Jan 2023 16:34:12 +0900
+Subject: [PATCH] Port PaperMC/Paper#8597
+
+
+diff --git a/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java b/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java
+index 5d78348fc18b22ccb7ad109890f867e20efec047..552edd03a26c5dc6056f3aab052902184ac86fc0 100644
+--- a/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java
+@@ -89,7 +89,7 @@ public class MangrovePropaguleBlock extends SaplingBlock implements SimpleWaterl
+     @Override
+     public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+         if (!isHanging(state)) {
+-            if (random.nextInt(7) == 0) {
++            if (random.nextFloat() < (world.spigotConfig.saplingModifier / (100.0F * 7))) { // Andromeda - Port PaperMC/Paper#8597
+                 this.advanceTree(world, pos, state, random);
+             }
+ 
