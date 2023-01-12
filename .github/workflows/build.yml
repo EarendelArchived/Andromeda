@@ -64,7 +64,7 @@ jobs:
       - name: Update Javadoc
         run: |
           ./gradlew Andromeda-API:javadoc
-          mv -f Andromeda-API/build/docs/javadoc ./
+          (cd Andromeda-API/build/docs/javadoc && tar c .) | (cd javadoc && tar xf -)
           cd javadoc
           git add . && git commit -m "[CI-Skip] Update Javadocs"
           git push
