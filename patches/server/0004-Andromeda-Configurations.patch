@@ -68,7 +68,7 @@ index c2dca89291361d60cbf160cab77749cb0130035a..4c48dcfb82eade62f6464d834c914d1e
 +    // Andromeda end
  }
 diff --git a/src/main/java/io/papermc/paper/configuration/InnerClassFieldDiscoverer.java b/src/main/java/io/papermc/paper/configuration/InnerClassFieldDiscoverer.java
-index a0aa1f1a7adf986d500a2135aa42e138aa3c4f08..576bee3f9e5ca7f101e518e38a4b29e1990ea9c9 100644
+index a0aa1f1a7adf986d500a2135aa42e138aa3c4f08..69e92e493e5821e7b3e511f171ec6afd7ea36f0b 100644
 --- a/src/main/java/io/papermc/paper/configuration/InnerClassFieldDiscoverer.java
 +++ b/src/main/java/io/papermc/paper/configuration/InnerClassFieldDiscoverer.java
 @@ -17,7 +17,7 @@ import java.util.Map;
@@ -80,7 +80,7 @@ index a0aa1f1a7adf986d500a2135aa42e138aa3c4f08..576bee3f9e5ca7f101e518e38a4b29e1
  
      private final Map<Class<?>, Object> instanceMap = new HashMap<>();
      private final Map<Class<?>, Object> overrides;
-@@ -136,7 +136,20 @@ final class InnerClassFieldDiscoverer implements FieldDiscoverer<Map<Field, Obje
+@@ -136,7 +136,19 @@ final class InnerClassFieldDiscoverer implements FieldDiscoverer<Map<Field, Obje
          return new InnerClassFieldDiscoverer(overrides);
      }
  
@@ -94,7 +94,6 @@ index a0aa1f1a7adf986d500a2135aa42e138aa3c4f08..576bee3f9e5ca7f101e518e38a4b29e1
 +        final Map<Class<?>, Object> overrides = Map.of(
 +                team.earendel.andromeda.configurations.LevelConfigurations.class,
 +                new team.earendel.andromeda.configurations.LevelConfigurations(
-+                        contextMap.require(PaperConfigurations.SPIGOT_WORLD_CONFIG_CONTEXT_KEY).get(),
 +                        contextMap.require(Configurations.WORLD_KEY)
 +                )
 +        );
@@ -593,10 +592,10 @@ index 0000000000000000000000000000000000000000..10d7a2d08a49e9afb6e0ef3ffd0f8d75
 +}
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfigurations.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ef41931d5668751354bab6b7d4d52a89c2473062
+index 0000000000000000000000000000000000000000..1d00ae2bc9823ee676cdf3a1d3ac9a03ac6976e9
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfigurations.java
-@@ -0,0 +1,324 @@
+@@ -0,0 +1,326 @@
 +package team.earendel.andromeda.configurations;
 +
 +import com.google.common.collect.Table;
@@ -676,7 +675,6 @@ index 0000000000000000000000000000000000000000..ef41931d5668751354bab6b7d4d52a89
 +            
 +            %s
 +            
-+            
 +            Wiki: https://github.com/TeamEarendel/Andromeda/wiki
 +            Discord: *COMMING SOON*
 +            Twitter: *COMMING SOON*
@@ -690,6 +688,7 @@ index 0000000000000000000000000000000000000000..ef41931d5668751354bab6b7d4d52a89
 +            
 +            If you need help with the configuration or have any questions related to Andromeda,
 +            join us in our Discord for Andromeda, or check the GitHub Wiki pages.
++            
 +            
 +            # 한국어
 +            본 파일은 Andromeda의 레벨별 구성 파일입니다.
@@ -736,11 +735,13 @@ index 0000000000000000000000000000000000000000..ef41931d5668751354bab6b7d4d52a89
 +            
 +            See GitHub Wiki for more information.
 +            
++            
 +            # 한국어
 +            전역 및 레벨 전역 구성 파일은 %s 로 이동되었으며, 레벨별 구성 파일은
 +            각 레벨 폴더 안으로 이동되었습니다.
 +            
 +            자세한 내용은 GitHub 위키를 참고하시기 바랍니다.
++            
 +            
 +            Wiki: https://github.com/TeamEarendel/Andromeda/wiki
 +            """;
@@ -923,7 +924,7 @@ index 0000000000000000000000000000000000000000..ef41931d5668751354bab6b7d4d52a89
 +}
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..e72daafdacf59f789e5f409d4006c2354e047740
+index 0000000000000000000000000000000000000000..a2336a2e13e1dfa9435dcf96879110425e000748
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 @@ -0,0 +1,22 @@
@@ -935,7 +936,7 @@ index 0000000000000000000000000000000000000000..e72daafdacf59f789e5f409d4006c235
 +
 +@SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
 +public class GlobalConfiguration extends ConfigurationPart {
-+    static final int CURRENT_VERSION = 2;
++    static final int CURRENT_VERSION = 1;
 +    private static GlobalConfiguration instance;
 +
 +    public static GlobalConfiguration get() {
@@ -951,30 +952,24 @@ index 0000000000000000000000000000000000000000..e72daafdacf59f789e5f409d4006c235
 +}
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a76d86c797dd1e5e2469aa4fef8e1e804ec403ff
+index 0000000000000000000000000000000000000000..266896d751bc2d4b1fd845c4c8a05c3dfdddb5ca
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -0,0 +1,30 @@
+@@ -0,0 +1,24 @@
 +package team.earendel.andromeda.configurations;
 +
-+import com.mojang.logging.LogUtils;
 +import io.papermc.paper.configuration.Configuration;
 +import io.papermc.paper.configuration.ConfigurationPart;
 +import io.papermc.paper.configuration.PaperConfigurations;
 +import net.minecraft.resources.ResourceLocation;
-+import org.slf4j.Logger;
-+import org.spigotmc.SpigotWorldConfig;
 +import org.spongepowered.configurate.objectmapping.meta.Setting;
 +
 +@SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
 +public class LevelConfigurations extends ConfigurationPart {
-+    private static final Logger LOGGER = LogUtils.getLogger();
-+    public static final int CURRENT_VERSION = 2;
++    public static final int CURRENT_VERSION = 1;
 +
-+    private transient final SpigotWorldConfig spigotWorldConfig;
 +    private transient final ResourceLocation worldKey;
-+    public LevelConfigurations(SpigotWorldConfig spigotWorldConfig, ResourceLocation worldKey) {
-+        this.spigotWorldConfig = spigotWorldConfig;
++    public LevelConfigurations(ResourceLocation worldKey) {
 +        this.worldKey = worldKey;
 +    }
 +

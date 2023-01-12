@@ -1,0 +1,78 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Thu, 12 Jan 2023 16:03:30 +0900
+Subject: [PATCH] Port PaperMC/Paper#8525
+
+
+diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
+index 7bdf8ee3560706ec13df4e43f2bacdd60d1b6c9a..a270de0b9125a55d4e99f528df37b2aeccd82d0a 100644
+--- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
++++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
+@@ -948,6 +948,7 @@ public interface DispenseItemBehavior {
+                 Direction enumdirection = (Direction) pointer.getBlockState().getValue(DispenserBlock.FACING);
+                 BlockPos blockposition = pointer.getPos().relative(enumdirection);
+ 
++                if (worldserver.isEmptyBlock(blockposition) && WitherSkullBlock.canSpawnMob(worldserver, blockposition, stack)) { // Andromeda - Port PaperMC/Paper#8525
+                 // CraftBukkit start
+                 org.bukkit.block.Block bukkitBlock = worldserver.getWorld().getBlockAt(pointer.getPos().getX(), pointer.getPos().getY(), pointer.getPos().getZ());
+                 CraftItemStack craftItem = CraftItemStack.asCraftMirror(stack.copyWithCount(1)); // Paper - single item in event
+@@ -972,8 +973,7 @@ public interface DispenseItemBehavior {
+                 }
+                 // CraftBukkit end
+ 
+-                if (worldserver.isEmptyBlock(blockposition) && WitherSkullBlock.canSpawnMob(worldserver, blockposition, stack)) {
+-                    worldserver.setBlock(blockposition, (BlockState) Blocks.WITHER_SKELETON_SKULL.defaultBlockState().setValue(SkullBlock.ROTATION, RotationSegment.convertToSegment(enumdirection)), 3);
++                    worldserver.setBlock(blockposition, (BlockState) Blocks.WITHER_SKELETON_SKULL.defaultBlockState().setValue(SkullBlock.ROTATION, enumdirection.getAxis() == Direction.Axis.Y ? 0 : enumdirection.getOpposite().get2DDataValue() * 4), 3);
+                     worldserver.gameEvent((Entity) null, GameEvent.BLOCK_PLACE, blockposition);
+                     BlockEntity tileentity = worldserver.getBlockEntity(blockposition);
+ 
+@@ -997,6 +997,7 @@ public interface DispenseItemBehavior {
+                 BlockPos blockposition = pointer.getPos().relative((Direction) pointer.getBlockState().getValue(DispenserBlock.FACING));
+                 CarvedPumpkinBlock blockpumpkincarved = (CarvedPumpkinBlock) Blocks.CARVED_PUMPKIN;
+ 
++                if (worldserver.isEmptyBlock(blockposition) && blockpumpkincarved.canSpawnGolem(worldserver, blockposition)) {
+                 // CraftBukkit start
+                 org.bukkit.block.Block bukkitBlock = worldserver.getWorld().getBlockAt(pointer.getPos().getX(), pointer.getPos().getY(), pointer.getPos().getZ());
+                 CraftItemStack craftItem = CraftItemStack.asCraftMirror(stack.copyWithCount(1)); // Paper - single item in event
+@@ -1021,7 +1022,6 @@ public interface DispenseItemBehavior {
+                 }
+                 // CraftBukkit end
+ 
+-                if (worldserver.isEmptyBlock(blockposition) && blockpumpkincarved.canSpawnGolem(worldserver, blockposition)) {
+                     if (!worldserver.isClientSide) {
+                         worldserver.setBlock(blockposition, blockpumpkincarved.defaultBlockState(), 3);
+                         worldserver.gameEvent((Entity) null, GameEvent.BLOCK_PLACE, blockposition);
+@@ -1070,6 +1070,7 @@ public interface DispenseItemBehavior {
+                 BlockPos blockposition = pointer.getPos().relative((Direction) pointer.getBlockState().getValue(DispenserBlock.FACING));
+                 BlockState iblockdata = worldserver.getBlockState(blockposition);
+ 
++                final java.util.function.Supplier<@org.jetbrains.annotations.Nullable ItemStack> callEvent = () -> { // Andromeda - Port PaperMC/Paper#8525
+                 // CraftBukkit start
+                 org.bukkit.block.Block bukkitBlock = worldserver.getWorld().getBlockAt(pointer.getPos().getX(), pointer.getPos().getY(), pointer.getPos().getZ());
+                 CraftItemStack craftItem = CraftItemStack.asCraftMirror(stack.copyWithCount(1)); // Paper - only single item in event
+@@ -1092,15 +1093,25 @@ public interface DispenseItemBehavior {
+                         return stack;
+                     }
+                 }
++                return null; // Andromeda - Port PaperMC/Paper#8525
+                 // CraftBukkit end
++                }; // Andromeda - Port PaperMC/Paper#8525
+ 
+                 if (iblockdata.is(BlockTags.BEEHIVES, (blockbase_blockdata) -> {
+                     return blockbase_blockdata.hasProperty(BeehiveBlock.HONEY_LEVEL) && blockbase_blockdata.getBlock() instanceof BeehiveBlock;
+                 }) && (Integer) iblockdata.getValue(BeehiveBlock.HONEY_LEVEL) >= 5) {
++                    // Andromeda - Port PaperMC/Paper#8525
++                    ItemStack returnedStack = callEvent.get();
++                    if (returnedStack != null) return returnedStack;
++                    // Andromeda end
+                     ((BeehiveBlock) iblockdata.getBlock()).releaseBeesAndResetHoneyLevel(worldserver, iblockdata, blockposition, (Player) null, BeehiveBlockEntity.BeeReleaseStatus.BEE_RELEASED);
+                     this.setSuccess(true);
+                     return this.takeLiquid(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
+                 } else if (worldserver.getFluidState(blockposition).is(FluidTags.WATER)) {
++                    // Andromeda - Port PaperMC/Paper#8525
++                    ItemStack returnedStack = callEvent.get();
++                    if (returnedStack != null) return returnedStack;
++                    // Andromeda end
+                     this.setSuccess(true);
+                     return this.takeLiquid(pointer, stack, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER));
+                 } else {

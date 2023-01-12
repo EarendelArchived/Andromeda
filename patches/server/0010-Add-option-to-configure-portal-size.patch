@@ -44,10 +44,10 @@ index e7554ec800f321e4e34c926c53f2375a8c3aa979..f92d9ab174d4cdbe09d65758931a0f07
  
      // CraftBukkit start - return boolean
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index a76d86c797dd1e5e2469aa4fef8e1e804ec403ff..00a61572df804073c78300fbd034461e9058c03c 100644
+index 266896d751bc2d4b1fd845c4c8a05c3dfdddb5ca..555fbb4ad5a44218264c2e35f82bc140d0f37f43 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -27,4 +27,19 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -21,4 +21,19 @@ public class LevelConfigurations extends ConfigurationPart {
  
      @Setting(Configuration.VERSION_FIELD)
      public int version = CURRENT_VERSION;

@@ -114,10 +114,10 @@ index a99e2586962952332dd9904ef5bb50a0d3083266..7f4edffdf079da2258bb11deda62a3ae
      public void openCustomInventoryScreen(Player player) {
          player.openMenu(this);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 00a61572df804073c78300fbd034461e9058c03c..a5b8ec1fa0ecd8d4856851a0c4b0ac291a29f942 100644
+index 555fbb4ad5a44218264c2e35f82bc140d0f37f43..bdb7946e201cad99196cb1b0adeb9ee00f0d1de0 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -42,4 +42,16 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -36,4 +36,16 @@ public class LevelConfigurations extends ConfigurationPart {
          }
  
      }

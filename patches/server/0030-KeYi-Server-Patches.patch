@@ -112,7 +112,7 @@ index 004dce26ff073f1de52a84cd425c4f60fdab5e50..1d3e95591b4a16ffee3c1767f9b7853b
                  aiblockdata[k] = iblockdata2;
                  if (k == i) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index db0f5ac6520b008aa05506549ff5b2cf70a12610..825a71a3fed79880bc0bdd9278050987bd6f6c03 100644
+index 2eaffe02940639a18fc14a3cac68744ad100f2fc..d07f7fab525af0f0211e4f47eb1964152db37d40 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 @@ -29,6 +29,7 @@ public class GlobalConfiguration extends ConfigurationPart {
@@ -124,10 +124,10 @@ index db0f5ac6520b008aa05506549ff5b2cf70a12610..825a71a3fed79880bc0bdd9278050987
  
      public Enchantments enchantments;
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 9d2f0aac4f18ae54588994e66867d03c26d93a9a..0c451160a19bf4fcbb4996c5e776b29eaa7d1c34 100644
+index d33ecd9c0e79c2063c1f1bac2faec41a676d0373..2b54ac77a949284cd9ce135c71e0b5c7022d6f4c 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -85,4 +85,18 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -79,4 +79,18 @@ public class LevelConfigurations extends ConfigurationPart {
          public boolean skipEntityMoveIfNoMovement = true;
      }
  

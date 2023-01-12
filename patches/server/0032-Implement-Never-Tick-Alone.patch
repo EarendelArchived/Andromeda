@@ -65,7 +65,7 @@ index 86eb638e04769bb46848b279a8704bf141e717ab..0b7ebce9d2a627b6035c5364399a3219
          this.playersAffectingSpawning.clear();
          for (ServerPlayer player : this.players) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 825a71a3fed79880bc0bdd9278050987bd6f6c03..aefbef812616ecdee2d595e9faeae3bc3eb1999e 100644
+index d07f7fab525af0f0211e4f47eb1964152db37d40..bbe6d516b6633d82d788c2cd0123cf438979e08b 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 @@ -78,4 +78,17 @@ public class GlobalConfiguration extends ConfigurationPart {
@@ -87,10 +87,10 @@ index 825a71a3fed79880bc0bdd9278050987bd6f6c03..aefbef812616ecdee2d595e9faeae3bc
 +
  }
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 0c451160a19bf4fcbb4996c5e776b29eaa7d1c34..1604fced79c4baeb043a1c5435598391b8bb86b9 100644
+index 2b54ac77a949284cd9ce135c71e0b5c7022d6f4c..6fd38f24f8cb05d5a8cd53101077598c135b8402 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -99,4 +99,16 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -93,4 +93,16 @@ public class LevelConfigurations extends ConfigurationPart {
  
      }
  

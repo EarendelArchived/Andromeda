@@ -18,10 +18,10 @@ index ca24b2373dfdcd887eacfdd5c4299e6dd61f63f7..e3921fac9a16a0da17ab79508c3dc6a2
          boolean bl = false;
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 710d04666edc734f62581211a0c99534afa40efd..9e7fd624ce046129e63994f2737cca2079f97be6 100644
+index 6fd38f24f8cb05d5a8cd53101077598c135b8402..03b9fe1c0e0f8a4e52502e39153ce9cac316613e 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -77,6 +77,7 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -71,6 +71,7 @@ public class LevelConfigurations extends ConfigurationPart {
      public class Player extends ConfigurationPart {
  
          public boolean checkSpectatorMovedToQuickly = true;

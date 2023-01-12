@@ -30,7 +30,7 @@ index 619883100becdc2390413022640ee4ccc4dbeb29..af7e78f75095c598b5cf46e94408b25e
  
          public class MobEffects extends ConfigurationPart {
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index fc279373f4df87ea0a26ff372e3886b936710b84..d9f939800e6f0c8731a8627d8318aa28122aa735 100644
+index b4758d44ebdd4f644e3cfc1df8e1588af3d804f1..47ac631cc94a0252692042fb4ac7a48bb803a5de 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -2604,7 +2604,7 @@ public class ServerLevel extends Level implements WorldGenLevel {

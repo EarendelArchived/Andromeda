@@ -31,7 +31,7 @@ index a93e7140f8b7b1f93dfb4e275534e5ac7ab54a3e..88e675eb3e79b8f82cb7b40998010f2b
          this.server.logChatMessage((unsignedFunction == null ? Component.literal(message.signedContent()) : unsignedFunction.apply(this.server.console)), params, flag ? null : "Not Secure"); // Paper
          OutgoingChatMessage outgoingchatmessage = OutgoingChatMessage.create(message);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 2adf2403d9bb21e82eaa26c677582576a4332371..e45c29985b80b7abfebce35d0b11e09a89bbf5e5 100644
+index 15e80e4276e02a84fcce1b93586d522f2b993684..f06386dd5d4af462866f02141820200449d28d88 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 @@ -30,6 +30,7 @@ public class GlobalConfiguration extends ConfigurationPart {

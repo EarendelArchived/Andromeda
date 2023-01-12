@@ -1,0 +1,83 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Thu, 12 Jan 2023 15:56:44 +0900
+Subject: [PATCH] Port PaperMC/Paper#8524
+
+
+diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
+index bf03124f2519bec3d0523155cb8ea118147be7e3..7bdf8ee3560706ec13df4e43f2bacdd60d1b6c9a 100644
+--- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
++++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
+@@ -349,7 +349,7 @@ public interface DispenseItemBehavior {
+                         // Chain to handler for new item
+                         ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
+                         DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
+-                        if (idispensebehavior != DispenseItemBehavior.NOOP && idispensebehavior != ArmorItem.DISPENSE_ITEM_BEHAVIOR) {
++                        if (idispensebehavior != DispenseItemBehavior.NOOP && idispensebehavior != this) { // Andromeda - Port PaperMC/Paper#8524
+                             idispensebehavior.dispense(pointer, eventStack);
+                             return stack;
+                         }
+@@ -405,7 +405,7 @@ public interface DispenseItemBehavior {
+                     // Chain to handler for new item
+                     ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
+                     DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
+-                    if (idispensebehavior != DispenseItemBehavior.NOOP && idispensebehavior != ArmorItem.DISPENSE_ITEM_BEHAVIOR) {
++                    if (idispensebehavior != DispenseItemBehavior.NOOP && idispensebehavior != this) { // Andromeda - Port PaperMC/Paper#8524
+                         idispensebehavior.dispense(pointer, eventStack);
+                         return stack;
+                     }
+@@ -479,7 +479,7 @@ public interface DispenseItemBehavior {
+                     // Chain to handler for new item
+                     ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
+                     DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
+-                    if (idispensebehavior != DispenseItemBehavior.NOOP && idispensebehavior != ArmorItem.DISPENSE_ITEM_BEHAVIOR) {
++                    if (idispensebehavior != DispenseItemBehavior.NOOP && idispensebehavior != this) { // Andromeda - Port PaperMC/Paper#8524
+                         idispensebehavior.dispense(pointer, eventStack);
+                         return stack;
+                     }
+@@ -930,7 +930,7 @@ public interface DispenseItemBehavior {
+         OptionalDispenseItemBehavior dispensebehaviormaybe1 = new OptionalDispenseItemBehavior() {
+             @Override
+             protected ItemStack execute(BlockSource pointer, ItemStack stack) {
+-                this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
++                this.setSuccess(ArmorItem.dispenseArmor(pointer, stack, this)); // Andromeda - Port PaperMC/Paper#8524
+                 return stack;
+             }
+         };
+@@ -984,7 +984,7 @@ public interface DispenseItemBehavior {
+                     stack.shrink(1);
+                     this.setSuccess(true);
+                 } else {
+-                    this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
++                    this.setSuccess(ArmorItem.dispenseArmor(pointer, stack, this)); // Andromeda - Port PaperMC/Paper#8524
+                 }
+ 
+                 return stack;
+@@ -1030,7 +1030,7 @@ public interface DispenseItemBehavior {
+                     stack.shrink(1);
+                     this.setSuccess(true);
+                 } else {
+-                    this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
++                    this.setSuccess(ArmorItem.dispenseArmor(pointer, stack, this)); // Andromeda - Port PaperMC/Paper#8524
+                 }
+ 
+                 return stack;
+diff --git a/src/main/java/net/minecraft/world/item/ArmorItem.java b/src/main/java/net/minecraft/world/item/ArmorItem.java
+index 26ed7bc8bc76b81b3cb47784de158febb5719a81..eab2828ef278ac6c53211d4fb59ba45b2eb4ff61 100644
+--- a/src/main/java/net/minecraft/world/item/ArmorItem.java
++++ b/src/main/java/net/minecraft/world/item/ArmorItem.java
+@@ -47,7 +47,14 @@ public class ArmorItem extends Item implements Wearable {
+     protected final ArmorMaterial material;
+     private final Multimap<Attribute, AttributeModifier> defaultModifiers;
+ 
++    @Deprecated @io.papermc.paper.annotation.DoNotUse // Andromeda - Port PaperMC/Paper#8524
+     public static boolean dispenseArmor(BlockSource pointer, ItemStack armor) {
++        // Andromeda start - Port PaperMC/Paper#8524
++        return dispenseArmor(pointer, armor, null);
++    }
++
++    public static boolean dispenseArmor(BlockSource pointer, ItemStack armor, @Nullable DispenseItemBehavior currentBehavior) {
++        // Andromeda end
+         BlockPos blockposition = pointer.getPos().relative((Direction) pointer.getBlockState().getValue(DispenserBlock.FACING));
+         List<LivingEntity> list = pointer.getLevel().getEntitiesOfClass(LivingEntity.class, new AABB(blockposition), EntitySelector.NO_SPECTATORS.and(new EntitySelector.MobCanWearArmorEntitySelector(armor)));
+ 

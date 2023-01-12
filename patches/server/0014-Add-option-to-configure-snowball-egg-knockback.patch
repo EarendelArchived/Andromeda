@@ -41,10 +41,10 @@ index bdddec9510d84c8940b6116ede389bcac3680ab1..fc02c8edbda1719f219c2cb1d2cd5a3d
  
      @Override
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index a5b8ec1fa0ecd8d4856851a0c4b0ac291a29f942..481dd6d0377988b17a1bef1c51d103f961c5ea87 100644
+index bdb7946e201cad99196cb1b0adeb9ee00f0d1de0..4fdeb78a6b7d36dd02d1edd8c23619728f578efb 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -54,4 +54,23 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -48,4 +48,23 @@ public class LevelConfigurations extends ConfigurationPart {
  
      }
  
