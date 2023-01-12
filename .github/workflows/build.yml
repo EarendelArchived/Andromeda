@@ -31,7 +31,7 @@ jobs:
       - name: Checkout pages
         uses: actions/checkout@v3
         with:
-          path: javadocs
+          path: javadoc
           ref: gh-pages
 
       - name: Validate Gradle Wrapper
@@ -64,8 +64,8 @@ jobs:
       - name: Update Javadoc
         run: |
           ./gradlew Andromeda-API:javadoc
-          mv -f Andromeda-API/build/docs/javadoc javadocs
-          cd javadocs
+          mv -f Andromeda-API/build/docs/javadoc ./
+          cd javadoc
           git add . && git commit -m "[CI-Skip] Update Javadocs"
           git push
       
