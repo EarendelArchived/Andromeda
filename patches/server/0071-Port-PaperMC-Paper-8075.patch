@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Thu, 12 Jan 2023 18:07:36 +0900
+Subject: [PATCH] Port PaperMC/Paper#8075
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+index 84b230d979a91dd776e180e5b828b26bdc98ef12..21173a5a3205e7adf2e582c43e2bf78ce96994bf 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
++++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+@@ -617,6 +617,7 @@ public class EnderDragon extends Mob implements Enemy {
+                 this.level.removeBlock(new BlockPos(block.getX(), block.getY(), block.getZ()), false);
+             }
+         } else {
++            flag1 = false;
+             for (org.bukkit.block.Block block : event.blockList()) {
+                 org.bukkit.Material blockId = block.getType();
+                 if (blockId.isAir()) {
+@@ -636,14 +637,9 @@ public class EnderDragon extends Mob implements Enemy {
+                     });
+                     craftBlock.getNMS().spawnAfterBreak((ServerLevel) level, blockposition, ItemStack.EMPTY, false);
+                 }
+-                // Paper start - TNTPrimeEvent
+-                org.bukkit.block.Block tntBlock = level.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
+-                if(!new com.destroystokyo.paper.event.block.TNTPrimeEvent(tntBlock, com.destroystokyo.paper.event.block.TNTPrimeEvent.PrimeReason.EXPLOSION, explosionSource.getIndirectSourceEntity().getBukkitEntity()).callEvent())
+-                    continue;
+-                // Paper end
+-                nmsBlock.wasExploded(level, blockposition, explosionSource);
++                //nmsBlock.wasExploded(level, blockposition, explosionSource); // Andromeda - Port PaperMC/Paper#8075
+ 
+-                this.level.removeBlock(blockposition, false);
++                flag1 = this.level.removeBlock(blockposition, false) || flag1; // Andromeda - Port PaperMC/Paper#8075
+             }
+         }
+         // CraftBukkit end

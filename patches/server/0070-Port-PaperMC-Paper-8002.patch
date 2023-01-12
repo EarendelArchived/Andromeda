@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Thu, 12 Jan 2023 18:05:10 +0900
+Subject: [PATCH] Port PaperMC/Paper#8002
+
+
+diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+index af7e78f75095c598b5cf46e94408b25e177bfa15..bc4fcbc0805841efec81fca56f9afd663797fb6e 100644
+--- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+@@ -216,6 +216,7 @@ public class WorldConfiguration extends ConfigurationPart {
+ 
+         public class Behavior extends ConfigurationPart {
+             public boolean disableChestCatDetection = false;
++            public boolean disableGameEvents = false; // Andromeda - Port PaperMC/Paper#8002
+             public boolean spawnerNerfedMobsShouldJump = false;
+             public int experienceMergeMaxValue = -1;
+             public boolean shouldRemoveDragon = false;
+diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+index 41c43c7aa99f2b46ee094a8e1d46262b988f223f..95ab7e6731e22e001249b5925ebf4596c8a981b6 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -447,7 +447,7 @@ public class LevelChunk extends ChunkAccess {
+     public GameEventListenerRegistry getListenerRegistry(int ySectionCoord) {
+         Level world = this.level;
+ 
+-        if (world instanceof ServerLevel) {
++        if (world instanceof ServerLevel && !this.level.paperConfig().entities.behavior.disableGameEvents) { // Andromeda - Port PaperMC/Paper#8002
+             ServerLevel worldserver = (ServerLevel) world;
+ 
+             // Andromeda start - Petal patches
+diff --git a/src/main/java/net/minecraft/world/level/gameevent/GameEventDispatcher.java b/src/main/java/net/minecraft/world/level/gameevent/GameEventDispatcher.java
+index a59f38003d005e53c52dfe0633a99e1fa3fc7f69..87ac83bb4360232378ecd81215132134645a8e82 100644
+--- a/src/main/java/net/minecraft/world/level/gameevent/GameEventDispatcher.java
++++ b/src/main/java/net/minecraft/world/level/gameevent/GameEventDispatcher.java
+@@ -27,6 +27,7 @@ public class GameEventDispatcher {
+     }
+ 
+     public void post(GameEvent event, Vec3 emitterPos, GameEvent.Context emitter) {
++        if (this.level.paperConfig().entities.behavior.disableGameEvents) return; // Andromeda - Port PaperMC/Paper#8002
+         int i = event.getNotificationRadius();
+         BlockPos blockposition = new BlockPos(emitterPos);
+         // CraftBukkit start
