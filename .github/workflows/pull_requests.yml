@@ -19,7 +19,7 @@ jobs:
         java: ['temurin']
         os: [ubuntu-20.04]
 
-    if: "!startsWith(github.event.commits[0].message, '[CI-Skip]')"
+    if: github.event.label.name == 'build'
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout action
@@ -44,7 +44,6 @@ jobs:
       - name: Configure Git
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions[bot]"
-          echo "workflow=$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
 
       - name: Apply Patches
         run: ./gradlew applyPatches --stacktrace
@@ -59,47 +58,13 @@ jobs:
         run: ./gradlew createMojmapPaperclipJar --stacktrace
         
       - name: Update Javadoc
-        if: github.ref_name == env.branch
         run: |
           ./gradlew Andromeda-API:javadoc
-          (cd Andromeda-API/build/docs/javadoc && tar c .) | (cd javadoc && tar xf -)
-          cd javadoc
-          git add . && git commit -m "[CI-Skip] Update Javadocs"
-          git push
-      
-      - name: Publish Packages
-        continue-on-error: true
-        if: github.ref_name == env.branch
-        run: |
-          export GITHUB_USERNAME=${{ env.ORG_NAME }}
-          export GITHUB_TOKEN=${{ secrets.GH_PAT }}
-          ./gradlew publish --stacktrace
         
       - name: Upload Artifacts
-        if: env.debug == 'true' || github.ref_name != env.branch
         uses: actions/upload-artifact@v3
         with:
           name: Artifacts
           path: |
             build/libs
             Andromeda-API/build/docs/javadoc
-
-      - name: Release Artifacts
-        if: github.ref_name == env.branch
-        uses: marvinpinto/action-automatic-releases@v1
-        with:
-          title: "Release #${{ env.workflow }}"
-          automatic_release_tag: release-${{ env.workflow }}
-          repo_token: "${{ secrets.GH_PAT }}"
-          files: build/libs/*.jar
-          prerelease: false
-          
-      - name: Release Artifacts (Latest)
-        if: github.ref_name == env.branch
-        uses: marvinpinto/action-automatic-releases@v1
-        with:
-          title: "Release #${{ env.workflow }}"
-          automatic_release_tag: latest-${{ env.version }}
-          repo_token: "${{ secrets.GH_PAT }}"
-          files: build/libs/*.jar
-          prerelease: false
