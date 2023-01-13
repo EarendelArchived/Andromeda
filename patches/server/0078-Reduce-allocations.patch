@@ -710,6 +710,19 @@ index 5d1567f7413b4065b5587ae45ccf9a3e11355c20..75406d7fab22fc2f306f756220fdf833
          }
  
          @Override
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
+index 5ae858b81e6f9903b7296077cf497f62bb8d6995..9e9023d2040d374881cdf58d218ffa8546418c66 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
+@@ -65,7 +65,7 @@ public abstract class AbstractFurnaceBlockEntity extends BaseContainerBlockEntit
+     protected static final int SLOT_FUEL = 1;
+     protected static final int SLOT_RESULT = 2;
+     public static final int DATA_LIT_TIME = 0;
+-    private static final int[] SLOTS_FOR_UP = new int[]{0};
++    private static final int[] SLOTS_FOR_UP = team.earendel.andromeda.utilities.Constants.ZERO_INT; // Andromeda - Reduce allocations
+     private static final int[] SLOTS_FOR_DOWN = new int[]{2, 1};
+     private static final int[] SLOTS_FOR_SIDES = new int[]{1};
+     public static final int DATA_LIT_DURATION = 1;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/ChunkStatus.java b/src/main/java/net/minecraft/world/level/chunk/ChunkStatus.java
 index 71df7c590e31932f2b8fc26a2afaaa54f52674ac..3b91ee283601ba5fcca111b4dd2ed2b50bcb51aa 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/ChunkStatus.java
