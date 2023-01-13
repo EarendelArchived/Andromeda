@@ -2,7 +2,7 @@ name: Build Andromeda
 on:
   push:
     branches: [ "ver/*", "feat/*", "dev/*", "expr/*" ]
-  pull_requests:
+  pull_request:
     branches: [ "ver/*", "feat/*", "dev/*", "expr/*" ]
   workflow_dispatch:
 
