@@ -1,11 +1,8 @@
 name: Build Andromeda
 on:
   push:
-    branches:
-      - 'ver/*'
-      - 'feat/*'
-      - 'dev/*'
-  workflow_dispatch:
+    branches: [ "ver/*", "feat/*", "dev/*", "expr/*" ]
+  workflow_dispatch: [ "ver/*", "feat/*", "dev/*", "expr/*" ]
 
 env:
   ORG_NAME: TeamEarendel
