@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 13 Jan 2023 18:38:34 +0900
+Subject: [PATCH] Port PaperMC/Paper#5457
+
+
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index 9608c5a3dbd7c747daf3e3434279f15c7ffc5f0a..f32184894ffc8fe3349bef71ddbe266d580c9169 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -138,7 +138,7 @@ public abstract class PlayerList {
+     private static final SimpleDateFormat BAN_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+     private final MinecraftServer server;
+     public final List<ServerPlayer> players = new java.util.concurrent.CopyOnWriteArrayList(); // CraftBukkit - ArrayList -> CopyOnWriteArrayList: Iterator safety
+-    private final Map<UUID, ServerPlayer> playersByUUID = Maps.newHashMap();
++    private final Map<UUID, ServerPlayer> playersByUUID = Maps.newConcurrentMap(); // Andromeda - Port PaperMC/Paper#5457
+     private final UserBanList bans;
+     private final IpBanList ipBans;
+     private final ServerOpList ops;
+@@ -160,7 +160,7 @@ public abstract class PlayerList {
+ 
+     // CraftBukkit start
+     private CraftServer cserver;
+-    private final Map<String,ServerPlayer> playersByName = new java.util.HashMap<>();
++    private final Map<String,ServerPlayer> playersByName = Maps.newConcurrentMap(); // Andromeda - Port PaperMC/Paper#5457
+     public @Nullable String collideRuleTeamName; // Paper - Team name used for collideRule
+ 
+     public PlayerList(MinecraftServer server, LayeredRegistryAccess<RegistryLayer> registryManager, PlayerDataStorage saveHandler, int maxPlayers) {

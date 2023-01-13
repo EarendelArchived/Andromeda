@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 13 Jan 2023 15:07:45 +0900
+Subject: [PATCH] Port PaperMC/Paper#8074
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/network/StandardPaperServerListPingEventImpl.java b/src/main/java/com/destroystokyo/paper/network/StandardPaperServerListPingEventImpl.java
+index 4c2351b03b58511b80017b58ee9b20ab5193adc9..f4ca8bbc75dd9f60846e41140badabbbde7609a8 100644
+--- a/src/main/java/com/destroystokyo/paper/network/StandardPaperServerListPingEventImpl.java
++++ b/src/main/java/com/destroystokyo/paper/network/StandardPaperServerListPingEventImpl.java
+@@ -74,15 +74,25 @@ public final class StandardPaperServerListPingEventImpl extends PaperServerListP
+ 
+     @SuppressWarnings("deprecation")
+     public static void processRequest(MinecraftServer server, Connection networkManager) {
+-        StandardPaperServerListPingEventImpl event = new StandardPaperServerListPingEventImpl(server, networkManager, server.getStatus());
+-        server.server.getPluginManager().callEvent(event);
++        // Andromeda start - Port PaperMC/Paper#8074
++        ServerStatus ping = getEventResponse(server, networkManager);
+ 
+-        // Close connection immediately if event is cancelled
+-        if (event.isCancelled()) {
++        if (ping == null) {
+             networkManager.disconnect(null);
+             return;
+         }
+ 
++        networkManager.send(new ClientboundStatusResponsePacket(ping));
++    }
++
++    public static ServerStatus getEventResponse(MinecraftServer server, Connection networkManager) {
++        // Andromeda end
++        StandardPaperServerListPingEventImpl event = new StandardPaperServerListPingEventImpl(server, networkManager, server.getStatus());
++        server.server.getPluginManager().callEvent(event);
++
++        // Close connection immediately if event is cancelled
++        if (event.isCancelled()) return null; // Andromeda - Port PaperMC/Paper#8074
++
+         // Setup response
+         ServerStatus ping = new ServerStatus();
+ 
+@@ -103,8 +113,7 @@ public final class StandardPaperServerListPingEventImpl extends PaperServerListP
+             ping.setFavicon(event.getServerIcon().getData());
+         }
+ 
+-        // Send response
+-        networkManager.send(new ClientboundStatusResponsePacket(ping));
++        return ping; // Andromeda - Port PaperMC/Paper#8074
+     }
+ 
+ }
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index 88e675eb3e79b8f82cb7b40998010f2b209ed5fd..9608c5a3dbd7c747daf3e3434279f15c7ffc5f0a 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -296,7 +296,13 @@ public abstract class PlayerList {
+         Component joinMessage = ichatmutablecomponent; // Paper - Adventure
+ 
+         playerconnection.teleport(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot());
+-        player.sendServerStatus(this.server.getStatus());
++        // Andromeda start - Port PaperMC/Paper#8074
++        io.papermc.paper.util.MCUtil.scheduleAsyncTask(() -> {
++            if (player.hasDisconnected()) return;
++            net.minecraft.network.protocol.status.ServerStatus status = com.destroystokyo.paper.network.StandardPaperServerListPingEventImpl.getEventResponse(this.server, connection);
++            if (status != null) player.sendServerStatus(status);
++        });
++        // Andromeda end
+         // player.connection.send(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(this.players)); // Paper - use single player info update packet
+         this.players.add(player);
+         this.playersByName.put(player.getScoreboardName().toLowerCase(java.util.Locale.ROOT), player); // Spigot

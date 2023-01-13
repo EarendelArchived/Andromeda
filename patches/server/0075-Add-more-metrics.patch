@@ -1,0 +1,63 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 13 Jan 2023 15:34:00 +0900
+Subject: [PATCH] Add more metrics
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
+index 9d9c9bcbd9bd86915e084f2438eae2a732eadd33..f620c51723a5149ba641a6da743648cf4951cc85 100644
+--- a/src/main/java/com/destroystokyo/paper/Metrics.java
++++ b/src/main/java/com/destroystokyo/paper/Metrics.java
+@@ -636,6 +636,52 @@ public class Metrics {
+                     return map;
+                 }));
+ 
++                // Andromeda start - Add more metrics
++                metrics.addCustomChart(new Metrics.DrilldownPie("datapacks", () -> {
++                    Map<String, Map<String, Integer>> map = new HashMap<>();
++                    int datapacks = Bukkit.getServer().getDatapackManager().getEnabledPacks().size();
++
++                    Map<String, Integer> entry = new HashMap<>();
++                    entry.put(String.valueOf(datapacks), 1);
++
++                    if (datapacks == 0)
++                        map.put("0", entry);
++                    else if (datapacks <= 5)
++                        map.put("1-5", entry);
++                    else if (datapacks <= 10)
++                        map.put("6-10", entry);
++                    else if (datapacks <= 25)
++                        map.put("11-25", entry);
++                    else
++                        map.put("25+", entry);
++
++                    return map;
++                }));
++
++                metrics.addCustomChart(new Metrics.DrilldownPie("plugins", () -> {
++                    Map<String, Map<String, Integer>> map = new HashMap<>();
++                    int plugins = Bukkit.getPluginManager().getPlugins().length;
++
++                    Map<String, Integer> entry = new HashMap<>();
++                    entry.put(String.valueOf(plugins), 1);
++
++                    if (plugins == 0)
++                        map.put("0", entry);
++                    else if (plugins <= 5)
++                        map.put("1-5", entry);
++                    else if (plugins <= 10)
++                        map.put("6-10", entry);
++                    else if (plugins <= 25)
++                        map.put("11-25", entry);
++                    else if (plugins <= 50)
++                        map.put("26-50", entry);
++                    else
++                        map.put("50+", entry);
++
++                    return map;
++                }));
++                // Andromeda end
++
+                 metrics.addCustomChart(new Metrics.DrilldownPie("legacy_plugins", () -> {
+                     Map<String, Map<String, Integer>> map = new HashMap<>();
+ 
