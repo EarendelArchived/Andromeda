@@ -1,0 +1,5 @@
+name: "CodeQL Config"
+
+paths:
+  - Andromeda-API/
+  - Andromeda-Server/
