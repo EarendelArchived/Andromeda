@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 14 Jan 2023 01:57:27 +0900
+Subject: [PATCH] Port PaperMC/Paper#6478
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java b/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
+index e9e50f353757340aee2196f2150dc7e49575b87c..a4d909001daecc033767c9a9398352c30f794663 100644
+--- a/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
++++ b/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
+@@ -535,9 +535,9 @@ public class ArmorStand extends LivingEntity {
+                             this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
+                             this.lastHit = i;
+                         } else {
+-                            this.brokenByPlayer(source);
++                            org.bukkit.event.entity.EntityDeathEvent event = this.brokenByPlayer(source); // Andromeda - Port PaperMC/Paper#6478
+                             this.showBreakingParticles();
+-                            this.discard(); // CraftBukkit - SPIGOT-4890: remain as this.die() since above damagesource method will call death event
++                            if (!event.isCancelled()) this.discard(); // CraftBukkit - SPIGOT-4890: remain as this.die() since above damagesource method will call death event // Andromeda - Port PaperMC/Paper#6478
+                         }
+ 
+                         return true;
+@@ -597,7 +597,7 @@ public class ArmorStand extends LivingEntity {
+ 
+     }
+ 
+-    private void brokenByPlayer(DamageSource damageSource) {
++    private org.bukkit.event.entity.EntityDeathEvent brokenByPlayer(DamageSource damageSource) { // Andromeda - Port PaperMC/Paper#6478
+         // Purpur start
+         final ItemStack armorStand = new ItemStack(Items.ARMOR_STAND);
+         if (this.level.purpurConfig.persistentDroppableEntityDisplayNames && this.hasCustomName()) {
+@@ -605,10 +605,10 @@ public class ArmorStand extends LivingEntity {
+         }
+         drops.add(org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitCopy(armorStand)); // CraftBukkit - add to drops
+         // Purpur end
+-        this.brokenByAnything(damageSource);
++        return this.brokenByAnything(damageSource); // Andromeda - Port PaperMC/Paper#6478
+     }
+ 
+-    private void brokenByAnything(DamageSource damageSource) {
++    private org.bukkit.event.entity.EntityDeathEvent brokenByAnything(DamageSource damageSource) { // Andromeda - Port PaperMC/Paper#6478
+         this.playBrokenSound();
+         // this.dropAllDeathLoot(damagesource); // CraftBukkit - moved down
+ 
+@@ -630,8 +630,7 @@ public class ArmorStand extends LivingEntity {
+                 this.armorItems.set(i, ItemStack.EMPTY);
+             }
+         }
+-        this.dropAllDeathLoot(damageSource); // CraftBukkit - moved from above
+-
++        return this.dropAllDeathLoot(damageSource); // CraftBukkit - moved from above // Andromeda - Port PaperMC/Paper#6478
+     }
+ 
+     private void playBrokenSound() {

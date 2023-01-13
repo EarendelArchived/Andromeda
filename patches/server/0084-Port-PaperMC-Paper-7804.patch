@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 14 Jan 2023 01:49:38 +0900
+Subject: [PATCH] Port PaperMC/Paper#7804
+
+
+diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+index 0696a90c87a25779830ba93271591b6ea71599e6..cd099cf50ef4716ba2048c1a25ea04e693a202ae 100644
+--- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+@@ -407,6 +407,8 @@ public class WorldConfiguration extends ConfigurationPart {
+         public boolean cooldownWhenFull = true;
+         public boolean disableMoveEvent = false;
+         public boolean ignoreOccludingBlocks = false;
++        public int hopperMinecartTransferCooldown = 4; // Andromeda - Port PaperMC/Paper#7804
++        public boolean resetHopperMinecartCooldownOnMove = true; // Andromeda - Port PaperMC/Paper#7804
+     }
+ 
+     public Collisions collisions;
+diff --git a/src/main/java/net/minecraft/world/entity/vehicle/MinecartHopper.java b/src/main/java/net/minecraft/world/entity/vehicle/MinecartHopper.java
+index 70f1916185b79bbb9f033f4ef8119d7b17a13ef8..cdb8d28f13d3e484092a5ddbf532ea996241b228 100644
+--- a/src/main/java/net/minecraft/world/entity/vehicle/MinecartHopper.java
++++ b/src/main/java/net/minecraft/world/entity/vehicle/MinecartHopper.java
+@@ -21,7 +21,7 @@ public class MinecartHopper extends AbstractMinecartContainer implements Hopper
+     public static final int MOVE_ITEM_SPEED = 4;
+     private boolean enabled = true;
+     public int cooldownTime = -1;
+-    private final BlockPos lastPosition = BlockPos.ZERO;
++    private BlockPos lastPosition = BlockPos.ZERO;
+ 
+     public MinecartHopper(EntityType<? extends MinecartHopper> type, Level world) {
+         super(type, world);
+@@ -92,13 +92,18 @@ public class MinecartHopper extends AbstractMinecartContainer implements Hopper
+             if (blockPos.equals(this.lastPosition)) {
+                 --this.cooldownTime;
+             } else {
++                // Andromeda start - Port PaperMC/Paper#7804
++                --this.cooldownTime;
++                this.lastPosition = blockPos;
++                if (this.level.paperConfig().hopper.resetHopperMinecartCooldownOnMove)
++                // Andromeda end
+                 this.setCooldown(0);
+             }
+ 
+             if (!this.isOnCooldown()) {
+                 this.setCooldown(0);
+                 if (this.suckInItems()) {
+-                    this.setCooldown(4);
++                    this.setCooldown(this.level.paperConfig().hopper.hopperMinecartTransferCooldown); // Andromeda - Port PaperMC/Paper#7804
+                     this.setChanged();
+                 }
+             }
+@@ -113,8 +118,8 @@ public class MinecartHopper extends AbstractMinecartContainer implements Hopper
+         } else {
+             List<ItemEntity> list = this.level.getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(0.25D, 0.0D, 0.25D), EntitySelector.ENTITY_STILL_ALIVE);
+             if (!list.isEmpty()) {
+-                HopperBlockEntity.addItem(this, list.get(0));
+                 this.immunize();  // Paper
++                return HopperBlockEntity.addItem(this, list.get(0)); // Andromeda - Port PaperMC/Paper#7804
+             }
+ 
+             return false;
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+index 698a0ac71cf9fb409d609a81cc2958121260a46d..b0acfaf51fa16cf74d8a39c0c26863178c773add 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -362,7 +362,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+         if (hopper instanceof HopperBlockEntity blockEntity) {
+             blockEntity.setCooldown(blockEntity.getLevel().spigotConfig.hopperTransfer);
+         } else if (hopper instanceof MinecartHopper blockEntity) {
+-            blockEntity.setCooldown(blockEntity.getLevel().spigotConfig.hopperTransfer / 2);
++            blockEntity.setCooldown(blockEntity.getLevel().paperConfig().hopper.hopperMinecartTransferCooldown); // Andromeda - Port PaperMC/Paper#7804
+         }
+     }
+     // Paper end

@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 14 Jan 2023 02:00:05 +0900
+Subject: [PATCH] Port PaperMC/Paper#5751
+
+
+diff --git a/src/main/java/net/minecraft/world/item/BlockItem.java b/src/main/java/net/minecraft/world/item/BlockItem.java
+index 193ae502acb622da3a42d49dc0c69da9d22f6ede..4cbc3c6821f6939c6f7a55861d16cd5c4fd1ad19 100644
+--- a/src/main/java/net/minecraft/world/item/BlockItem.java
++++ b/src/main/java/net/minecraft/world/item/BlockItem.java
+@@ -268,7 +268,10 @@ public class BlockItem extends Item {
+ 
+                     nbttagcompound1.merge(nbttagcompound);
+                     if (!nbttagcompound1.equals(nbttagcompound2)) {
++                        boolean prevForceLoadState = tileentity.forceLoad; // Andromeda - Port PaperMC/Paper#5751
++                        tileentity.forceLoad = false; // Andromeda - Port PaperMC/Paper#5751
+                         tileentity.load(nbttagcompound1);
++                        tileentity.forceLoad = prevForceLoadState; // Andromeda - Port PaperMC/Paper#5751
+                         tileentity.setChanged();
+                         return true;
+                     }
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/BannerBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/BannerBlockEntity.java
+index 66e2137f9379e885294f2b9f67f7e35296792770..b2b43c1873e444f121e199fd0eca5ef3e2e1597c 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/BannerBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/BannerBlockEntity.java
+@@ -103,7 +103,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
+ 
+         this.itemPatterns = nbt.getList("Patterns", 10);
+         // CraftBukkit start
+-        while (this.itemPatterns.size() > 20) {
++        while (this.itemPatterns.size() > 20 && !this.forceLoad) { // Andromeda - Port PaperMC/Paper#5751
+             this.itemPatterns.remove(20);
+         }
+         // CraftBukkit end
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java
+index efc1bdcaf141a2c2152173439d707f50feaaf91a..d818db1bb4bfe9eebaa61d65429589b88215e831 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java
+@@ -43,6 +43,7 @@ public abstract class BlockEntity {
+     protected final BlockPos worldPosition;
+     protected boolean remove;
+     private BlockState blockState;
++    public boolean forceLoad = true; // Andromeda - Port PaperMC/Paper#5751
+ 
+     public BlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+         this.type = type;
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/SignBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/SignBlockEntity.java
+index 9e760a8e8244b15daaf0abdfc5f8a51d5c663e12..91cad8f3672dd5bcd69f27ece61b9d5b12358f1c 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/SignBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/SignBlockEntity.java
+@@ -110,7 +110,7 @@ public class SignBlockEntity extends BlockEntity implements CommandSource { // C
+         for (int i = 0; i < 4; ++i) {
+             String s = nbt.getString(SignBlockEntity.RAW_TEXT_FIELD_NAMES[i]);
+             // CraftBukkit start
+-            if (s != null && s.length() > 2048) {
++            if (s != null && s.length() > 2048 && !this.forceLoad) { // Andromeda - Port PaperMC/Paper#5751
+                 s = "\"\"";
+             }
+ 
