@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 13 Jan 2023 20:25:25 +0900
+Subject: [PATCH] Port PaperMC/Paper#6761
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 3c37a656f63db811deb84fb31c2971b9668dace9..22ef6c1f1224c011a46315e942716fff5f85b145 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -228,7 +228,7 @@ public class ServerPlayer extends Player {
+     private boolean textFilteringEnabled;
+     private boolean allowsListing;
+     public WardenSpawnTracker wardenSpawnTracker;
+-    private final ContainerSynchronizer containerSynchronizer;
++    public final ContainerSynchronizer containerSynchronizer; // Andromeda - private -> public
+     private final ContainerListener containerListener;
+     @Nullable
+     private RemoteChatSession chatSession;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+index e4afb366ba6f03c1e852e31ca14b58e21abe99d8..a79aa9c1f82085d31b334590d6de9eff3cdafc4d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+@@ -729,8 +729,14 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     // Paper end
+     @Override
+     public boolean dropItem(boolean dropAll) {
+-        if (!(this.getHandle() instanceof ServerPlayer)) return false;
+-        return ((ServerPlayer) this.getHandle()).drop(dropAll);
++        // Andromeda start - Port PaperMC/Paper#6761
++        if (!(this.getHandle() instanceof ServerPlayer player)) return false;
++        boolean success = player.drop(dropAll);
++        final net.minecraft.world.entity.player.Inventory inv = player.getInventory();
++        final java.util.OptionalInt optionalSlot = player.containerMenu.findSlot(inv, inv.selected);
++        optionalSlot.ifPresent(slot -> player.containerSynchronizer.sendSlotChange(player.containerMenu, slot, inv.getSelected()));
++        return success;
++        // Andromeda end
+     }
+ 
+     @Override

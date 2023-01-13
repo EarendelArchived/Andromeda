@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 13 Jan 2023 20:19:08 +0900
+Subject: [PATCH] Port PaperMC/Paper#6465
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+index 832469e39901d9ec666ddaf3aff77419f6195b1c..3f31cabc26ee5e8cfa6a4d56c693ea23008fb1ff 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
++++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+@@ -968,9 +968,9 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+             if (entitywitch != null) {
+                 // Paper start
+                 if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityZapEvent(this, lightning, entitywitch).isCancelled()) {
++                    super.thunderHit(world, lightning); // Andromeda - Port PaperMC/Paper#6465
+                     return;
+                 }
+-                if (org.spigotmc.SpigotConfig.logVillagerDeaths) Villager.LOGGER.info("Villager {} was struck by lightning {}.", this, lightning); // Move down
+                 // Paper end
+ 
+                 entitywitch.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
+@@ -984,8 +984,10 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+                 entitywitch.setPersistenceRequired();
+                 // CraftBukkit start
+                 if (CraftEventFactory.callEntityTransformEvent(this, entitywitch, EntityTransformEvent.TransformReason.LIGHTNING).isCancelled()) {
++                    super.thunderHit(world, lightning); // Andromeda - Port PaperMC/Paper#6465
+                     return;
+                 }
++                if (org.spigotmc.SpigotConfig.logVillagerDeaths) Villager.LOGGER.info("Villager {} was struck by lightning {}.", this, lightning); // Andromeda - Port PaperMC/Paper#6465
+                 world.addFreshEntityWithPassengers(entitywitch, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.LIGHTNING);
+                 // CraftBukkit end
+                 this.releaseAllPois();

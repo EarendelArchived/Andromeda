@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 13 Jan 2023 20:20:21 +0900
+Subject: [PATCH] Port PaperMC/Paper#6701
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/persistence/CraftPersistentDataTypeRegistry.java b/src/main/java/org/bukkit/craftbukkit/persistence/CraftPersistentDataTypeRegistry.java
+index 355c9f79fd3132848a00eacde951d1e1bfa92737..59c274f7c82dacdf297a51bcdc64e559fd65b04d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/persistence/CraftPersistentDataTypeRegistry.java
++++ b/src/main/java/org/bukkit/craftbukkit/persistence/CraftPersistentDataTypeRegistry.java
+@@ -92,7 +92,7 @@ public final class CraftPersistentDataTypeRegistry {
+         }
+     }
+ 
+-    private final Map<Class, TagAdapter> adapters = new HashMap<>();
++    private final Map<Class, TagAdapter> adapters = new java.util.concurrent.ConcurrentHashMap<>(); // Andromeda - Port PaperMC/Paper#6701
+ 
+     /**
+      * Creates a suitable adapter instance for the primitive class type

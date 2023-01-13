@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 13 Jan 2023 20:31:40 +0900
+Subject: [PATCH] Port PaperMC/Paper#7171
+
+
+diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
+index a8c878ed70845a417b8d892ff1aea1baceddb43b..0f3ce7483559bf986942b5b471f8a87115c89eb3 100644
+--- a/src/main/java/net/minecraft/world/level/Explosion.java
++++ b/src/main/java/net/minecraft/world/level/Explosion.java
+@@ -287,12 +287,18 @@ public class Explosion {
+                             d14 = entity instanceof Player && level.paperConfig().environment.disableExplosionKnockback ? 0 : ProtectionEnchantment.getExplosionKnockbackAfterDampener((LivingEntity) entity, d13); // Paper - Disable explosion knockback
+                         }
+ 
+-                        entity.setDeltaMovement(entity.getDeltaMovement().add(d8 * d14, d9 * d14, d10 * d14));
++                        // Andromeda start - Port PaperMC/Paper#7171
++                        org.bukkit.util.Vector delta = new org.bukkit.util.Vector(d8 * d14, d9 * d14, d10 * d14);
++                        if (this.source != null && this.damageSource.getEntity() == null && entity instanceof LivingEntity livingEntity)
++                            if (!new com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent(livingEntity.getBukkitLivingEntity(), this.source.getBukkitEntity(), (float) d14, delta).callEvent())
++                                return;
++                        entity.setDeltaMovement(entity.getDeltaMovement().add(delta.getX(), delta.getY(), delta.getZ()));
++                        // Andromeda end
+                         if (entity instanceof Player) {
+                             Player entityhuman = (Player) entity;
+ 
+                             if (!entityhuman.isSpectator() && (!entityhuman.isCreative() || !entityhuman.getAbilities().flying) && !level.paperConfig().environment.disableExplosionKnockback) { // Paper - Disable explosion knockback
+-                                this.hitPlayers.put(entityhuman, new Vec3(d8 * d13, d9 * d13, d10 * d13));
++                                this.hitPlayers.put(entityhuman, org.bukkit.craftbukkit.util.CraftVector.toNMS(delta)); // Andromeda - Port PaperMC/Paper#7171
+                             }
+                         }
+                     }

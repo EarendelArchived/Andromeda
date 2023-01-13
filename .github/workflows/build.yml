@@ -70,6 +70,7 @@ jobs:
           git push
       
       - name: Publish Packages
+        continue-on-error: true
         if: github.ref_name == env.branch
         run: |
           export GITHUB_USERNAME=${{ env.ORG_NAME }}
