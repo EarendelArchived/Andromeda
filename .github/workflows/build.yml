@@ -86,7 +86,7 @@ jobs:
 
       - name: Release Artifacts
         if: github.ref_name == env.branch
-        uses: marvinpinto/action-automatic-releases@v1
+        uses: marvinpinto/action-automatic-releases@latest
         with:
           title: "Release #${{ env.workflow }}"
           automatic_release_tag: release-${{ env.workflow }}
@@ -96,7 +96,7 @@ jobs:
           
       - name: Release Artifacts (Latest)
         if: github.ref_name == env.branch
-        uses: marvinpinto/action-automatic-releases@v1
+        uses: marvinpinto/action-automatic-releases@latest
         with:
           title: "Release #${{ env.workflow }}"
           automatic_release_tag: latest-${{ env.version }}
