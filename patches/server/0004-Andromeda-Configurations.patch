@@ -592,10 +592,10 @@ index 0000000000000000000000000000000000000000..10d7a2d08a49e9afb6e0ef3ffd0f8d75
 +}
 diff --git a/src/main/java/team/earendel/andromeda/configurations/AndromedaConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfigurations.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..1d00ae2bc9823ee676cdf3a1d3ac9a03ac6976e9
+index 0000000000000000000000000000000000000000..7a4d8457cfa1037c6e0c6801179f220fb655bba0
 --- /dev/null
 +++ b/src/main/java/team/earendel/andromeda/configurations/AndromedaConfigurations.java
-@@ -0,0 +1,326 @@
+@@ -0,0 +1,332 @@
 +package team.earendel.andromeda.configurations;
 +
 +import com.google.common.collect.Table;
@@ -625,11 +625,9 @@ index 0000000000000000000000000000000000000000..1d00ae2bc9823ee676cdf3a1d3ac9a03
 +import net.minecraft.world.entity.EntityType;
 +import net.minecraft.world.item.Item;
 +import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
++import org.jetbrains.annotations.VisibleForTesting;
 +import org.slf4j.Logger;
-+import org.spongepowered.configurate.ConfigurateException;
-+import org.spongepowered.configurate.ConfigurationNode;
-+import org.spongepowered.configurate.ConfigurationOptions;
-+import org.spongepowered.configurate.NodePath;
++import org.spongepowered.configurate.*;
 +import org.spongepowered.configurate.objectmapping.ObjectMapper;
 +import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 +import org.spongepowered.configurate.transformation.TransformAction;
@@ -893,6 +891,14 @@ index 0000000000000000000000000000000000000000..1d00ae2bc9823ee676cdf3a1d3ac9a03
 +        return LevelConfigurations.CURRENT_VERSION;
 +    }
 +
++    @VisibleForTesting
++    static ConfigurationNode createForTesting() {
++        ObjectMapper.Factory factory = defaultGlobalFactoryBuilder(ObjectMapper.factoryBuilder()).build();
++        ConfigurationOptions options = defaultGlobalOptions(defaultOptions(ConfigurationOptions.defaults()))
++                .serializers(builder -> builder.register(type -> ConfigurationPart.class.isAssignableFrom(erase(type)), factory.asTypeSerializer()));
++        return BasicConfigurationNode.root(options);
++    }
++
 +    public static AndromedaConfigurations setup(final Path legacyConfigurations, final Path configurationDir) throws Exception {
 +        final Path legacy = Files.isSymbolicLink(legacyConfigurations) ? Files.readSymbolicLink(legacyConfigurations) : legacyConfigurations;
 +        final Path replacementFile = legacy.resolveSibling(legacyConfigurations.getFileName() + "-README.txt");
@@ -996,4 +1002,41 @@ index 0000000000000000000000000000000000000000..d73cf6f400ff05a842837c716f2d2c10
 +
 +    NodePath[] REMOVED_LEVEL_PATHS = {};
 +
++}
+diff --git a/src/test/java/org/bukkit/support/AbstractTestingBase.java b/src/test/java/org/bukkit/support/AbstractTestingBase.java
+index 084c48ffabac2cd753609add745203e8a55bc09e..2a38c0a24fbaf5bacf0929c4f0f68bf0f8dd769d 100644
+--- a/src/test/java/org/bukkit/support/AbstractTestingBase.java
++++ b/src/test/java/org/bukkit/support/AbstractTestingBase.java
+@@ -68,6 +68,7 @@ public abstract class AbstractTestingBase {
+         DummyServer.setup();
+         DummyEnchantments.setup();
+         io.papermc.paper.configuration.GlobalConfigTestingBase.setupGlobalConfigForTest(); // Paper
++        team.earendel.andromeda.configurations.GlobalConfigTestingBase.setupGlobalConfigForTest(); // Andromeda
+ 
+         ImmutableList.Builder<Material> builder = ImmutableList.builder();
+         for (Material m : Material.values()) {
+diff --git a/src/test/java/team/earendel/andromeda/configurations/GlobalConfigTestingBase.java b/src/test/java/team/earendel/andromeda/configurations/GlobalConfigTestingBase.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4466606d0714199b7d715fb6cd7a33afde420b58
+--- /dev/null
++++ b/src/test/java/team/earendel/andromeda/configurations/GlobalConfigTestingBase.java
+@@ -0,0 +1,19 @@
++package team.earendel.andromeda.configurations;
++
++import org.spongepowered.configurate.ConfigurationNode;
++import org.spongepowered.configurate.serialize.SerializationException;
++
++public class GlobalConfigTestingBase {
++    public static void setupGlobalConfigForTest() {
++        //noinspection ConstantConditions
++        if (GlobalConfiguration.get() == null) {
++            ConfigurationNode node = AndromedaConfigurations.createForTesting();
++            try {
++                GlobalConfiguration globalConfiguration = node.require(GlobalConfiguration.class);
++                GlobalConfiguration.set(globalConfiguration);
++            } catch (SerializationException e) {
++                throw new RuntimeException(e);
++            }
++        }
++    }
 +}
