@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8473
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index ac40fefcd11132d9f865c249ed18a3ace6ea40f2..16e31bb379b2e555963a81e69a51a4825f5b91a3 100644
+index 6112cc120e84271624bdf3d35ed94e8f663e74b2..16caddc8c056fddb32fe9a2f61e648cf77eaa9fe 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -988,7 +988,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -13,7 +13,25 @@ index ac40fefcd11132d9f865c249ed18a3ace6ea40f2..16e31bb379b2e555963a81e69a51a482
          if (this.getHandle().connection == null) return;
  
 -        int stage = (int) (9 * progress); // There are 0 - 9 damage states
-+        int stage = (int) (progress * 10) - 1; // There are 0 - 9 damage states // Andromeda - Port PaperMC/Paper#8473
++        int stage = this.getHandle().level.andromedaLevelConfiguration().paperPullRequestsPort.fixSendBlockDamage0Progress.enabled ? (int) (progress * 10) - 1 : (int) progress * 9; // There are 0 - 9 damage states // Andromeda - Port PaperMC/Paper#8473
          ClientboundBlockDestructionPacket packet = new ClientboundBlockDestructionPacket(destroyerIdentity, new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), stage);  // Paper - customBlockDamage identity
          this.getHandle().connection.send(packet);
      }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 1d3077322ae0434439710dd7c8670da2208fa242..b3af23f43ac912b94e9de3bd1e735cc4b0059773 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -208,6 +208,13 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         }
+ 
++        public FixSendBlockDamage0Progress fixSendBlockDamage0Progress;
++        public class FixSendBlockDamage0Progress extends ConfigurationPart {
++
++            public boolean enabled = true;
++
++        }
++
+     }
+ 
+ }

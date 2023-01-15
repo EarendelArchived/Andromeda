@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sun, 15 Jan 2023 16:03:20 +0900
+Subject: [PATCH] Mining speed tweaks
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index ff6a06ef41827d076ad0b89bb5c8c090ac2dc443..35b7c862b64bb51decb8ec50ac6a81e6576e66a6 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -3071,5 +3071,19 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param component Name of the server mod to display to the Player
+      */
+     void setModName(@NotNull Component component);
++
++    /**
++     * Gets the mining amplifier for the player.
++     *
++     * @return Mining amplifier for the player
++     */
++    float getMiningAmplifier();
++
++    /**
++     * Sets the mining amplifier of the player.
++     *
++     * @param amplifier mining amplifier
++     */
++    void setMiningAmplifier(float amplifier);
+     // Andromeda end
+ }

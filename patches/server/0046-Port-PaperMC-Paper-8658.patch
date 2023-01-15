@@ -5,86 +5,92 @@ Subject: [PATCH] Port PaperMC/Paper#8658
 
 
 diff --git a/src/main/java/net/minecraft/core/dispenser/AbstractProjectileDispenseBehavior.java b/src/main/java/net/minecraft/core/dispenser/AbstractProjectileDispenseBehavior.java
-index 309ad5a1da6b3a297d5526cd9247359ac5f49406..73ada4184f5cd264a80b6d76b98a1313e08a49a9 100644
+index 309ad5a1da6b3a297d5526cd9247359ac5f49406..6609c5cc214e689b11276afb2c109a45c8e52541 100644
 --- a/src/main/java/net/minecraft/core/dispenser/AbstractProjectileDispenseBehavior.java
 +++ b/src/main/java/net/minecraft/core/dispenser/AbstractProjectileDispenseBehavior.java
-@@ -24,7 +24,6 @@ public abstract class AbstractProjectileDispenseBehavior extends DefaultDispense
+@@ -24,7 +24,8 @@ public abstract class AbstractProjectileDispenseBehavior extends DefaultDispense
          ServerLevel worldserver = pointer.getLevel();
          Position iposition = DispenserBlock.getDispensePosition(pointer);
          Direction enumdirection = (Direction) pointer.getBlockState().getValue(DispenserBlock.FACING);
 -        Projectile iprojectile = this.getProjectile(worldserver, iposition, stack);
++        Projectile iprojectile = null; // Andromeda - Port PaperMC/Paper#8658
++        if (!team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.properlyTrackTheChangedItemFromDispenseEvents.enabled) iprojectile = this.getProjectile(worldserver, iposition, stack); // Andromeda - Port PaperMC/Paper#8658
  
          // CraftBukkit start
          // iprojectile.shoot((double) enumdirection.getStepX(), (double) ((float) enumdirection.getStepY() + 0.1F), (double) enumdirection.getStepZ(), this.getPower(), this.getUncertainty());
-@@ -53,6 +52,7 @@ public abstract class AbstractProjectileDispenseBehavior extends DefaultDispense
+@@ -53,6 +54,7 @@ public abstract class AbstractProjectileDispenseBehavior extends DefaultDispense
                  return stack;
              }
          }
-+        Projectile iprojectile = this.getProjectile(worldserver, iposition, CraftItemStack.asNMSCopy(event.getItem())); // Andromeda - Port PaperMC/Paper#8658
++        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.properlyTrackTheChangedItemFromDispenseEvents.enabled) iprojectile = this.getProjectile(worldserver, iposition, CraftItemStack.asNMSCopy(event.getItem())); // Andromeda - Port PaperMC/Paper#8658
  
          iprojectile.shoot(event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ(), this.getPower(), this.getUncertainty());
          ((Entity) iprojectile).projectileSource = new org.bukkit.craftbukkit.projectiles.CraftBlockProjectileSource((DispenserBlockEntity) pointer.getEntity());
 diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-index ed137bb15f76bac5a73f3dec215078c21e4953b9..60c48aff048eee397a931fa3956e8593f27731d2 100644
+index ed137bb15f76bac5a73f3dec215078c21e4953b9..2df7bb73a004c9b3f1e5eaff2557e3cfafb9b3fb 100644
 --- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -241,10 +241,14 @@ public interface DispenseItemBehavior {
+@@ -241,10 +241,16 @@ public interface DispenseItemBehavior {
                          idispensebehavior.dispense(pointer, eventStack);
                          return stack;
                      }
 +                    // Andromeda start - Port PaperMC/Paper#8658
-+                    itemstack1 = CraftItemStack.asNMSCopy(event.getItem());
-+                    entitytypes = ((SpawnEggItem) itemstack1.getItem()).getType(itemstack1.getTag());
++                    if (!team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.properlyTrackTheChangedItemFromDispenseEvents.enabled) {
++                        itemstack1 = CraftItemStack.asNMSCopy(event.getItem());
++                        entitytypes = ((SpawnEggItem) itemstack1.getItem()).getType(itemstack1.getTag());
++                    }
 +                    // Andromeda end
                  }
  
                  try {
 -                    entitytypes.spawn(pointer.getLevel(), stack, (Player) null, pointer.getPos().relative(enumdirection), MobSpawnType.DISPENSER, enumdirection != Direction.UP, false);
-+                    entitytypes.spawn(pointer.getLevel(), itemstack1, (Player) null, pointer.getPos().relative(enumdirection), MobSpawnType.DISPENSER, enumdirection != Direction.UP, false); // Andromeda - Port PaperMC/Paper#8658
++                    entitytypes.spawn(pointer.getLevel(), team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.properlyTrackTheChangedItemFromDispenseEvents.enabled ? itemstack1 : stack, (Player) null, pointer.getPos().relative(enumdirection), MobSpawnType.DISPENSER, enumdirection != Direction.UP, false); // Andromeda - Port PaperMC/Paper#8658
                  } catch (Exception exception) {
                      DispenseItemBehavior.LOGGER.error("Error while dispensing spawn egg from dispenser at {}", pointer.getPos(), exception); // CraftBukkit - decompile error
                      return ItemStack.EMPTY;
-@@ -301,7 +305,7 @@ public interface DispenseItemBehavior {
+@@ -301,7 +307,7 @@ public interface DispenseItemBehavior {
  
                  ArmorStand entityarmorstand = new ArmorStand(worldserver, (double) blockposition.getX() + 0.5D, (double) blockposition.getY(), (double) blockposition.getZ() + 0.5D);
  
 -                EntityType.updateCustomEntityTag(worldserver, (Player) null, entityarmorstand, stack.getTag());
-+                EntityType.updateCustomEntityTag(worldserver, (Player) null, entityarmorstand, CraftItemStack.asNMSCopy(event.getItem()).getTag()); // Andromeda - Port PaperMC/Paper#8658
++                EntityType.updateCustomEntityTag(worldserver, (Player) null, entityarmorstand, team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.properlyTrackTheChangedItemFromDispenseEvents.enabled ? CraftItemStack.asNMSCopy(event.getItem()).getTag() : stack.getTag()); // Andromeda - Port PaperMC/Paper#8658
                  entityarmorstand.setYRot(enumdirection.toYRot());
                  worldserver.addFreshEntity(entityarmorstand);
                  if (shrink) stack.shrink(1); // Paper - actually handle here
-@@ -579,7 +583,7 @@ public interface DispenseItemBehavior {
+@@ -579,7 +585,7 @@ public interface DispenseItemBehavior {
                  }
  
                  SmallFireball entitysmallfireball = new SmallFireball(worldserver, d0, d1, d2, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ());
 -                entitysmallfireball.setItem(itemstack1);
-+                entitysmallfireball.setItem(CraftItemStack.asNMSCopy(event.getItem())); // Andromeda - Port PaperMC/Paper#8658
++                entitysmallfireball.setItem(team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.properlyTrackTheChangedItemFromDispenseEvents.enabled ? CraftItemStack.asNMSCopy(event.getItem()) : itemstack1); // Andromeda - Port PaperMC/Paper#8658
                  entitysmallfireball.projectileSource = new org.bukkit.craftbukkit.projectiles.CraftBlockProjectileSource((DispenserBlockEntity) pointer.getEntity());
  
                  worldserver.addFreshEntity(entitysmallfireball);
-@@ -624,6 +628,7 @@ public interface DispenseItemBehavior {
+@@ -624,6 +630,7 @@ public interface DispenseItemBehavior {
                  int z = blockposition.getZ();
                  BlockState iblockdata = worldserver.getBlockState(blockposition);
                  Material material = iblockdata.getMaterial();
-+                ItemStack dispancedItem = stack; // Andromeda - Port PaperMC/Paer#8658
++                ItemStack dispencedItem = stack; // Andromeda - Port PaperMC/Paer#8658
                  if (worldserver.isEmptyBlock(blockposition) || !material.isSolid() || material.isReplaceable() || (dispensiblecontaineritem instanceof BucketItem && iblockdata.getBlock() instanceof LiquidBlockContainer && ((LiquidBlockContainer) iblockdata.getBlock()).canPlaceLiquid(worldserver, blockposition, iblockdata, ((BucketItem) dispensiblecontaineritem).content))) {
                      org.bukkit.block.Block block = worldserver.getWorld().getBlockAt(pointer.getPos().getX(), pointer.getPos().getY(), pointer.getPos().getZ());
                      CraftItemStack craftItem = CraftItemStack.asCraftMirror(stack.copyWithCount(1)); // Paper - single item in event
-@@ -647,12 +652,15 @@ public interface DispenseItemBehavior {
+@@ -647,12 +654,17 @@ public interface DispenseItemBehavior {
                          }
                      }
  
 -                    dispensiblecontaineritem = (DispensibleContainerItem) CraftItemStack.asNMSCopy(event.getItem()).getItem();
 +                    // Andromeda start - Port PaperMC/Paper#8658
-+                    dispancedItem = CraftItemStack.asNMSCopy(event.getItem());
-+                    dispensiblecontaineritem = (DispensibleContainerItem) dispancedItem.getItem();
++                    if (team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.properlyTrackTheChangedItemFromDispenseEvents.enabled) {
++                        dispencedItem = CraftItemStack.asNMSCopy(event.getItem());
++                        dispensiblecontaineritem = (DispensibleContainerItem) dispencedItem.getItem();
++                    }
 +                    // Andromeda end
                  }
                  // CraftBukkit end
  
                  if (dispensiblecontaineritem.emptyContents((Player) null, worldserver, blockposition, (BlockHitResult) null)) {
 -                    dispensiblecontaineritem.checkExtraContent((Player) null, worldserver, stack, blockposition);
-+                    dispensiblecontaineritem.checkExtraContent((Player) null, worldserver, dispancedItem, blockposition);
++                    dispensiblecontaineritem.checkExtraContent((Player) null, worldserver, team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.properlyTrackTheChangedItemFromDispenseEvents.enabled ? stack : dispencedItem, blockposition); // Andromeda - Port PaperMC/Paper#8658
                      // CraftBukkit start - Handle stacked buckets
                      Item item = Items.BUCKET;
                      stack.shrink(1);
@@ -119,3 +125,21 @@ index 33a30d26da2401535f0a72acb2bbffec1aef151e..c158303fba26fcb685fb90fd86ff5d43
              }
  
              if (worldserver.addFreshEntity(entityminecartabstract) && shrink) stack.shrink(1); // Paper - actually handle here
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index 084d925df3339dbed19a45d200aa30b8f916f45e..e4644ee4551d723c7cb6e273ba2af761211695d1 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -143,6 +143,13 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+         }
+ 
++        public ProperlyTrackTheChangedItemFromDispenseEvents properlyTrackTheChangedItemFromDispenseEvents;
++        public class ProperlyTrackTheChangedItemFromDispenseEvents extends ConfigurationPart {
++
++            public boolean enabled = true;
++
++        }
++
+     }
+ 
+ }

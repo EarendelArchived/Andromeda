@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8623
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
-index c849839f61ebfc6e7a8df0f000d635b8c4a47e2a..8c16bfcc3446ca5419a13abc2378ecc5c0a4eb54 100644
+index c849839f61ebfc6e7a8df0f000d635b8c4a47e2a..722ab8d0f18fbf79790a4077ffdf3d2fbbc3dbea 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 @@ -534,7 +534,7 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob
@@ -13,12 +13,12 @@ index c849839f61ebfc6e7a8df0f000d635b8c4a47e2a..8c16bfcc3446ca5419a13abc2378ecc5
                                  if (WitherBoss.canDestroy(iblockdata)) {
                                      // CraftBukkit start
 -                                    if (CraftEventFactory.callEntityChangeBlockEvent(this, blockposition, Blocks.AIR.defaultBlockState()).isCancelled()) {
-+                                    if (CraftEventFactory.callEntityChangeBlockEvent(this, blockposition, iblockdata.getFluidState().createLegacyBlock()).isCancelled()) { // Andromeda - Port PaperMC/Paper#8623
++                                    if (CraftEventFactory.callEntityChangeBlockEvent(this, blockposition, this.level.andromedaLevelConfiguration().paperPullRequestsPort.takeInAccountWaterloggedBlockForTheEvent.enabled ? iblockdata.getFluidState().createLegacyBlock() : Blocks.AIR.defaultBlockState()).isCancelled()) { // Andromeda - Port PaperMC/Paper#8623
                                          continue;
                                      }
                                      // CraftBukkit end
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Ravager.java b/src/main/java/net/minecraft/world/entity/monster/Ravager.java
-index a68c701c1ca448d64154852094704532a1b96445..5361fc17b1fb310112fd56ce9d12cc19a9d03722 100644
+index a68c701c1ca448d64154852094704532a1b96445..9b2ebec1da2bdec011abe7a89ae58298fb71a87a 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Ravager.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Ravager.java
 @@ -211,7 +211,7 @@ public class Ravager extends Raider {
@@ -26,12 +26,12 @@ index a68c701c1ca448d64154852094704532a1b96445..5361fc17b1fb310112fd56ce9d12cc19
                      Block block = iblockdata.getBlock();
  
 -                    if (this.level.purpurConfig.ravagerGriefableBlocks.contains(block) && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this, blockposition, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()).isCancelled()) { // CraftBukkit // Purpur
-+                    if (this.level.purpurConfig.ravagerGriefableBlocks.contains(block) && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this, blockposition, iblockdata.getFluidState().createLegacyBlock()).isCancelled()) { // CraftBukkit // Purpur // Andromeda - Port PaperMC/Paper#8623
++                    if (this.level.purpurConfig.ravagerGriefableBlocks.contains(block) && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this, blockposition, this.level.andromedaLevelConfiguration().paperPullRequestsPort.takeInAccountWaterloggedBlockForTheEvent.enabled ? iblockdata.getFluidState().createLegacyBlock() : net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()).isCancelled()) { // CraftBukkit // Purpur // Andromeda - Port PaperMC/Paper#8623
                          flag = this.level.destroyBlock(blockposition, true, this) || flag;
                      }
                  }
 diff --git a/src/main/java/net/minecraft/world/level/block/PointedDripstoneBlock.java b/src/main/java/net/minecraft/world/level/block/PointedDripstoneBlock.java
-index 895fea12e9780521573bfe6f6a3d9c867ac9f4e0..10a58b204930354573c0a0bdaef189bc1ff3e9e1 100644
+index 895fea12e9780521573bfe6f6a3d9c867ac9f4e0..5422d740687180d4786c0a4c63cc6d332e33cf89 100644
 --- a/src/main/java/net/minecraft/world/level/block/PointedDripstoneBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/PointedDripstoneBlock.java
 @@ -131,7 +131,7 @@ public class PointedDripstoneBlock extends Block implements Fallable, SimpleWate
@@ -39,7 +39,25 @@ index 895fea12e9780521573bfe6f6a3d9c867ac9f4e0..10a58b204930354573c0a0bdaef189bc
          if (!world.isClientSide && projectile.mayInteract(world, blockposition) && projectile instanceof ThrownTrident && projectile.getDeltaMovement().length() > 0.6D) {
              // CraftBukkit start
 -            if (CraftEventFactory.callEntityChangeBlockEvent(projectile, blockposition, Blocks.AIR.defaultBlockState()).isCancelled()) {
-+            if (CraftEventFactory.callEntityChangeBlockEvent(projectile, blockposition, state.getFluidState().createLegacyBlock()).isCancelled()) { // Andromeda - Port PaperMC/Paper#8623
++            if (CraftEventFactory.callEntityChangeBlockEvent(projectile, blockposition, world.andromedaLevelConfiguration().paperPullRequestsPort.takeInAccountWaterloggedBlockForTheEvent.enabled ? state.getFluidState().createLegacyBlock() : Blocks.AIR.defaultBlockState()).isCancelled()) { // Andromeda - Port PaperMC/Paper#8623
                  return;
              }
              // CraftBukkit end
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 042e25b01e2fa78aa8c79865a1d057f354a6170f..1cc1e30dc2ea34ad65d4d93d6766e730d8227cb0 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -180,6 +180,13 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         }
+ 
++        public TakeInAccountWaterloggedBlockForTheEvent takeInAccountWaterloggedBlockForTheEvent;
++        public class TakeInAccountWaterloggedBlockForTheEvent extends ConfigurationPart {
++
++            public boolean enabled = true;
++
++        }
++
+     }
+ 
+ }

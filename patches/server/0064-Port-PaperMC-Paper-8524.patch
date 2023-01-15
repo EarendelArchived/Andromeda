@@ -5,10 +5,10 @@ Subject: [PATCH] Port PaperMC/Paper#8524
 
 
 diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-index bf03124f2519bec3d0523155cb8ea118147be7e3..7bdf8ee3560706ec13df4e43f2bacdd60d1b6c9a 100644
+index bba2b52802eddc1639c977057b5c6097a11684c7..8900a2e4017c57f3e5230e06b31ba44a44ce0b9b 100644
 --- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -349,7 +349,7 @@ public interface DispenseItemBehavior {
+@@ -351,7 +351,7 @@ public interface DispenseItemBehavior {
                          // Chain to handler for new item
                          ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
                          DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
@@ -17,7 +17,7 @@ index bf03124f2519bec3d0523155cb8ea118147be7e3..7bdf8ee3560706ec13df4e43f2bacdd6
                              idispensebehavior.dispense(pointer, eventStack);
                              return stack;
                          }
-@@ -405,7 +405,7 @@ public interface DispenseItemBehavior {
+@@ -407,7 +407,7 @@ public interface DispenseItemBehavior {
                      // Chain to handler for new item
                      ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
                      DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
@@ -26,7 +26,7 @@ index bf03124f2519bec3d0523155cb8ea118147be7e3..7bdf8ee3560706ec13df4e43f2bacdd6
                          idispensebehavior.dispense(pointer, eventStack);
                          return stack;
                      }
-@@ -479,7 +479,7 @@ public interface DispenseItemBehavior {
+@@ -481,7 +481,7 @@ public interface DispenseItemBehavior {
                      // Chain to handler for new item
                      ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
                      DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
@@ -35,7 +35,7 @@ index bf03124f2519bec3d0523155cb8ea118147be7e3..7bdf8ee3560706ec13df4e43f2bacdd6
                          idispensebehavior.dispense(pointer, eventStack);
                          return stack;
                      }
-@@ -930,7 +930,7 @@ public interface DispenseItemBehavior {
+@@ -934,7 +934,7 @@ public interface DispenseItemBehavior {
          OptionalDispenseItemBehavior dispensebehaviormaybe1 = new OptionalDispenseItemBehavior() {
              @Override
              protected ItemStack execute(BlockSource pointer, ItemStack stack) {
@@ -44,7 +44,7 @@ index bf03124f2519bec3d0523155cb8ea118147be7e3..7bdf8ee3560706ec13df4e43f2bacdd6
                  return stack;
              }
          };
-@@ -984,7 +984,7 @@ public interface DispenseItemBehavior {
+@@ -988,7 +988,7 @@ public interface DispenseItemBehavior {
                      stack.shrink(1);
                      this.setSuccess(true);
                  } else {
@@ -53,7 +53,7 @@ index bf03124f2519bec3d0523155cb8ea118147be7e3..7bdf8ee3560706ec13df4e43f2bacdd6
                  }
  
                  return stack;
-@@ -1030,7 +1030,7 @@ public interface DispenseItemBehavior {
+@@ -1034,7 +1034,7 @@ public interface DispenseItemBehavior {
                      stack.shrink(1);
                      this.setSuccess(true);
                  } else {

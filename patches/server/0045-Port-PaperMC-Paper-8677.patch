@@ -5,14 +5,14 @@ Subject: [PATCH] Port PaperMC/Paper#8677
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Animal.java b/src/main/java/net/minecraft/world/entity/animal/Animal.java
-index 2ac88f06ebb79e515cd9934ac1e3e2c8003d9e3c..3535a1fa2bfdc6545bdc6efba7abce0da2f1f4e4 100644
+index 2ac88f06ebb79e515cd9934ac1e3e2c8003d9e3c..07614f50a8fd88e5be87588ec53e90798dce2355 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Animal.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Animal.java
 @@ -152,6 +152,7 @@ public abstract class Animal extends AgeableMob {
              int i = this.getAge();
  
              if (!this.level.isClientSide && i == 0 && this.canFallInLove() && (this.level.purpurConfig.animalBreedingCooldownSeconds <= 0 || !this.level.hasBreedingCooldown(player.getUUID(), this.getClass()))) { // Purpur
-+                this.breedItem = itemstack.copy(); // Andromeda - Port PaperMC/Paper#8677
++                if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.fixSeveralIsuesWithEntityBreedEvent.enabled) this.breedItem = itemstack.copy(); // Andromeda - Port PaperMC/Paper#8677
                  this.usePlayerItem(player, hand, itemstack);
                  this.setInLove(player);
                  return InteractionResult.SUCCESS;
@@ -20,51 +20,52 @@ index 2ac88f06ebb79e515cd9934ac1e3e2c8003d9e3c..3535a1fa2bfdc6545bdc6efba7abce0d
          // CraftBukkit start
          EntityEnterLoveModeEvent entityEnterLoveModeEvent = CraftEventFactory.callEntityEnterLoveModeEvent(player, this, 600);
          if (entityEnterLoveModeEvent.isCancelled()) {
-+            this.breedItem = null; // Andromeda - Port PaperMC/Paper#8677
++            if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.fixSeveralIsuesWithEntityBreedEvent.enabled) this.breedItem = null; // Andromeda - Port PaperMC/Paper#8677
              return;
          }
          this.inLove = entityEnterLoveModeEvent.getTicksInLove();
-@@ -193,7 +195,6 @@ public abstract class Animal extends AgeableMob {
+@@ -193,7 +195,7 @@ public abstract class Animal extends AgeableMob {
          if (player != null) {
              this.loveCause = player.getUUID();
          }
 -        this.breedItem = player.getInventory().getSelected(); // CraftBukkit
++        if (!this.level.andromedaLevelConfiguration().paperPullRequestsPort.fixSeveralIsuesWithEntityBreedEvent.enabled) this.breedItem = player.getInventory().getSelected(); // Andromeda - Port PaperMC/Paper#8677
  
          this.level.broadcastEntityEvent(this, (byte) 18);
      }
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Panda.java b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-index 841838562ffed67127b03e27f61d692d9933fbe3..289bdd39c61219f8895816c1dd4bf41bb0c70a3a 100644
+index 841838562ffed67127b03e27f61d692d9933fbe3..75c7e0416b8e31b665733a7c0f7c7670fbbd7dd3 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Panda.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Panda.java
 @@ -695,6 +695,7 @@ public class Panda extends Animal {
                  this.usePlayerItem(player, hand, itemstack);
                  this.ageUp((int) ((float) (-this.getAge() / 20) * 0.1F), true);
              } else if (!this.level.isClientSide && this.getAge() == 0 && this.canFallInLove()) {
-+                this.breedItem = itemstack.copy(); // Andromeda - Port PaperMC/Paper#8677
++                if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.fixSeveralIsuesWithEntityBreedEvent.enabled) this.breedItem = itemstack.copy(); // Andromeda - Port PaperMC/Paper#8677
                  this.usePlayerItem(player, hand, itemstack);
                  this.setInLove(player);
              } else {
 diff --git a/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java b/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
-index 0600b2fca10ed994cfe652643e7df5a020987bab..4e1968270e3d2394e01aac30c33757a0c6d1ffce 100644
+index 0600b2fca10ed994cfe652643e7df5a020987bab..5210ccbc42b3f2edec0cde1da42059c20fb4e4d5 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
 @@ -407,6 +407,7 @@ public class Camel extends AbstractHorse implements PlayerRideableJumping, Rider
  
              boolean bl2 = this.isTamed() && this.getAge() == 0 && this.canFallInLove();
              if (bl2) {
-+                this.breedItem = item.copy(); // Andromeda - Port PaperMC/Paper#8677
++                if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.fixSeveralIsuesWithEntityBreedEvent.enabled) this.breedItem = item.copy(); // Andromeda - Port PaperMC/Paper#8677
                  this.setInLove(player);
              }
  
 diff --git a/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java b/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
-index 8f27e6b495b82361d331c514c78088d358e4f5b4..b92cfdcb1ba793cea578216fd2416f35531d8460 100644
+index 8f27e6b495b82361d331c514c78088d358e4f5b4..ec1e3e9597ec0ad0bf1a4cbdb7b3c010cfb493b8 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 @@ -519,6 +519,7 @@ public abstract class AbstractHorse extends Animal implements ContainerListener,
              b0 = 5;
              if (!this.level.isClientSide && this.isTamed() && this.getAge() == 0 && !this.isInLove()) {
                  flag = true;
-+                this.breedItem = item.copy(); // Andromeda - Port PaperMC/Paer#8677
++                if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.fixSeveralIsuesWithEntityBreedEvent.enabled) this.breedItem = item.copy(); // Andromeda - Port PaperMC/Paer#8677
                  this.setInLove(player);
              }
          } else if (item.is(Items.GOLDEN_APPLE) || item.is(Items.ENCHANTED_GOLDEN_APPLE)) {
@@ -72,19 +73,37 @@ index 8f27e6b495b82361d331c514c78088d358e4f5b4..b92cfdcb1ba793cea578216fd2416f35
              b0 = 10;
              if (!this.level.isClientSide && this.isTamed() && this.getAge() == 0 && !this.isInLove()) {
                  flag = true;
-+                this.breedItem = item.copy(); // Andromeda - Port PaperMC/Paer#8677
++                if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.fixSeveralIsuesWithEntityBreedEvent.enabled) this.breedItem = item.copy(); // Andromeda - Port PaperMC/Paer#8677
                  this.setInLove(player);
              }
          }
 diff --git a/src/main/java/net/minecraft/world/entity/animal/horse/Llama.java b/src/main/java/net/minecraft/world/entity/animal/horse/Llama.java
-index beea0545a38b0f044409c2cdb5bbefaf8d783d45..dbef7f0a9754ee90052abf201c988145d592db41 100644
+index beea0545a38b0f044409c2cdb5bbefaf8d783d45..917ce4cda59904f9cbc249fab95a56a16d71106e 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/horse/Llama.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/horse/Llama.java
 @@ -289,6 +289,7 @@ public class Llama extends AbstractChestedHorse implements VariantHolder<Llama.V
              f = 10.0F;
              if (this.isTamed() && this.getAge() == 0 && this.canFallInLove()) {
                  flag = true;
-+                this.breedItem = item.copy(); // Andromeda - Port PaperMC/Paer#8677
++                if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.fixSeveralIsuesWithEntityBreedEvent.enabled) this.breedItem = item.copy(); // Andromeda - Port PaperMC/Paer#8677
                  this.setInLove(player);
              }
          }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 6adead94485ad859f8566be56f0e5dc4fbe70ef7..9eb40feb1870c1601c7be8ab573f902e7f26d55f 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -166,6 +166,13 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         }
+ 
++        public FixSeveralIsuesWithEntityBreedEvent fixSeveralIsuesWithEntityBreedEvent;
++        public class FixSeveralIsuesWithEntityBreedEvent extends ConfigurationPart {
++
++            public boolean enabled = true;
++
++        }
++
+     }
+ 
+ }

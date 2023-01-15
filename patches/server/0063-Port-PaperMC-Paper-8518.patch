@@ -5,10 +5,10 @@ Subject: [PATCH] Port PaperMC/Paper#8518
 
 
 diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-index c0efc522db09b143867a4cfcbc2c64e5deef0277..bf03124f2519bec3d0523155cb8ea118147be7e3 100644
+index 98f3711886361077015ba6e08f4566c5b01846a5..bba2b52802eddc1639c977057b5c6097a11684c7 100644
 --- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -1119,6 +1119,13 @@ public interface DispenseItemBehavior {
+@@ -1123,6 +1123,13 @@ public interface DispenseItemBehavior {
                  this.setSuccess(true);
                  if (iblockdata.is(Blocks.RESPAWN_ANCHOR)) {
                      if ((Integer) iblockdata.getValue(RespawnAnchorBlock.CHARGE) != 4) {
@@ -22,7 +22,7 @@ index c0efc522db09b143867a4cfcbc2c64e5deef0277..bf03124f2519bec3d0523155cb8ea118
                          RespawnAnchorBlock.charge(worldserver, blockposition, iblockdata);
                          stack.shrink(1);
                      } else {
-@@ -1141,6 +1148,13 @@ public interface DispenseItemBehavior {
+@@ -1145,6 +1152,13 @@ public interface DispenseItemBehavior {
                  Optional<BlockState> optional = HoneycombItem.getWaxed(iblockdata);
  
                  if (optional.isPresent()) {
@@ -36,7 +36,7 @@ index c0efc522db09b143867a4cfcbc2c64e5deef0277..bf03124f2519bec3d0523155cb8ea118
                      worldserver.setBlockAndUpdate(blockposition, (BlockState) optional.get());
                      worldserver.levelEvent(3003, blockposition, 0);
                      stack.shrink(1);
-@@ -1166,6 +1180,12 @@ public interface DispenseItemBehavior {
+@@ -1170,6 +1184,12 @@ public interface DispenseItemBehavior {
                      if (!worldserver.getBlockState(blockposition1).is(BlockTags.CONVERTABLE_TO_MUD)) {
                          return this.defaultDispenseItemBehavior.dispense(pointer, stack);
                      } else {

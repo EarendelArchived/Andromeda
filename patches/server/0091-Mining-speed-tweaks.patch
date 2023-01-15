@@ -1,0 +1,89 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sun, 15 Jan 2023 16:03:01 +0900
+Subject: [PATCH] Mining speed tweaks
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
+index 09f0212162b3790c632479ce9b5331c45c963b70..88f53b00faf74d11314464ce8753aa67ae1bfdb1 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Player.java
++++ b/src/main/java/net/minecraft/world/entity/player/Player.java
+@@ -185,6 +185,7 @@ public abstract class Player extends LivingEntity {
+     // Paper end
+     public int sixRowEnderchestSlotCount = -1; // Purpur
+     public boolean canPortalInstant = false; // Purpur
++    public float miningSpeedAmplifier = 0; // Andromeda
+ 
+     // CraftBukkit start
+     public boolean fauxSleeping;
+@@ -871,14 +872,16 @@ public abstract class Player extends LivingEntity {
+             f *= f1;
+         }
+ 
+-        if (this.isEyeInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(this)) {
++        if (this.isEyeInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(this)  && !this.getLevel().andromedaLevelConfiguration().entity.player.mining.disableSpeedReductionWhenSwiming.enabled && (!this.getLevel().andromedaLevelConfiguration().entity.player.mining.disableSpeedReductionWhenSwiming.usePermission || this.getBukkitEntity().hasPermission("andromeda.mining.bypass-swiming-reduction"))) { // Andromeda
+             f /= 5.0F;
+         }
+ 
+-        if (!this.onGround) {
++        if (!this.onGround && !this.getLevel().andromedaLevelConfiguration().entity.player.mining.disableSpeedReductionWhenFlying.enabled && (!this.getLevel().andromedaLevelConfiguration().entity.player.mining.disableSpeedReductionWhenFlying.usePermission || this.getBukkitEntity().hasPermission("andromeda.mining.bypass-flying-reduction"))) { // Andromeda
+             f /= 5.0F;
+         }
+ 
++        f += this.miningSpeedAmplifier; // Andromeda
++
+         return f;
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index e1d6dca1bb7406f76cdd06d2a30b10d9f59b2e9d..b5b67bce7797a6d54039525b6d3709e671cc28f3 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -3154,5 +3154,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     public void setModName(net.kyori.adventure.text.Component component) {
+         this.getHandle().connection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(io.papermc.paper.adventure.PaperAdventure.asJsonString(component, java.util.Locale.ROOT))));
+     }
++
++    @Override
++    public float getMiningAmplifier() {
++        return this.getHandle().miningSpeedAmplifier;
++    }
++
++    @Override
++    public void setMiningAmplifier(float amplifier) {
++        this.getHandle().miningSpeedAmplifier = amplifier;
++    }
+     // Andromeda end
+ }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 37c6d03b2941178fef79e4b724ab4fd2f3403a68..a82d03bdc357524863e5d833103a98924bfff92d 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -32,6 +32,27 @@ public class LevelConfigurations extends ConfigurationPart {
+             public boolean checkSpectatorMovedToQuickly = true;
+             public boolean giveAdvancementsReward = true;
+ 
++            public Mining mining;
++            public class Mining extends ConfigurationPart {
++
++                public DisableSpeedReductionWhenFlying disableSpeedReductionWhenFlying;
++                public class DisableSpeedReductionWhenFlying extends ConfigurationPart {
++
++                    public boolean enabled = false;
++                    public boolean usePermission = false;
++
++                }
++
++                public DisableSpeedReductionWhenSwiming disableSpeedReductionWhenSwiming;
++                public class DisableSpeedReductionWhenSwiming extends ConfigurationPart {
++
++                    public boolean enabled = false;
++                    public boolean usePermission = false;
++
++                }
++
++            }
++
+         }
+ 
+         public Vehicle vehicle;
