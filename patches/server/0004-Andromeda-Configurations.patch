@@ -1004,31 +1004,30 @@ index 0000000000000000000000000000000000000000..d73cf6f400ff05a842837c716f2d2c10
 +
 +}
 diff --git a/src/test/java/org/bukkit/support/AbstractTestingBase.java b/src/test/java/org/bukkit/support/AbstractTestingBase.java
-index 084c48ffabac2cd753609add745203e8a55bc09e..2a38c0a24fbaf5bacf0929c4f0f68bf0f8dd769d 100644
+index 084c48ffabac2cd753609add745203e8a55bc09e..04338e9f855e99394b4782bf10e2b6a20678375d 100644
 --- a/src/test/java/org/bukkit/support/AbstractTestingBase.java
 +++ b/src/test/java/org/bukkit/support/AbstractTestingBase.java
 @@ -68,6 +68,7 @@ public abstract class AbstractTestingBase {
          DummyServer.setup();
          DummyEnchantments.setup();
          io.papermc.paper.configuration.GlobalConfigTestingBase.setupGlobalConfigForTest(); // Paper
-+        team.earendel.andromeda.configurations.GlobalConfigTestingBase.setupGlobalConfigForTest(); // Andromeda
++        team.earendel.andromeda.configurations.GlobalConfigurationTestingBase.setupGlobalConfigurationForTest(); // Andromeda
  
          ImmutableList.Builder<Material> builder = ImmutableList.builder();
          for (Material m : Material.values()) {
-diff --git a/src/test/java/team/earendel/andromeda/configurations/GlobalConfigTestingBase.java b/src/test/java/team/earendel/andromeda/configurations/GlobalConfigTestingBase.java
+diff --git a/src/test/java/team/earendel/andromeda/configurations/GlobalConfigurationTestingBase.java b/src/test/java/team/earendel/andromeda/configurations/GlobalConfigurationTestingBase.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..4466606d0714199b7d715fb6cd7a33afde420b58
+index 0000000000000000000000000000000000000000..cd5e590dd671582748ed6ab86eed84fe68d0f7a4
 --- /dev/null
-+++ b/src/test/java/team/earendel/andromeda/configurations/GlobalConfigTestingBase.java
-@@ -0,0 +1,19 @@
++++ b/src/test/java/team/earendel/andromeda/configurations/GlobalConfigurationTestingBase.java
+@@ -0,0 +1,18 @@
 +package team.earendel.andromeda.configurations;
 +
 +import org.spongepowered.configurate.ConfigurationNode;
 +import org.spongepowered.configurate.serialize.SerializationException;
 +
-+public class GlobalConfigTestingBase {
-+    public static void setupGlobalConfigForTest() {
-+        //noinspection ConstantConditions
++public class GlobalConfigurationTestingBase {
++    public static void setupGlobalConfigurationForTest() {
 +        if (GlobalConfiguration.get() == null) {
 +            ConfigurationNode node = AndromedaConfigurations.createForTesting();
 +            try {
