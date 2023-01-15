@@ -34,7 +34,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 diff --git a/src/main/java/net/minecraft/world/entity/vehicle/Boat.java b/src/main/java/net/minecraft/world/entity/vehicle/Boat.java
-index 231c71939982ba4ce9305bc8eb6174ed45102c9f..9e0dd3f1016f9336a544f7665de706fafab437c4 100644
+index 231c71939982ba4ce9305bc8eb6174ed45102c9f..824e7e6924935e46e735169384546caffcc3e769 100644
 --- a/src/main/java/net/minecraft/world/entity/vehicle/Boat.java
 +++ b/src/main/java/net/minecraft/world/entity/vehicle/Boat.java
 @@ -893,13 +893,27 @@ public class Boat extends Entity implements VariantHolder<Boat.Type> {
@@ -62,7 +62,7 @@ index 231c71939982ba4ce9305bc8eb6174ed45102c9f..9e0dd3f1016f9336a544f7665de706fa
              if (onGround) {
                  if (this.fallDistance > 3.0F) {
 -                    if (this.status != Boat.Status.ON_LAND) {
-+                    if (!this.level.andromedaLevelConfiguration().vehicle.boat.breakWhenLand) { // Andromeda - Implement Boat Fall
++                    if (!this.level.andromedaLevelConfiguration().entity.vehicle.boat.breakWhenLand) { // Andromeda - Implement Boat Fall
                          this.resetFallDistance();
                          return;
                      }
@@ -80,7 +80,7 @@ index 231c71939982ba4ce9305bc8eb6174ed45102c9f..9e0dd3f1016f9336a544f7665de706fa
 -                            for (i = 0; i < 2; ++i) {
 -                                this.spawnAtLocation((ItemLike) Items.STICK);
 -                            }
-+                        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS) && this.level.andromedaLevelConfiguration().vehicle.boat.dropItemsWhenBreak) {
++                        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS) && this.level.andromedaLevelConfiguration().entity.vehicle.boat.dropItemsWhenBreak) {
 +                            dropLoots(); // Andromeda - Implement Boat Fall
                          }
                      }
@@ -114,23 +114,30 @@ index a99e2586962952332dd9904ef5bb50a0d3083266..7f4edffdf079da2258bb11deda62a3ae
      public void openCustomInventoryScreen(Player player) {
          player.openMenu(this);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 555fbb4ad5a44218264c2e35f82bc140d0f37f43..bdb7946e201cad99196cb1b0adeb9ee00f0d1de0 100644
+index 4a57c3f65a6d279c3bc9ebe5401dee5ec84ed510..923038418d75c45624e33b8b36776314ec8cf43f 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -36,4 +36,16 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -32,6 +32,17 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         }
+ 
++        public Vehicle vehicle;
++        public class Vehicle extends ConfigurationPart {
++
++            public Boat boat;
++            public class Boat extends ConfigurationPart {
++                public boolean breakWhenLand = false;
++                public boolean dropItemsWhenBreak = false;
++            }
++
++        }
++
+     }
+ 
+     public Structure structure;
+@@ -53,5 +64,4 @@ public class LevelConfigurations extends ConfigurationPart {
          }
  
      }
-+
-+    public Vehicle vehicle;
-+    public class Vehicle extends ConfigurationPart {
-+
-+        public Boat boat;
-+        public class Boat extends ConfigurationPart {
-+            public boolean breakWhenLand = false;
-+            public boolean dropItemsWhenBreak = false;
-+        }
-+
-+    }
-+
+-
  }

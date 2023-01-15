@@ -5,7 +5,7 @@ Subject: [PATCH] Add option to configure snowball & egg knockback
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
-index c7c10c89871a3ee6d21da4bb19407a68759b3ade..1b4cc464ffc0cd245a8398c20ead210520e198e5 100644
+index c7c10c89871a3ee6d21da4bb19407a68759b3ade..693b1e042259a1854864100fcae6fd145b1ebb29 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
 @@ -54,6 +54,12 @@ public class Snowball extends ThrowableItemProjectile {
@@ -13,8 +13,8 @@ index c7c10c89871a3ee6d21da4bb19407a68759b3ade..1b4cc464ffc0cd245a8398c20ead2105
          super.onHitEntity(entityHitResult);
          Entity entity = entityHitResult.getEntity();
 +        // Andromeda start
-+        if (!this.level.andromedaLevelConfiguration().projectile.snowball.knockbackOnlyPlayers || (entity instanceof net.minecraft.server.level.ServerPlayer && !((net.minecraft.server.level.ServerPlayer) entity).getAbilities().invulnerable)) {
-+            entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().normalize().multiply(this.level.andromedaLevelConfiguration().projectile.snowball.knockback, this.level.andromedaLevelConfiguration().projectile.snowball.knockback, this.level.andromedaLevelConfiguration().projectile.snowball.knockback)));
++        if (!this.level.andromedaLevelConfiguration().entity.projectile.snowball.knockbackOnlyPlayers || (entity instanceof net.minecraft.server.level.ServerPlayer && !((net.minecraft.server.level.ServerPlayer) entity).getAbilities().invulnerable)) {
++            entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().normalize().multiply(this.level.andromedaLevelConfiguration().entity.projectile.snowball.knockback, this.level.andromedaLevelConfiguration().entity.projectile.snowball.knockback, this.level.andromedaLevelConfiguration().entity.projectile.snowball.knockback)));
 +            entity.hurtMarked = true;
 +        }
 +        // Andromeda end
@@ -22,7 +22,7 @@ index c7c10c89871a3ee6d21da4bb19407a68759b3ade..1b4cc464ffc0cd245a8398c20ead2105
          entity.hurt(DamageSource.thrown(this, this.getOwner()), (float)i);
      }
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java b/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
-index bdddec9510d84c8940b6116ede389bcac3680ab1..fc02c8edbda1719f219c2cb1d2cd5a3da0d5ea44 100644
+index bdddec9510d84c8940b6116ede389bcac3680ab1..1f474cce53394ad93f37d30f8a330fc255ab3a6a 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
 @@ -46,7 +46,13 @@ public class ThrownEgg extends ThrowableItemProjectile {
@@ -31,40 +31,52 @@ index bdddec9510d84c8940b6116ede389bcac3680ab1..fc02c8edbda1719f219c2cb1d2cd5a3d
          super.onHitEntity(entityHitResult);
 -        entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), 0.0F);
 +        // Andromeda start
-+        if (!this.level.andromedaLevelConfiguration().projectile.egg.knockbackOnlyPlayers || (entityHitResult.getEntity() instanceof ServerPlayer && !((ServerPlayer) entityHitResult.getEntity()).getAbilities().invulnerable)) {
-+            entityHitResult.getEntity().setDeltaMovement(entityHitResult.getEntity().getDeltaMovement().add(this.getDeltaMovement().normalize().multiply(this.level.andromedaLevelConfiguration().projectile.egg.knockback, this.level.andromedaLevelConfiguration().projectile.egg.knockback, this.level.andromedaLevelConfiguration().projectile.egg.knockback)));
++        if (!this.level.andromedaLevelConfiguration().entity.projectile.egg.knockbackOnlyPlayers || (entityHitResult.getEntity() instanceof ServerPlayer && !((ServerPlayer) entityHitResult.getEntity()).getAbilities().invulnerable)) {
++            entityHitResult.getEntity().setDeltaMovement(entityHitResult.getEntity().getDeltaMovement().add(this.getDeltaMovement().normalize().multiply(this.level.andromedaLevelConfiguration().entity.projectile.egg.knockback, this.level.andromedaLevelConfiguration().entity.projectile.egg.knockback, this.level.andromedaLevelConfiguration().entity.projectile.egg.knockback)));
 +            entityHitResult.getEntity().hurtMarked = true;
 +        }
-+        if (!this.level.andromedaLevelConfiguration().projectile.egg.damageOnlyPlayers || entityHitResult.getEntity() instanceof ServerPlayer) entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), this.level.andromedaLevelConfiguration().projectile.egg.damage);
++        if (!this.level.andromedaLevelConfiguration().entity.projectile.egg.damageOnlyPlayers || entityHitResult.getEntity() instanceof ServerPlayer) entityHitResult.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), this.level.andromedaLevelConfiguration().entity.projectile.egg.damage);
 +        // Andromeda end
      }
  
      @Override
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index bdb7946e201cad99196cb1b0adeb9ee00f0d1de0..4fdeb78a6b7d36dd02d1edd8c23619728f578efb 100644
+index 923038418d75c45624e33b8b36776314ec8cf43f..530aabf8e5af9482b37a01b6ac918f44604091bf 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -48,4 +48,23 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -43,6 +43,29 @@ public class LevelConfigurations extends ConfigurationPart {
  
+         }
+ 
++        public Projectile projectile;
++        public class Projectile extends ConfigurationPart {
++
++            public Egg egg;
++            public class Egg extends ConfigurationPart {
++
++                public float knockback = 0.0f;
++                public boolean knockbackOnlyPlayers = false;
++                public float damage = 0.0f;
++                public boolean damageOnlyPlayers = false;
++
++            }
++
++            public Snowball snowball;
++            public class Snowball extends ConfigurationPart {
++
++                public float knockback = 0.0f;
++                public boolean knockbackOnlyPlayers = false;
++
++            }
++
++        }
++
      }
  
-+    public Projectile projectile;
-+    public class Projectile extends ConfigurationPart {
-+
-+        public Egg egg;
-+        public class Egg extends ConfigurationPart {
-+            public float knockback = 0.0f;
-+            public boolean knockbackOnlyPlayers = false;
-+            public float damage = 0.0f;
-+            public boolean damageOnlyPlayers = false;
-+        }
-+
-+        public Snowball snowball;
-+        public class Snowball extends ConfigurationPart {
-+            public float knockback = 0.0f;
-+            public boolean knockbackOnlyPlayers = false;
-+        }
-+
-+    }
+     public Structure structure;
+@@ -64,4 +87,5 @@ public class LevelConfigurations extends ConfigurationPart {
+         }
+ 
+     }
 +
  }

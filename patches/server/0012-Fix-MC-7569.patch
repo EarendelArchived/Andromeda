@@ -5,7 +5,7 @@ Subject: [PATCH] Fix MC-7569
 
 
 diff --git a/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java b/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
-index 986beb0f2400b9f1d2fc3637574ddd01b1f07b8e..0da88060a7ebc5258718783b1d7a2e12d45c213e 100644
+index 986beb0f2400b9f1d2fc3637574ddd01b1f07b8e..128f23e599e93067cb5653667c504780a7d4e626 100644
 --- a/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
 +++ b/src/main/java/net/minecraft/server/rcon/RconConsoleSource.java
 @@ -36,7 +36,7 @@ public class RconConsoleSource implements CommandSource {
@@ -13,7 +13,23 @@ index 986beb0f2400b9f1d2fc3637574ddd01b1f07b8e..0da88060a7ebc5258718783b1d7a2e12
      // CraftBukkit start - Send a String
      public void sendMessage(String message) {
 -        this.buffer.append(message);
-+        this.buffer.append(message + System.lineSeparator()); // Andromeda - Fix MC-7569
++        this.buffer.append(message + (team.earendel.andromeda.configurations.GlobalConfiguration.get().rcon.fixMc7569 ? System.lineSeparator() : null)); // Andromeda - Fix MC-7569
      }
  
      @Override
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index 46a5f7e93b46b304b6e38f86246426ad39719af8..b57595522723763bdb63ec277e812ab2ed02e475 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -34,4 +34,11 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+     }
+ 
++    public Rcon rcon;
++    public class Rcon extends ConfigurationPart {
++
++        public boolean fixMc7569 = true;
++
++    }
++
+ }

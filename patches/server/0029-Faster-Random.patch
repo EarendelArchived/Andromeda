@@ -20,7 +20,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/src/main/java/com/destroystokyo/paper/loottable/PaperLootableInventoryData.java b/src/main/java/com/destroystokyo/paper/loottable/PaperLootableInventoryData.java
-index e5ea9f27a1936ed9e329e74317c91c5df89b9fbd..0f56142b967de425a70106e204b3cdf435554c42 100644
+index e5ea9f27a1936ed9e329e74317c91c5df89b9fbd..0d52b0d3cb601860d3371713b55c27977ccdc4d4 100644
 --- a/src/main/java/com/destroystokyo/paper/loottable/PaperLootableInventoryData.java
 +++ b/src/main/java/com/destroystokyo/paper/loottable/PaperLootableInventoryData.java
 @@ -13,7 +13,7 @@ import java.util.UUID;
@@ -28,25 +28,12 @@ index e5ea9f27a1936ed9e329e74317c91c5df89b9fbd..0f56142b967de425a70106e204b3cdf4
  public class PaperLootableInventoryData {
  
 -    private static final Random RANDOM = new Random();
-+    private static final Random RANDOM = Boolean.getBoolean("Andromeda.UseJavaRandom") ? new Random() : new team.earendel.andromeda.utilities.Random(); // Andromeda
++    private static final Random RANDOM = team.earendel.andromeda.configurations.GlobalConfiguration.get().misc.useFasterRandom ? new team.earendel.andromeda.utilities.Random() : new Random(); // Andromeda
  
      private long lastFill = -1;
      private long nextRefill = -1;
-diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index c5175ba257b51170a5cff984ccb65df73443e1df..5da6b3d53ef3083147dc67c788fce66ec74b48dc 100644
---- a/src/main/java/net/minecraft/server/Main.java
-+++ b/src/main/java/net/minecraft/server/Main.java
-@@ -89,6 +89,8 @@ public class Main {
-                 | $$  | $$| $$ \\  $$| $$$$$$$/| $$  | $$|  $$$$$$/| $$ \\/  | $$| $$$$$$$$| $$$$$$$/| $$  | $$
-                 |__/  |__/|__/  \\__/|_______/ |__/  |__/ \\______/ |__/     |__/|________/|_______/ |__/  |__/
-                 """);
-+        if (!Boolean.getBoolean("Andromeda.UseJavaRandom"))
-+            LOGGER.info("Using faster random instance, if you want to use Java's random, add \"-DAndromeda.UseJavaRandom=true\" to your server startup flags, IN FRONT OF the \"-jar\"");
-         // Andromeda end
-         SharedConstants.tryDetectVersion();
-         /* CraftBukkit start - Replace everything
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index de0eb5a673b873e402cb4290f0c67a8f18660860..84f1cdf6e4f368705547d4c5eb027c84b8f130e4 100644
+index de0eb5a673b873e402cb4290f0c67a8f18660860..9e9b253423ccc8a302975a631f27a35549dd7fe8 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -691,7 +691,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -54,13 +41,13 @@ index de0eb5a673b873e402cb4290f0c67a8f18660860..84f1cdf6e4f368705547d4c5eb027c84
              // CraftBukkit start
              if (world.generator != null) {
 -                Random rand = new Random(world.getSeed());
-+                Random rand = Boolean.getBoolean("Andromeda.UseJavaRandom") ? new Random() : new team.earendel.andromeda.utilities.Random(); // Andromeda
++                Random rand = team.earendel.andromeda.configurations.GlobalConfiguration.get().misc.useFasterRandom ? new team.earendel.andromeda.utilities.Random() : new Random(); // Andromeda
 +                rand.setSeed(world.getSeed()); // Andromeda
                  org.bukkit.Location spawn = world.generator.getFixedSpawnLocation(world.getWorld(), rand);
  
                  if (spawn != null) {
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 1d3c9cfdea9b606f47b7783bdf3064adfd796467..37ca8e7772dd6f6a76779ee103b54a3ce55527e1 100644
+index 1d3c9cfdea9b606f47b7783bdf3064adfd796467..0e6b2f1815b1da878a4227c652ea9a45eee3754a 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -49,7 +49,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -68,12 +55,12 @@ index 1d3c9cfdea9b606f47b7783bdf3064adfd796467..37ca8e7772dd6f6a76779ee103b54a3c
      static final Logger LOGGER = LogUtils.getLogger();
      private static final int MAX_TICKS_BEFORE_LOGIN = 600;
 -    private static final RandomSource RANDOM = new org.bukkit.craftbukkit.util.RandomSourceWrapper(new java.util.Random()); // Paper - This is called across threads, make safe
-+    private static final RandomSource RANDOM = new org.bukkit.craftbukkit.util.RandomSourceWrapper(Boolean.getBoolean("Andromeda.UseJavaRandom") ? new java.util.Random() : new team.earendel.andromeda.utilities.Random()); // Paper - This is called across threads, make safe // Andromeda
++    private static final RandomSource RANDOM = new org.bukkit.craftbukkit.util.RandomSourceWrapper(team.earendel.andromeda.configurations.GlobalConfiguration.get().misc.useFasterRandom ? new team.earendel.andromeda.utilities.Random() : new java.util.Random()); // Paper - This is called across threads, make safe // Andromeda
      private final byte[] challenge;
      final MinecraftServer server;
      public final Connection connection;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 58210b0fe8d77d0906da46e25863f2a6b20a1919..41c43c7aa99f2b46ee094a8e1d46262b988f223f 100644
+index 58210b0fe8d77d0906da46e25863f2a6b20a1919..cf802a69ed84d158af92f6b5c72f4cfd908bad37 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -946,7 +946,7 @@ public class LevelChunk extends ChunkAccess {
@@ -81,12 +68,12 @@ index 58210b0fe8d77d0906da46e25863f2a6b20a1919..41c43c7aa99f2b46ee094a8e1d46262b
                  //try (co.aikar.timings.Timing ignored = this.level.timings.chunkLoadPopulate.startTiming()) { // Paper // Purpur
                  this.needsDecoration = false;
 -                java.util.Random random = new java.util.Random();
-+                java.util.Random random = Boolean.getBoolean("Andromeda.UseJavaRandom") ? new java.util.Random() : new team.earendel.andromeda.utilities.Random(); // Andromeda
++                java.util.Random random = team.earendel.andromeda.configurations.GlobalConfiguration.get().misc.useFasterRandom ? new team.earendel.andromeda.utilities.Random() : new java.util.Random(); // Andromeda
                  random.setSeed(this.level.getSeed());
                  long xRand = random.nextLong() / 2L * 2L + 1L;
                  long zRand = random.nextLong() / 2L * 2L + 1L;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
-index dcfe090c269d4cbcc2eb1b6f85392848bb34656c..4f12425c7cdcface7d6730a315d4b9cd0297e745 100644
+index dcfe090c269d4cbcc2eb1b6f85392848bb34656c..ef797d47c6bbc1c1e3ff6c15c04e1df41f727436 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 @@ -109,7 +109,8 @@ public class RegionFile implements AutoCloseable {
@@ -94,13 +81,13 @@ index dcfe090c269d4cbcc2eb1b6f85392848bb34656c..4f12425c7cdcface7d6730a315d4b9cd
  
      private void backupRegionFile() {
 -        Path backup = this.regionFile.getParent().resolve(this.regionFile.getFileName() + "." + new java.util.Random().nextLong() + ".backup");
-+        java.util.Random rand = Boolean.getBoolean("Andromeda.UseJavaRandom") ? new java.util.Random() : new team.earendel.andromeda.utilities.Random(); // Andromeda
++        java.util.Random rand = team.earendel.andromeda.configurations.GlobalConfiguration.get().misc.useFasterRandom ? new team.earendel.andromeda.utilities.Random() : new java.util.Random(); // Andromeda
 +        Path backup = this.regionFile.getParent().resolve(this.regionFile.getFileName() + "." + rand.nextLong() + ".backup"); // Andromeda
          this.backupRegionFile(backup);
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 804f81c478c09a5b6d0b10a78dc2b7ae0b88cc18..d06d2733e52a67a693f4fbea267fad61bc39d1bd 100644
+index 804f81c478c09a5b6d0b10a78dc2b7ae0b88cc18..7b526b74b5c78accb1f772de67a0bf9cae4725d0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -226,7 +226,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -108,12 +95,12 @@ index 804f81c478c09a5b6d0b10a78dc2b7ae0b88cc18..d06d2733e52a67a693f4fbea267fad61
      // Paper end
  
 -    private static final Random rand = new Random();
-+    private static final Random rand = Boolean.getBoolean("Andromeda.UseJavaRandom") ? new Random() : new team.earendel.andromeda.utilities.Random(); // Andromeda
++    private static final Random rand = team.earendel.andromeda.configurations.GlobalConfiguration.get().misc.useFasterRandom ? new team.earendel.andromeda.utilities.Random() : new Random(); // Andromeda
  
      public CraftWorld(ServerLevel world, ChunkGenerator gen, BiomeProvider biomeProvider, Environment env) {
          this.world = world;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java
-index d1c7ab67cba881d96b7a5e9220130d86d0514304..3c50a354dcf05703dac58825e5338082257d1a92 100644
+index d1c7ab67cba881d96b7a5e9220130d86d0514304..8f47a3ec7440c978cb15a614e48a71694e22791e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftFirework.java
 @@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
@@ -121,12 +108,12 @@ index d1c7ab67cba881d96b7a5e9220130d86d0514304..3c50a354dcf05703dac58825e5338082
  public class CraftFirework extends CraftProjectile implements Firework {
  
 -    private final Random random = new Random();
-+    private final Random random = Boolean.getBoolean("Andromeda.UseJavaRandom") ? new Random() : new team.earendel.andromeda.utilities.Random(); // Andromeda
++    private final Random random = team.earendel.andromeda.configurations.GlobalConfiguration.get().misc.useFasterRandom ? new team.earendel.andromeda.utilities.Random(): new Random(); // Andromeda
      //private CraftItemStack item; // Paper - Remove usage, not accurate representation of current item.
  
      public CraftFirework(CraftServer server, FireworkRocketEntity entity) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java b/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
-index a9673a804d597599c35c83f4f245510c83005328..e770379a00138f505fe5a3c2dd1f1893b469427f 100644
+index a9673a804d597599c35c83f4f245510c83005328..25060824e248b268a06f6fd275c533ecb1014008 100644
 --- a/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
 +++ b/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
 @@ -48,7 +48,7 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
@@ -134,10 +121,26 @@ index a9673a804d597599c35c83f4f245510c83005328..e770379a00138f505fe5a3c2dd1f1893
      private final ChunkGenerator generator;
      private final ServerLevel world;
 -    private final Random random = new Random();
-+    private final Random random = Boolean.getBoolean("Andromeda.UseJavaRandom") ? new Random() : new team.earendel.andromeda.utilities.Random(); // Andromeda
++    private final Random random = team.earendel.andromeda.configurations.GlobalConfiguration.get().misc.useFasterRandom ? new team.earendel.andromeda.utilities.Random() : new Random(); // Andromeda
      private boolean newApi;
      private boolean implementBaseHeight = true;
  
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index 7e8ad027cfccf21dca6001040b6b01afcb94dee5..66c651e8d2cd35c178bcb126ec50a6d8e3a6e503 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -99,4 +99,11 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+     }
+ 
++    public Misc misc;
++    public class Misc extends ConfigurationPart {
++
++        public boolean useFasterRandom = true;
++
++    }
++
+ }
 diff --git a/src/main/java/team/earendel/andromeda/utilities/Random.java b/src/main/java/team/earendel/andromeda/utilities/Random.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..81d919396e0091ac8afca4ae1e3c38d0cc2dc764

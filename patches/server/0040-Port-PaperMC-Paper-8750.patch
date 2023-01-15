@@ -23,23 +23,20 @@ index 7acf5ab9339e0134819aab5f270e99e927cc7a62..9a5d99b8a2627fd6eaa6322c84b8274c
          }
          this.checkTakeAchievements(stack);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 03b9fe1c0e0f8a4e52502e39153ce9cac316613e..7e07776405c5c2a5f8be6a993d63f795e2b41909 100644
+index b798c5ab5ca6acd867eecaa6df912bb8ab71dbca..ea27b2c20d29a69c0df9f3b03b8dc002cc26c817 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -106,4 +106,16 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -145,6 +145,13 @@ public class LevelConfigurations extends ConfigurationPart {
  
-     }
+         }
  
-+    public PaperPullRequestsPort paperPullRequestsPort;
-+    public class PaperPullRequestsPort extends ConfigurationPart {
-+
 +        public MakePlayerPurchaseEventRespectResultItem makePlayerPurchaseEventRespectResultItem;
 +        public class MakePlayerPurchaseEventRespectResultItem extends ConfigurationPart {
 +
-+            public boolean enabled = false;
++            public boolean enabled = true;
 +
 +        }
 +
-+    }
-+
+     }
+ 
  }

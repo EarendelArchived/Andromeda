@@ -5,10 +5,10 @@ Subject: [PATCH] Port PaperMC/Paper#8754
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
-index 830326496e2f961682daadc7a7859247042b4cdd..ed9c7373a29b9d860292c0844f0f4308e92d825a 100644
+index 830326496e2f961682daadc7a7859247042b4cdd..7938e2a0ad643d2af303768d031d0bff73c7b640 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
-@@ -85,11 +85,15 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
+@@ -85,11 +85,19 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
                          result = blockCookEvent.getResult();
                          itemstack1 = CraftItemStack.asNMSCopy(result);
                          // CraftBukkit end
@@ -18,10 +18,14 @@ index 830326496e2f961682daadc7a7859247042b4cdd..ed9c7373a29b9d860292c0844f0f4308
 -                    world.addFreshEntity(droppedItem);
 -                    // Paper end
 +                        // Andromeda start - Port PaperMC/Paper#8754
-+                        while (!itemstack1.isEmpty()) {
++                        boolean flag1 = world.andromedaLevelConfiguration().paperPullRequestsPort.fixCampfireRecipesNotAlwaysOutputtingFullResult.enabled;
++                        while (!itemstack1.isEmpty() || !flag1) {
 +                            // Paper start
 +                            net.minecraft.world.entity.item.ItemEntity droppedItem = new net.minecraft.world.entity.item.ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, itemstack1.split(world.random.nextInt(21) + 10));
-+                            droppedItem.setDeltaMovement(world.random.triangle(0.0D, 0.11485000171139836D), world.random.triangle(0.2D, 0.11485000171139836D), world.random.triangle(0.0D, 0.11485000171139836D));
++                            if (flag1)
++                                droppedItem.setDeltaMovement(world.random.triangle(0.0D, 0.11485000171139836D), world.random.triangle(0.2D, 0.11485000171139836D), world.random.triangle(0.0D, 0.11485000171139836D));
++                            else
++                                droppedItem.setDeltaMovement(world.random.nextGaussian() * 0.05D, world.random.nextGaussian() * 0.05D + 0.2D, world.random.nextGaussian() * 0.05D);
 +                            world.addFreshEntity(droppedItem);
 +                            // Paper end
 +                        }
@@ -29,3 +33,24 @@ index 830326496e2f961682daadc7a7859247042b4cdd..ed9c7373a29b9d860292c0844f0f4308
                          campfire.items.set(i, ItemStack.EMPTY);
                          world.sendBlockUpdated(pos, state, state, 3);
                          world.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index b54295ec5d3130a430d657e9b43eff44053e42a8..b798c5ab5ca6acd867eecaa6df912bb8ab71dbca 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -135,4 +135,16 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+     }
+ 
++    public PaperPullRequestsPort paperPullRequestsPort;
++    public class PaperPullRequestsPort extends ConfigurationPart {
++
++        public FixCampfireRecipesNotAlwaysOutputtingFullResult fixCampfireRecipesNotAlwaysOutputtingFullResult;
++        public class FixCampfireRecipesNotAlwaysOutputtingFullResult extends ConfigurationPart {
++
++            public boolean enabled = true;
++
++        }
++
++    }
++
+ }

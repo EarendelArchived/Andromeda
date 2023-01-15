@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 0ec4cb1c721b85b25ba0f4eac48e8d13113441f0..c623f36c7628ebfcff0915d7c34757a39048475e 100644
+index 241bd6cb5f5f37e66a11a4be5c71240eb0f1c72d..5f58832e843f550cb54028851c5b8fe35f1aeda6 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -399,6 +399,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -49,7 +49,7 @@ index 0ec4cb1c721b85b25ba0f4eac48e8d13113441f0..c623f36c7628ebfcff0915d7c34757a3
          // Paper start - detailed watchdog information
          io.papermc.paper.util.TickThread.ensureTickThread("Cannot move an entity off-main");
          synchronized (this.posLock) {
-@@ -3847,6 +3854,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3846,6 +3853,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public final void setBoundingBox(AABB boundingBox) {
@@ -58,16 +58,18 @@ index 0ec4cb1c721b85b25ba0f4eac48e8d13113441f0..c623f36c7628ebfcff0915d7c34757a3
          double minX = boundingBox.minX,
                  minY = boundingBox.minY,
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 35acac8431a1c8ef1b7b4825a5e06c93b72bb7fe..d33ecd9c0e79c2063c1f1bac2faec41a676d0373 100644
+index 805c816077a591431188d60305a7579f0f04b339..ea64a34897f598823e9535469f7737c1c662955a 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -74,4 +74,9 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -101,4 +101,11 @@ public class LevelConfigurations extends ConfigurationPart {
  
      }
  
 +    public VeryManyPlayers veryManyPlayers;
 +    public class VeryManyPlayers extends ConfigurationPart {
-+        public boolean skipEntityMoveIfNoMovement = true;
++
++        public boolean skipEntityMoveIfNoMovement = false;
++
 +    }
 +
  }

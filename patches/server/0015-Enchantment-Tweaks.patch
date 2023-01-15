@@ -58,32 +58,38 @@ index a38194accb2d0ba204ab2f81b4be6031842faf9c..963ac085c994db466f1d05ecf295d0b6
              }
          } else {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 5fae009c978110663281234286ba05200587fbcf..918f5d9649971e2d595e598afad526758d693f1b 100644
+index b57595522723763bdb63ec277e812ab2ed02e475..77d1199ccb5e31a8600cc23b80eab3876c6d2257 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -29,4 +29,25 @@ public class GlobalConfiguration extends ConfigurationPart {
-     public class ConsoleLogs extends ConfigurationPart {
-         public boolean offlineWarnings = true;
+@@ -41,4 +41,31 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
      }
-+
+ 
 +    public Enchantments enchantments;
 +    public class Enchantments extends ConfigurationPart {
++
 +        public boolean mixableWeaponEnchantments = false;
 +        public boolean mixableProtectionEnchantments = false;
 +
 +        public Trident trident;
 +        public class Trident extends ConfigurationPart {
++
 +            public boolean acceptWeaponEnchantments = false;
 +            public boolean acceptFireAspect = false;
 +            public boolean acceptKnockback = false;
 +            public boolean acceptLooting = false;
++
 +        }
 +
 +        public Axe axe;
 +        public class Axe extends ConfigurationPart {
++
 +            public boolean acceptFireAspect = false;
 +            public boolean acceptKnockback = false;
 +            public boolean acceptLooting = false;
++
 +        }
++
 +    }
++
  }

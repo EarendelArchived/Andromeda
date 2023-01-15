@@ -18,7 +18,7 @@ index 309fe1162db195c7c3c94d785d6aa2700e42b08a..a7aec3c9c810b34cd20d883deaa5ffbf
      }
  
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index a93e7140f8b7b1f93dfb4e275534e5ac7ab54a3e..88e675eb3e79b8f82cb7b40998010f2b209ed5fd 100644
+index f0a1bd3faac7e7fc8570bee9e4310f420277eaad..0b7f19db743be9a7a25fab835a084eb25c3ff3eb 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -1417,7 +1417,7 @@ public abstract class PlayerList {
@@ -31,14 +31,14 @@ index a93e7140f8b7b1f93dfb4e275534e5ac7ab54a3e..88e675eb3e79b8f82cb7b40998010f2b
          this.server.logChatMessage((unsignedFunction == null ? Component.literal(message.signedContent()) : unsignedFunction.apply(this.server.console)), params, flag ? null : "Not Secure"); // Paper
          OutgoingChatMessage outgoingchatmessage = OutgoingChatMessage.create(message);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 15e80e4276e02a84fcce1b93586d522f2b993684..f06386dd5d4af462866f02141820200449d28d88 100644
+index 084d925df3339dbed19a45d200aa30b8f916f45e..93ee9ea7160b1a2b219617505556d4b3c0361f1b 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -30,6 +30,7 @@ public class GlobalConfiguration extends ConfigurationPart {
-     public class ConsoleLogs extends ConfigurationPart {
+@@ -33,6 +33,7 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
          public boolean offlineWarnings = true;
          public boolean rootUserWarnings = true;
 +        public boolean notSecureChatMarker = true;
+ 
      }
  
-     public Enchantments enchantments;

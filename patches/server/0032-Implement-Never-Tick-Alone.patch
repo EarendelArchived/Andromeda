@@ -7,7 +7,7 @@ Original: Thor12022
 Copyright (C) 2023 Thor12022
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 84f1cdf6e4f368705547d4c5eb027c84b8f130e4..60c43441849862f3b0d25c546d0e03c55c5d9e3a 100644
+index 9e9b253423ccc8a302975a631f27a35549dd7fe8..d85cd2019904c6cc419d708ea4eba8188dcf64f7 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1122,6 +1122,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -48,7 +48,7 @@ index 84f1cdf6e4f368705547d4c5eb027c84b8f130e4..60c43441849862f3b0d25c546d0e03c5
                  //this.profiler.pop(); // Purpur
                  //this.endMetricsRecordingTick(); // Purpur
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 86eb638e04769bb46848b279a8704bf141e717ab..0b7ebce9d2a627b6035c5364399a3219e5c3fefa 100644
+index 7d07cd021525ede9768ad416a283563e5547c16f..2339f705f1990fe6a45fccb53a42e22f058ed56c 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -646,6 +646,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -65,14 +65,13 @@ index 86eb638e04769bb46848b279a8704bf141e717ab..0b7ebce9d2a627b6035c5364399a3219
          this.playersAffectingSpawning.clear();
          for (ServerPlayer player : this.players) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index d07f7fab525af0f0211e4f47eb1964152db37d40..bbe6d516b6633d82d788c2cd0123cf438979e08b 100644
+index 7c0e76c199bc577fd55f5c33f6cd28e11028abde..d488d370f8afa8076b0363b91b84c4e9a69b0a1e 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -78,4 +78,17 @@ public class GlobalConfiguration extends ConfigurationPart {
-         }
+@@ -107,4 +107,18 @@ public class GlobalConfiguration extends ConfigurationPart {
  
      }
-+
+ 
 +    public NeverTickAlone neverTickAlone;
 +    public class NeverTickAlone extends ConfigurationPart {
 +
@@ -80,17 +79,19 @@ index d07f7fab525af0f0211e4f47eb1964152db37d40..bbe6d516b6633d82d788c2cd0123cf43
 +
 +        public UnsupportedSettings unsupportedSettings;
 +        public class UnsupportedSettings extends ConfigurationPart {
++
 +            public boolean doNotTick = false;
++
 +        }
 +
 +    }
 +
  }
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 2b54ac77a949284cd9ce135c71e0b5c7022d6f4c..6fd38f24f8cb05d5a8cd53101077598c135b8402 100644
+index 3b234ea84d27dc1fc5421c3cf7d95c6605ba2e59..3b11421c0ffdb79b158b3589fbefae1ed4ee1083 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -93,4 +93,16 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -122,4 +122,16 @@ public class LevelConfigurations extends ConfigurationPart {
  
      }
  

@@ -59,21 +59,26 @@ index f7f085a2dc5dc8d09bc665a371afac04b0e118fc..1d3c9cfdea9b606f47b7783bdf3064ad
          // Paper start - validate usernames
          if (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode() && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.performUsernameValidation) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index e72daafdacf59f789e5f409d4006c2354e047740..5fae009c978110663281234286ba05200587fbcf 100644
+index a2336a2e13e1dfa9435dcf96879110425e000748..46a5f7e93b46b304b6e38f86246426ad39719af8 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -19,4 +19,14 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -19,4 +19,19 @@ public class GlobalConfiguration extends ConfigurationPart {
  
      @Setting(Configuration.VERSION_FIELD)
      public int version = CURRENT_VERSION;
 +
 +    public RubiaPorts rubiaPorts;
 +    public class RubiaPorts extends ConfigurationPart {
++
 +        public boolean allowAnyUsername = false;
++
 +    }
 +
 +    public ConsoleLogs consoleLogs;
 +    public class ConsoleLogs extends ConfigurationPart {
++
 +        public boolean offlineWarnings = true;
++
 +    }
++
  }

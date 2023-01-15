@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 0011 - Swaps the predicate order of collision
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 1ae7ef3d94d4d3d8413a5419eeb9fadad89d2f8d..0ec4cb1c721b85b25ba0f4eac48e8d13113441f0 100644
+index 1ae7ef3d94d4d3d8413a5419eeb9fadad89d2f8d..241bd6cb5f5f37e66a11a4be5c71240eb0f1c72d 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -1986,8 +1986,9 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -37,10 +37,20 @@ index 1ae7ef3d94d4d3d8413a5419eeb9fadad89d2f8d..0ec4cb1c721b85b25ba0f4eac48e8d13
 +        if (entity.noPhysics && this.noPhysics) return; // Andromeda - Akarin tweaks
          if (!this.isPassengerOfSameVehicle(entity)) {
 -            if (!entity.noPhysics && !this.noPhysics) {
-+            if (true) { // Andromeda - Akarin tweaks
++            //if (!entity.noPhysics && !this.noPhysics) { // Andromeda - Akarin tweaks
                  if (this.level.paperConfig().collisions.onlyPlayersCollide && !(entity instanceof ServerPlayer || this instanceof ServerPlayer)) return; // Paper
                  double d0 = entity.getX() - this.getX();
                  double d1 = entity.getZ() - this.getZ();
+@@ -2015,8 +2016,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+                         entity.push(d0, 0.0D, d1);
+                     }
+                 }
+-
+-            }
++            //} // Andromeda - Akarin tweaks
+         }
+     }
+ 
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity.java
 index 13e749a3c40f0b2cc002f13675a9a56eedbefdac..86a04821f326f026337d70d02c90a1fdb67677a3 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity.java
@@ -54,25 +64,26 @@ index 13e749a3c40f0b2cc002f13675a9a56eedbefdac..86a04821f326f026337d70d02c90a1fd
              LootTable lootTable = this.level.getServer().getLootTables().get(this.lootTable);
              if (player instanceof ServerPlayer) {
 diff --git a/src/main/java/net/minecraft/world/level/storage/PlayerDataStorage.java b/src/main/java/net/minecraft/world/level/storage/PlayerDataStorage.java
-index 601f8099f74e81c17600566b3c9b7a6dd39c9bcb..b4422d32ddd12b3869ae3fcf59adcaaa98676aa7 100644
+index 601f8099f74e81c17600566b3c9b7a6dd39c9bcb..0aeb372e883ad2bc70683936db5c77deac0dc38d 100644
 --- a/src/main/java/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/src/main/java/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -56,7 +56,8 @@ public class PlayerDataStorage {
+@@ -56,8 +56,8 @@ public class PlayerDataStorage {
              File file = new File(this.playerDir, player.getStringUUID() + ".dat");
              // Spigot Start
              boolean usingWrongFile = false;
 -            if ( org.bukkit.Bukkit.getOnlineMode() && !file.exists() ) // Paper - Check online mode first
-+            boolean normalFile = file.exists() && file.isFile();
-+            if ( org.bukkit.Bukkit.getOnlineMode() && !normalFile ) // Paper - Check online mode first // Andromeda - Ensures normal file
-             {
+-            {
++            boolean normalFile = file.exists() && file.isFile(); // Andromeda - Akarin Tweaks
++            if (org.bukkit.Bukkit.getOnlineMode() && !normalFile) { // Paper - Check online mode first // Andromeda - Akarin Tweaks (Ensures normal file)
                  file = new File( this.playerDir, java.util.UUID.nameUUIDFromBytes( ( "OfflinePlayer:" + player.getScoreboardName() ).getBytes( "UTF-8" ) ).toString() + ".dat");
                  if ( file.exists() )
-@@ -67,7 +68,7 @@ public class PlayerDataStorage {
+                 {
+@@ -67,7 +67,7 @@ public class PlayerDataStorage {
              }
              // Spigot End
  
 -            if (file.exists() && file.isFile()) {
-+            if (normalFile) { // Andromeda - Avoid double I/O operation
++            if (normalFile) { // Andromeda - Akarin Tweaks (Avoid double I/O operation)
                  nbttagcompound = NbtIo.readCompressed(file);
              }
              // Spigot Start

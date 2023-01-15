@@ -5,7 +5,7 @@ Subject: [PATCH] A Cursed Option
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index dcf62e3422144a0a70006b942a5c7ea1d4af0b43..343eec9490b6f46341c376f97519229ed945e1fe 100644
+index d85cd2019904c6cc419d708ea4eba8188dcf64f7..a0b0544594643c72643cbbc3c41f75873c25275e 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1334,6 +1334,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -17,26 +17,25 @@ index dcf62e3422144a0a70006b942a5c7ea1d4af0b43..343eec9490b6f46341c376f97519229e
          this.managedBlock(() -> {
              return !this.canSleepForTickNoOversleep(); // Paper - move oversleep into full server tick
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 14b7caae01cd64c12b0df4de10f21ea7c085042c..2adf2403d9bb21e82eaa26c677582576a4332371 100644
+index d488d370f8afa8076b0363b91b84c4e9a69b0a1e..02816f11db66cdd6d5cbbce5e65fe8cc213d8897 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -91,4 +91,19 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -105,6 +105,18 @@ public class GlobalConfiguration extends ConfigurationPart {
  
-     }
+         public boolean useFasterRandom = true;
  
-+    public Misc misc;
-+    public class Misc extends ConfigurationPart {
-+
 +        public UnsupportedSettings unsupportedSettings;
 +        public class UnsupportedSettings extends ConfigurationPart {
 +
 +            public Cursed cursed;
 +            public class Cursed extends ConfigurationPart {
++
 +                public boolean disableTPSLimit = false;
++
 +            }
 +
 +        }
 +
-+    }
-+
- }
+     }
+ 
+     public NeverTickAlone neverTickAlone;

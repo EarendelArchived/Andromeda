@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@outlook.com>
 Date: Mon, 26 Dec 2022 00:11:11 +0900
-Subject: [PATCH] Unlock snow layer limit
+Subject: [PATCH] Add configuration to unlock snow layer limit
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 8ac8651273f1e4683512c7beab4a2029131c60ae..86eb638e04769bb46848b279a8704bf141e717ab 100644
+index 8ac8651273f1e4683512c7beab4a2029131c60ae..7d07cd021525ede9768ad416a283563e5547c16f 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -926,11 +926,13 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -14,12 +14,33 @@ index 8ac8651273f1e4683512c7beab4a2029131c60ae..86eb638e04769bb46848b279a8704bf1
                          l = (Integer) iblockdata.getValue(SnowLayerBlock.LAYERS);
 -                        if (l < Math.min(i1, 8)) {
 +                        if (l < i1) { // Andromeda - unlock snow layer limit
-+                            if (l < 8) { // Andromeda
++                            if (l < (this.andromedaLevelConfiguration().world.gameMechanics.unlockSnowLayerLimit ? 7 : 8)) { // Andromeda
                              BlockState iblockdata1 = (BlockState) iblockdata.setValue(SnowLayerBlock.LAYERS, l + 1);
  
                              Block.pushEntitiesUp(iblockdata, iblockdata1, this, blockposition);
                              org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this, blockposition, iblockdata1, null); // CraftBukkit
-+                            } else this.setBlock(blockposition, Blocks.SNOW_BLOCK.defaultBlockState(), 3); // Andromeda
++                            } else if (this.andromedaLevelConfiguration().world.gameMechanics.unlockSnowLayerLimit) this.setBlock(blockposition, Blocks.SNOW_BLOCK.defaultBlockState(), 3); // Andromeda
                          }
                      } else {
                          org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this, blockposition, Blocks.SNOW.defaultBlockState(), null); // CraftBukkit
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 530aabf8e5af9482b37a01b6ac918f44604091bf..4268e02e77e9a4892a04d138adedebb92de88912 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -88,4 +88,16 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+     }
+ 
++    public World world;
++    public class World extends ConfigurationPart {
++
++        public GameMechanics gameMechanics;
++        public class GameMechanics extends ConfigurationPart {
++
++            public boolean unlockSnowLayerLimit = false;
++
++        }
++
++    }
++
+ }

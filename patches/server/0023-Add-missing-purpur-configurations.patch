@@ -165,26 +165,10 @@ index 17df2b09542f67cdd1d83f795d9b2aad9ccd4e05..faee4b5fd9906511a00cee171c5efc2a
      public Packet<ClientGamePacketListener> getAddEntityPacket() {
          return new ClientboundAddEntityPacket(this, this.hasPose(Pose.EMERGING) ? 1 : 0);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..96a8e6d4459ad5654aadcd8e9f71c1997b2d68e9 100644
+index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..236fc1bedc1ec6eba9a45f2c12a522f92e74564e 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -9,7 +9,6 @@ import net.minecraft.world.entity.EntityType;
- import net.minecraft.world.item.DyeColor;
- import net.minecraft.world.item.Item;
- import net.minecraft.world.item.Items;
--import net.minecraft.world.level.Explosion;
- import net.minecraft.world.level.block.Block;
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.state.properties.Tilt;
-@@ -25,7 +24,6 @@ import org.bukkit.configuration.ConfigurationSection;
- import java.util.ArrayList;
- import java.util.HashMap;
- import java.util.List;
--import java.util.Locale;
- import java.util.Map;
- import java.util.function.Predicate;
- import java.util.logging.Level;
-@@ -1074,11 +1072,21 @@ public class PurpurWorldConfig {
+@@ -1074,11 +1074,21 @@ public class PurpurWorldConfig {
      public boolean allayRidable = false;
      public boolean allayRidableInWater = false;
      public boolean allayControllable = true;
@@ -206,7 +190,7 @@ index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..96a8e6d4459ad5654aadcd8e9f71c199
          allayRespectNBT.clear();
          getList("mobs.allay.respect-nbt", new ArrayList<>()).forEach(key -> allayRespectNBT.add(key.toString()));
      }
-@@ -1179,8 +1187,24 @@ public class PurpurWorldConfig {
+@@ -1179,8 +1189,24 @@ public class PurpurWorldConfig {
          blazeAlwaysDropExp = getBoolean("mobs.blaze.always-drop-exp", blazeAlwaysDropExp);
      }
  
@@ -231,7 +215,7 @@ index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..96a8e6d4459ad5654aadcd8e9f71c199
          camelBreedingTicks = getInt("mobs.camel.breeding-delay-ticks", camelBreedingTicks);
      }
  
-@@ -1599,12 +1623,22 @@ public class PurpurWorldConfig {
+@@ -1599,12 +1625,22 @@ public class PurpurWorldConfig {
      public boolean frogRidable = false;
      public boolean frogRidableInWater = false;
      public boolean frogControllable = true;
@@ -254,7 +238,7 @@ index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..96a8e6d4459ad5654aadcd8e9f71c199
          frogRidableJumpHeight = (float) getDouble("mobs.frog.ridable-jump-height", frogRidableJumpHeight);
          frogBreedingTicks = getInt("mobs.frog.breeding-delay-ticks", frogBreedingTicks);
      }
-@@ -2638,10 +2672,20 @@ public class PurpurWorldConfig {
+@@ -2638,10 +2674,20 @@ public class PurpurWorldConfig {
      public boolean tadpoleRidable = false;
      public boolean tadpoleRidableInWater = false;
      public boolean tadpoleControllable = true;
@@ -275,7 +259,7 @@ index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..96a8e6d4459ad5654aadcd8e9f71c199
      }
  
      public boolean traderLlamaRidable = false;
-@@ -2848,10 +2892,20 @@ public class PurpurWorldConfig {
+@@ -2848,10 +2894,20 @@ public class PurpurWorldConfig {
      public boolean wardenRidable = false;
      public boolean wardenRidableInWater = false;
      public boolean wardenControllable = true;

@@ -21,28 +21,24 @@ index c029d6eb7893d41432e3de15fbf94768ef595d3f..fc0eebda32fe193c725252171c5277c5
  
      public static AttributeSupplier.Builder createAttributes() {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 9207f0db9ef54b3c075df60dc32097bbfa34649b..26ba5ffb5f5cbf6c8fd1345f941fccd956c86013 100644
+index 6adead94485ad859f8566be56f0e5dc4fbe70ef7..81530fbe101b54f65afa303b781d3bb1169bcd7c 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -125,4 +125,21 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -68,6 +68,17 @@ public class LevelConfigurations extends ConfigurationPart {
  
-     }
+         }
  
-+    public Entity entity;
-+    public class Entity extends ConfigurationPart {
-+
 +        public Monster monster;
 +        public class Monster extends ConfigurationPart {
 +
 +            public EnderMan enderMan;
++
 +            public class EnderMan extends ConfigurationPart {
-+
 +                public boolean affectUniversalAnger = false;
-+
 +            }
 +
 +        }
 +
-+    }
-+
- }
+     }
+ 
+     public Structure structure;

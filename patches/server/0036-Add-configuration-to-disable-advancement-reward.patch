@@ -5,7 +5,7 @@ Subject: [PATCH] Add configuration to disable advancement reward
 
 
 diff --git a/src/main/java/net/minecraft/advancements/AdvancementRewards.java b/src/main/java/net/minecraft/advancements/AdvancementRewards.java
-index ca24b2373dfdcd887eacfdd5c4299e6dd61f63f7..e3921fac9a16a0da17ab79508c3dc6a2b8c0e881 100644
+index ca24b2373dfdcd887eacfdd5c4299e6dd61f63f7..11b8531f996b32cd5c5797889d815904103bd33b 100644
 --- a/src/main/java/net/minecraft/advancements/AdvancementRewards.java
 +++ b/src/main/java/net/minecraft/advancements/AdvancementRewards.java
 @@ -42,7 +42,7 @@ public class AdvancementRewards {
@@ -13,19 +13,19 @@ index ca24b2373dfdcd887eacfdd5c4299e6dd61f63f7..e3921fac9a16a0da17ab79508c3dc6a2
  
      public void grant(ServerPlayer player) {
 -        player.giveExperiencePoints(this.experience);
-+        if (player.getLevel().andromedaLevelConfiguration().player.giveAdvancementsReward) player.giveExperiencePoints(this.experience); // Andromeda
++        if (player.getLevel().andromedaLevelConfiguration().entity.player.giveAdvancementsReward) player.giveExperiencePoints(this.experience); // Andromeda
          LootContext lootContext = (new LootContext.Builder(player.getLevel())).withParameter(LootContextParams.THIS_ENTITY, player).withParameter(LootContextParams.ORIGIN, player.position()).withRandom(player.getRandom()).create(LootContextParamSets.ADVANCEMENT_REWARD);
          boolean bl = false;
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 6fd38f24f8cb05d5a8cd53101077598c135b8402..03b9fe1c0e0f8a4e52502e39153ce9cac316613e 100644
+index 3b11421c0ffdb79b158b3589fbefae1ed4ee1083..b54295ec5d3130a430d657e9b43eff44053e42a8 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -71,6 +71,7 @@ public class LevelConfigurations extends ConfigurationPart {
-     public class Player extends ConfigurationPart {
+@@ -30,6 +30,7 @@ public class LevelConfigurations extends ConfigurationPart {
  
-         public boolean checkSpectatorMovedToQuickly = true;
-+        public boolean giveAdvancementsReward = true;
+             public boolean useBypassReducedInfoPermission = false;
+             public boolean checkSpectatorMovedToQuickly = true;
++            public boolean giveAdvancementsReward = true;
  
-     }
+         }
  
