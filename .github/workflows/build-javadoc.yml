@@ -23,6 +23,7 @@ concurrency:
 jobs:
   # Build job
   build:
+    if: "!startsWith(github.event.commits[0].message, '[CI-Skip]')"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

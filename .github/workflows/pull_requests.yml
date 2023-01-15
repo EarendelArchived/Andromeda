@@ -19,17 +19,11 @@ jobs:
         java: ['temurin']
         os: [ubuntu-20.04]
 
-    if: github.event.label.name == 'build'
+    if: github.event.label.name == 'build' && "!startsWith(github.event.commits[0].message, '[CI-Skip]')"
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout action
         uses: actions/checkout@v3
-      
-      - name: Checkout pages
-        uses: actions/checkout@v3
-        with:
-          path: javadoc
-          ref: gh-pages
 
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
@@ -56,11 +50,11 @@ jobs:
 
       - name: Create Mojmap Jar
         run: ./gradlew createMojmapPaperclipJar --stacktrace
-        
+
       - name: Update Javadoc
         run: |
           ./gradlew Andromeda-API:javadoc
-        
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:

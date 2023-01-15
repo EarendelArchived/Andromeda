@@ -1,4 +1,5 @@
 name: Build Andromeda
+
 on:
   push:
     branches: [ "ver/*", "feat/*", "dev/*", "expr/*" ]
@@ -24,7 +25,7 @@ jobs:
     steps:
       - name: Checkout action
         uses: actions/checkout@v3
-      
+
       - name: Checkout pages
         uses: actions/checkout@v3
         with:
@@ -57,24 +58,23 @@ jobs:
 
       - name: Create Mojmap Jar
         run: ./gradlew createMojmapPaperclipJar --stacktrace
-        
+
       - name: Update Javadoc
         continue-on-error: true
         if: github.ref_name == env.branch
         run: |
-          ./gradlew Andromeda-API:javadoc
           (cd Andromeda-API/build/docs/javadoc && tar c .) | (cd javadoc && tar xf -)
           cd javadoc
           git add . && git commit -m "[CI-Skip] Update Javadocs"
           git push
-      
+
       - name: Publish Packages
         if: github.ref_name == env.branch
         run: |
           export GITHUB_USERNAME=${{ env.ORG_NAME }}
           export GITHUB_TOKEN=${{ secrets.GH_PAT }}
           ./gradlew publish --stacktrace
-        
+
       - name: Upload Artifacts
         if: env.debug == 'true' || github.ref_name != env.branch
         uses: actions/upload-artifact@v3
