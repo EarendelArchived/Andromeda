@@ -37,10 +37,10 @@ index 7909ba26bb7a883c74eda1ffd2d3e2bad286bc8b..232f4546ac4af35c4f4b5c10a63578e0
          int i = 0;
          if (this.background != null) {
 diff --git a/src/main/java/net/minecraft/network/FriendlyByteBuf.java b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
-index d9ed6db426dd4613733463ffcf7dc900b7109896..013b5eb18cead10e3407ec28b95b584b6ed0b039 100644
+index 92b30af59cc2e26b0a86721c3cdd88ba3d7b1b97..f44bd7ad773df9f82313cc9350235745e26ef555 100644
 --- a/src/main/java/net/minecraft/network/FriendlyByteBuf.java
 +++ b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
-@@ -654,6 +654,12 @@ public class FriendlyByteBuf extends ByteBuf {
+@@ -657,6 +657,12 @@ public class FriendlyByteBuf extends ByteBuf {
      }
  
      public FriendlyByteBuf writeItem(ItemStack stack) {
@@ -53,7 +53,7 @@ index d9ed6db426dd4613733463ffcf7dc900b7109896..013b5eb18cead10e3407ec28b95b584b
          if (stack.isEmpty() || stack.getItem() == null) { // CraftBukkit - NPE fix itemstack.getItem()
              this.writeBoolean(false);
          } else {
-@@ -691,6 +697,54 @@ public class FriendlyByteBuf extends ByteBuf {
+@@ -694,6 +700,54 @@ public class FriendlyByteBuf extends ByteBuf {
          return this;
      }
  
@@ -108,7 +108,7 @@ index d9ed6db426dd4613733463ffcf7dc900b7109896..013b5eb18cead10e3407ec28b95b584b
      public ItemStack readItem() {
          if (!this.readBoolean()) {
              return ItemStack.EMPTY;
-@@ -699,7 +753,7 @@ public class FriendlyByteBuf extends ByteBuf {
+@@ -702,7 +756,7 @@ public class FriendlyByteBuf extends ByteBuf {
              byte b0 = this.readByte();
              ItemStack itemstack = new ItemStack(item, b0);
  

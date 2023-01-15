@@ -5,14 +5,15 @@ Subject: [PATCH] Port PaperMC/Paper#8418
 
 
 diff --git a/src/main/java/net/minecraft/network/FriendlyByteBuf.java b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
-index 1b271896213f40b007a87ebbfe44e5c774db6994..d9ed6db426dd4613733463ffcf7dc900b7109896 100644
+index 1b271896213f40b007a87ebbfe44e5c774db6994..92b30af59cc2e26b0a86721c3cdd88ba3d7b1b97 100644
 --- a/src/main/java/net/minecraft/network/FriendlyByteBuf.java
 +++ b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
-@@ -96,6 +96,19 @@ public class FriendlyByteBuf extends ByteBuf {
+@@ -96,6 +96,20 @@ public class FriendlyByteBuf extends ByteBuf {
      }
  
      public static int getVarIntSize(int value) {
 +        // Andromeda start - Port PaperMC/Paper#8414
++        if (!team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.useVelocityOptimizeVarInts.enabled) return getVarIntSize_(value);
 +        return VARINT_EXACT_BYTE_LENGTHS[Integer.numberOfLeadingZeros(value)];
 +    }
 +
@@ -28,17 +29,19 @@ index 1b271896213f40b007a87ebbfe44e5c774db6994..d9ed6db426dd4613733463ffcf7dc900
          for (int j = 1; j < 5; ++j) {
              if ((value & -1 << j * 7) == 0) {
                  return j;
-@@ -568,6 +581,17 @@ public class FriendlyByteBuf extends ByteBuf {
+@@ -568,6 +582,19 @@ public class FriendlyByteBuf extends ByteBuf {
      }
  
      public FriendlyByteBuf writeVarInt(int value) {
 +        // Andromeda start - Port PaperMC/Paper#8414
-+        if ((value & (0xFFFFFFFF << 7)) == 0)
++        if (!team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.useVelocityOptimizeVarInts.enabled)
++            return writeVarInt_(value);
++        else if ((value & (0xFFFFFFFF << 7)) == 0)
 +            writeByte(value);
 +        else if ((value & (0xFFFFFFFF << 14)) == 0)
 +            writeShort((value & 0x7F | 0x80) << 8 | (value >>> 7));
 +        else
-+            writeVarInt_(value);
++            return writeVarInt_(value);
 +        return this;
 +    }
 +    public FriendlyByteBuf writeVarInt_(int value) {
@@ -46,3 +49,21 @@ index 1b271896213f40b007a87ebbfe44e5c774db6994..d9ed6db426dd4613733463ffcf7dc900
          while ((value & -128) != 0) {
              this.writeByte(value & 127 | 128);
              value >>>= 7;
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index 10537599d0c634c7d790b28d2c0d8906ea99aa4a..c65e9328c627d57e1da44e3ab1c03a4ee888753f 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -157,6 +157,13 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+         }
+ 
++        public UseVelocityOptimizeVarInts useVelocityOptimizeVarInts;
++        public class UseVelocityOptimizeVarInts extends ConfigurationPart {
++
++            public boolean enabled = true;
++
++        }
++
+     }
+ 
+ }
