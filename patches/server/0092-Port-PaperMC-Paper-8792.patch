@@ -5,29 +5,43 @@ Subject: [PATCH] Port PaperMC/Paper#8792
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 3e5abea2f814a0a364cf87ff4ce1b1718ba2ddac..a84ad9559ad38ccdfb4b85621d41354fdf0c1ede 100644
+index 3e5abea2f814a0a364cf87ff4ce1b1718ba2ddac..67ae3270e477115984fd92c0e80975013f0c7ddd 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-@@ -214,7 +214,21 @@ public final class CraftItemStack extends ItemStack {
+@@ -214,6 +214,23 @@ public final class CraftItemStack extends ItemStack {
          if (this.handle == null) {
              return 0;
          }
--        return net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(CraftEnchantment.getRaw(ench), handle); // Paper
 +
 +        // Andromeda start - Port PaperMC/Paper#8792
-+        ListTag enchantments = this.handle.getEnchantmentTags();
++        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.fixCisCimEnchantmentLevelInconsistency) {
++            ListTag enchantments = this.handle.getEnchantmentTags();
 +
-+        for (int i = 0; i < enchantments.size(); i++) {
-+            CompoundTag tag = enchantments.getCompound(i);
-+            String id = tag.getString(ENCHANTMENTS_ID.NBT);
-+            Enchantment enchantment = Enchantment.getByKey(CraftNamespacedKey.fromStringOrNull(id));
++            for (int i = 0; i < enchantments.size(); i++) {
++                CompoundTag tag = enchantments.getCompound(i);
++                String id = tag.getString(ENCHANTMENTS_ID.NBT);
++                Enchantment enchantment = Enchantment.getByKey(CraftNamespacedKey.fromStringOrNull(id));
 +
-+            if (ench.equals(enchantment))
-+                return 0xffff & tag.getShort(ENCHANTMENTS_LVL.NBT);
-+        }
++                if (ench.equals(enchantment))
++                    return 0xffff & tag.getShort(ENCHANTMENTS_LVL.NBT);
++            }
 +
-+        return 0;
++            return 0;
++        } else
 +        // Andromeda end
+         return net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(CraftEnchantment.getRaw(ench), handle); // Paper
      }
  
-     @Override
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index 3f3ea4cebddc4693cea9f81d7214c37ebcf7d9dd..bab87edfbd2ef2d4453496b441881f92c234471c 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -149,6 +149,8 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+         public boolean cleanUpRemovedTagsAfterDatapackUnload = true;
+ 
++        public boolean fixCisCimEnchantmentLevelInconsistency = true;
++
+     }
+ 
+ }

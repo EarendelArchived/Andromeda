@@ -5,19 +5,21 @@ Subject: [PATCH] Port PaperMC/Paper#8695
 
 
 diff --git a/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java b/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
-index 37e193f57938047c8b886ed7d2816411392f94b4..ebffe1a6d2775c9d5b651b2aac56c233926e8fbe 100644
+index 37e193f57938047c8b886ed7d2816411392f94b4..7431e0592fb903c3f04a938e9a3abf4afb8348e5 100644
 --- a/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
 +++ b/src/main/java/net/minecraft/network/syncher/SynchedEntityData.java
-@@ -153,6 +153,16 @@ public class SynchedEntityData {
+@@ -153,6 +153,18 @@ public class SynchedEntityData {
      }
      // CraftBukkit end
  
 +    // Andromeda start - Port PaperMC/Paper#8695
 +    public <T> void markDirtyIfNotDefault(EntityDataAccessor<T> datawatcherobject) {
-+        DataItem<T> item = this.getItem(datawatcherobject);
-+        if (!item.isSetToDefault()) {
-+            item.setDirty(true);
-+            this.isDirty = true;
++        if (this.entity.level.andromedaLevelConfiguration().paperPullRequestsPort.avoidRespawnDesyncOfPlayerMetadata) {
++            DataItem<T> item = this.getItem(datawatcherobject);
++            if (!item.isSetToDefault()) {
++                item.setDirty(true);
++                this.isDirty = true;
++            }
 +        }
 +    }
 +    // Andromeda end
@@ -26,7 +28,7 @@ index 37e193f57938047c8b886ed7d2816411392f94b4..ebffe1a6d2775c9d5b651b2aac56c233
          return this.isDirty;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index af7e769755d2897226730025aee55287d9537a46..f558998f83462e9c9846ae1d2e0dafbe3af61531 100644
+index af7e769755d2897226730025aee55287d9537a46..4053372a2e1db22770098e78b0c145818eff9bf2 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -1835,11 +1835,14 @@ public class ServerPlayer extends Player {
@@ -44,7 +46,7 @@ index af7e769755d2897226730025aee55287d9537a46..f558998f83462e9c9846ae1d2e0dafbe
              this.portalEntrancePos = oldPlayer.portalEntrancePos;
          } else if (this.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) || oldPlayer.isSpectator()) {
              this.getInventory().replaceWith(oldPlayer.getInventory());
-@@ -1847,11 +1850,12 @@ public class ServerPlayer extends Player {
+@@ -1847,10 +1850,16 @@ public class ServerPlayer extends Player {
              this.totalExperience = oldPlayer.totalExperience;
              this.experienceProgress = oldPlayer.experienceProgress;
              this.setScore(oldPlayer.getScore());
@@ -53,12 +55,15 @@ index af7e769755d2897226730025aee55287d9537a46..f558998f83462e9c9846ae1d2e0dafbe
  
          this.enchantmentSeed = oldPlayer.enchantmentSeed;
          this.enderChestInventory = oldPlayer.enderChestInventory;
--        this.getEntityData().set(ServerPlayer.DATA_PLAYER_MODE_CUSTOMISATION, (Byte) oldPlayer.getEntityData().get(ServerPlayer.DATA_PLAYER_MODE_CUSTOMISATION));
-+        this.getEntityData().markDirtyIfNotDefault(Player.DATA_PLAYER_MODE_CUSTOMISATION); // Andromeda - Port PaperMC/Paper#8695
++        // Andromeda start - Port PaperMC/Paper#8695
++        if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.avoidRespawnDesyncOfPlayerMetadata)
++            this.getEntityData().markDirtyIfNotDefault(Player.DATA_PLAYER_MODE_CUSTOMISATION);
++        else
++        // Andromeda end
+         this.getEntityData().set(ServerPlayer.DATA_PLAYER_MODE_CUSTOMISATION, (Byte) oldPlayer.getEntityData().get(ServerPlayer.DATA_PLAYER_MODE_CUSTOMISATION));
          this.lastSentExp = -1;
          this.lastSentHealth = -1.0F;
-         this.lastSentFood = -1;
-@@ -1859,7 +1863,9 @@ public class ServerPlayer extends Player {
+@@ -1859,7 +1868,9 @@ public class ServerPlayer extends Player {
          this.seenCredits = oldPlayer.seenCredits;
          this.enteredNetherPosition = oldPlayer.enteredNetherPosition;
          this.setShoulderEntityLeft(oldPlayer.getShoulderEntityLeft());
@@ -69,7 +74,7 @@ index af7e769755d2897226730025aee55287d9537a46..f558998f83462e9c9846ae1d2e0dafbe
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 1c5623800923c4f8d2da618bf97b8410ac6fee5a..31f249070453f214a1ce6ddcb6a8b561e8de9735 100644
+index bfee4d75736b91503d3ec8bea57754b574d0c6f2..def4451c1f437b87485d92ab44b0a6d922c50d6f 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -141,8 +141,8 @@ public abstract class Player extends LivingEntity {
@@ -83,3 +88,16 @@ index 1c5623800923c4f8d2da618bf97b8410ac6fee5a..31f249070453f214a1ce6ddcb6a8b561
      public static final EntityDataAccessor<Byte> DATA_PLAYER_MODE_CUSTOMISATION = SynchedEntityData.defineId(Player.class, EntityDataSerializers.BYTE);
      protected static final EntityDataAccessor<Byte> DATA_PLAYER_MAIN_HAND = SynchedEntityData.defineId(Player.class, EntityDataSerializers.BYTE);
      protected static final EntityDataAccessor<CompoundTag> DATA_SHOULDER_LEFT = SynchedEntityData.defineId(Player.class, EntityDataSerializers.COMPOUND_TAG);
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index c281ec655e89ae3165c29987c8fee90b77e13cee..e14bcf84fd626b86829e67a1c2e7b4fe8821b8cf 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -164,6 +164,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean correctlyShrinkItemsDuringEntityResurrectEvent = true;
+ 
++        public boolean avoidRespawnDesyncOfPlayerMetadata = true;
++
+     }
+ 
+ }

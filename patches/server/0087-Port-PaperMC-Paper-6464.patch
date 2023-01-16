@@ -32,7 +32,7 @@ index 3decfca75ae1ace3da8ff47815a47d84c2a86105..34dd9fb5f7d0817001b7ff6198ca6191
                  }
              }
 diff --git a/src/main/java/net/minecraft/world/level/block/grower/AbstractTreeGrower.java b/src/main/java/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
-index df41c210a0c06a2789fe4944fe1b9c2ba9509b61..ca1a15766ad0bfb1cf51f1a01be331865e40874a 100644
+index df41c210a0c06a2789fe4944fe1b9c2ba9509b61..f0a9e5e8bcf0e433381b4d6288cb9dafbec8eb61 100644
 --- a/src/main/java/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
 +++ b/src/main/java/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
 @@ -41,7 +41,10 @@ public abstract class AbstractTreeGrower {
@@ -56,7 +56,7 @@ index df41c210a0c06a2789fe4944fe1b9c2ba9509b61..ca1a15766ad0bfb1cf51f1a01be33186
                      return false;
                  }
              }
-@@ -120,4 +125,28 @@ public abstract class AbstractTreeGrower {
+@@ -120,4 +125,32 @@ public abstract class AbstractTreeGrower {
          }
      }
      // CraftBukkit end
@@ -72,16 +72,33 @@ index df41c210a0c06a2789fe4944fe1b9c2ba9509b61..ca1a15766ad0bfb1cf51f1a01be33186
 +        }
 +
 +        void recordAndSetToFalse() {
-+            previousCaptureTreeGeneration = level.captureTreeGeneration;
-+            previousCaptureBlockStates = level.captureBlockStates;
-+            level.captureTreeGeneration = false;
-+            level.captureBlockStates = false;
++            if (level.andromedaLevelConfiguration().paperPullRequestsPort.onlyCaptureActualTreeGrowth) {
++                previousCaptureTreeGeneration = level.captureTreeGeneration;
++                previousCaptureBlockStates = level.captureBlockStates;
++                level.captureTreeGeneration = false;
++                level.captureBlockStates = false;
++            }
 +        }
 +
 +        void restore() {
-+            level.captureTreeGeneration = previousCaptureTreeGeneration;
-+            level.captureBlockStates = previousCaptureBlockStates;
++            if (level.andromedaLevelConfiguration().paperPullRequestsPort.onlyCaptureActualTreeGrowth) {
++                level.captureTreeGeneration = previousCaptureTreeGeneration;
++                level.captureBlockStates = previousCaptureBlockStates;
++            }
 +        }
 +    }
 +    // Andromeda end
+ }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 8e2490414b653b32a1c8334d335c004fe66e31bd..74db630dead628eae675dfead4beb97169f5e8f0 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -195,6 +195,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean ignoreNbtLimitsWhenLoadedNotLoadedFromABlockPlace = true;
+ 
++        public boolean onlyCaptureActualTreeGrowth = true;
++
+     }
+ 
  }

@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#6761
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 3c37a656f63db811deb84fb31c2971b9668dace9..22ef6c1f1224c011a46315e942716fff5f85b145 100644
+index c7d6fae6e283c80fc6e1ca5062cdbfbe02340df8..ae4380436e159bef2d2a48158d54f07c509e85b6 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -228,7 +228,7 @@ public class ServerPlayer extends Player {
@@ -18,23 +18,39 @@ index 3c37a656f63db811deb84fb31c2971b9668dace9..22ef6c1f1224c011a46315e942716fff
      @Nullable
      private RemoteChatSession chatSession;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index e4afb366ba6f03c1e852e31ca14b58e21abe99d8..a79aa9c1f82085d31b334590d6de9eff3cdafc4d 100644
+index e4afb366ba6f03c1e852e31ca14b58e21abe99d8..2d9bec9ffc2a4137f20b522e41a9058876c25b90 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-@@ -729,8 +729,14 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+@@ -729,8 +729,19 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
      // Paper end
      @Override
      public boolean dropItem(boolean dropAll) {
--        if (!(this.getHandle() instanceof ServerPlayer)) return false;
--        return ((ServerPlayer) this.getHandle()).drop(dropAll);
 +        // Andromeda start - Port PaperMC/Paper#6761
-+        if (!(this.getHandle() instanceof ServerPlayer player)) return false;
-+        boolean success = player.drop(dropAll);
-+        final net.minecraft.world.entity.player.Inventory inv = player.getInventory();
-+        final java.util.OptionalInt optionalSlot = player.containerMenu.findSlot(inv, inv.selected);
-+        optionalSlot.ifPresent(slot -> player.containerSynchronizer.sendSlotChange(player.containerMenu, slot, inv.getSelected()));
-+        return success;
++        if (this.getHandle().level.andromedaLevelConfiguration().paperPullRequestsPort.fixHumanEntityDropNotUpdatingTheClientInventory) {
++            if (!(this.getHandle() instanceof ServerPlayer player)) return false;
++            boolean success = player.drop(dropAll);
++            final net.minecraft.world.entity.player.Inventory inv = player.getInventory();
++            final java.util.OptionalInt optionalSlot = player.containerMenu.findSlot(inv, inv.selected);
++            optionalSlot.ifPresent(slot -> player.containerSynchronizer.sendSlotChange(player.containerMenu, slot, inv.getSelected()));
++            return success;
++        } else {
 +        // Andromeda end
+         if (!(this.getHandle() instanceof ServerPlayer)) return false;
+         return ((ServerPlayer) this.getHandle()).drop(dropAll);
++        } // Andromeda - Port PaperMC/Paper#6761
      }
  
      @Override
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 821f02a72e367f4f9bc8fb2f6ff8ac959cf782be..b7c3a1f8e77b711d1af537faab90cc85a1283c0e 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -189,6 +189,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean improveEntityTransformEventCancellationHandling = true;
+ 
++        public boolean fixHumanEntityDropNotUpdatingTheClientInventory = true;
++
+     }
+ 
+ }

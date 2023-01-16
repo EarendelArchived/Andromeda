@@ -5,31 +5,46 @@ Subject: [PATCH] Port PaperMC/Paper#8075
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-index 84b230d979a91dd776e180e5b828b26bdc98ef12..21173a5a3205e7adf2e582c43e2bf78ce96994bf 100644
+index 84b230d979a91dd776e180e5b828b26bdc98ef12..77646b76acde31e12739970ed2ab601b3c833ea1 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 @@ -617,6 +617,7 @@ public class EnderDragon extends Mob implements Enemy {
                  this.level.removeBlock(new BlockPos(block.getX(), block.getY(), block.getZ()), false);
              }
          } else {
-+            flag1 = false;
++            if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.doNotFireTntPrimeEventForEnderDragon) flag1 = false; // Andromeda - Port PaperMC/Paper#8075
              for (org.bukkit.block.Block block : event.blockList()) {
                  org.bukkit.Material blockId = block.getType();
                  if (blockId.isAir()) {
-@@ -636,14 +637,9 @@ public class EnderDragon extends Mob implements Enemy {
+@@ -636,14 +637,18 @@ public class EnderDragon extends Mob implements Enemy {
                      });
                      craftBlock.getNMS().spawnAfterBreak((ServerLevel) level, blockposition, ItemStack.EMPTY, false);
                  }
--                // Paper start - TNTPrimeEvent
--                org.bukkit.block.Block tntBlock = level.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
--                if(!new com.destroystokyo.paper.event.block.TNTPrimeEvent(tntBlock, com.destroystokyo.paper.event.block.TNTPrimeEvent.PrimeReason.EXPLOSION, explosionSource.getIndirectSourceEntity().getBukkitEntity()).callEvent())
--                    continue;
--                // Paper end
--                nmsBlock.wasExploded(level, blockposition, explosionSource);
-+                //nmsBlock.wasExploded(level, blockposition, explosionSource); // Andromeda - Port PaperMC/Paper#8075
++                if (!this.level.andromedaLevelConfiguration().paperPullRequestsPort.doNotFireTntPrimeEventForEnderDragon) { // Andromeda - Port PaperMC/Paper#8075
+                 // Paper start - TNTPrimeEvent
+                 org.bukkit.block.Block tntBlock = level.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
+                 if(!new com.destroystokyo.paper.event.block.TNTPrimeEvent(tntBlock, com.destroystokyo.paper.event.block.TNTPrimeEvent.PrimeReason.EXPLOSION, explosionSource.getIndirectSourceEntity().getBukkitEntity()).callEvent())
+                     continue;
+                 // Paper end
+                 nmsBlock.wasExploded(level, blockposition, explosionSource);
++                } // Andromeda - Port PaperMC/Paper#8075
  
--                this.level.removeBlock(blockposition, false);
-+                flag1 = this.level.removeBlock(blockposition, false) || flag1; // Andromeda - Port PaperMC/Paper#8075
++                boolean flag2 = // Andromeda - Port PaperMC/Paper#8075
+                 this.level.removeBlock(blockposition, false);
++                if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.doNotFireTntPrimeEventForEnderDragon) flag1 = flag1 || flag2; // Andromeda - Port PaperMC/Paper#8075
              }
          }
          // CraftBukkit end
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 94ad792d529d14c3645063157af078beff3e5b1e..6bd71cd5b18e8a50fe81f6ba8c0faa7a617f569b 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -170,6 +170,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean useSpigotConfigForMangrovePropaguleGrowth = true;
+ 
++        public boolean doNotFireTntPrimeEventForEnderDragon = true;
++
+     }
+ 
+ }

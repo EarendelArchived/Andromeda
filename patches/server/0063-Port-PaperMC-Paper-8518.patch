@@ -5,45 +5,51 @@ Subject: [PATCH] Port PaperMC/Paper#8518
 
 
 diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-index 98f3711886361077015ba6e08f4566c5b01846a5..bba2b52802eddc1639c977057b5c6097a11684c7 100644
+index 4cb6f7f54731feb43e2990b27b5c5060a351a8c3..fd822628af1c633a31116384572b1815255bc9c8 100644
 --- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -1123,6 +1123,13 @@ public interface DispenseItemBehavior {
+@@ -1123,6 +1123,15 @@ public interface DispenseItemBehavior {
                  this.setSuccess(true);
                  if (iblockdata.is(Blocks.RESPAWN_ANCHOR)) {
                      if ((Integer) iblockdata.getValue(RespawnAnchorBlock.CHARGE) != 4) {
 +                        // Andromeda start - Port PaperMC/Paper#8518
-+                        ItemStack result = org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockDispenseEvent(pointer, blockposition, stack, this);
-+                        if (result != null) {
-+                            this.setSuccess(false);
-+                            return result;
++                        if (worldserver.andromedaLevelConfiguration().paperPullRequestsPort.callMissingBlockDispenseEvent) {
++                            ItemStack result = org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockDispenseEvent(pointer, blockposition, stack, this);
++                            if (result != null) {
++                                this.setSuccess(false);
++                                return result;
++                            }
 +                        }
 +                        // Andromeda end
                          RespawnAnchorBlock.charge(worldserver, blockposition, iblockdata);
                          stack.shrink(1);
                      } else {
-@@ -1145,6 +1152,13 @@ public interface DispenseItemBehavior {
+@@ -1145,6 +1154,15 @@ public interface DispenseItemBehavior {
                  Optional<BlockState> optional = HoneycombItem.getWaxed(iblockdata);
  
                  if (optional.isPresent()) {
 +                    // Andromeda start - Port PaperMC/Paper#8518
-+                    ItemStack result = org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockDispenseEvent(pointer, blockposition, stack, this);
-+                    if (result != null) {
-+                        this.setSuccess(false);
-+                        return result;
++                    if (worldserver.andromedaLevelConfiguration().paperPullRequestsPort.callMissingBlockDispenseEvent) {
++                        ItemStack result = org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockDispenseEvent(pointer, blockposition, stack, this);
++                        if (result != null) {
++                            this.setSuccess(false);
++                            return result;
++                        }
 +                    }
 +                    // Andromeda end
                      worldserver.setBlockAndUpdate(blockposition, (BlockState) optional.get());
                      worldserver.levelEvent(3003, blockposition, 0);
                      stack.shrink(1);
-@@ -1170,6 +1184,12 @@ public interface DispenseItemBehavior {
+@@ -1170,6 +1188,14 @@ public interface DispenseItemBehavior {
                      if (!worldserver.getBlockState(blockposition1).is(BlockTags.CONVERTABLE_TO_MUD)) {
                          return this.defaultDispenseItemBehavior.dispense(pointer, stack);
                      } else {
 +                        // Andromeda start - Port PaperMC/Paper#8518
-+                        ItemStack result = org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockDispenseEvent(pointer, blockposition1, stack, this);
-+                        if (result != null) {
-+                            return result;
++                        if (worldserver.andromedaLevelConfiguration().paperPullRequestsPort.callMissingBlockDispenseEvent) {
++                            ItemStack result = org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockDispenseEvent(pointer, blockposition1, stack, this);
++                            if (result != null) {
++                                return result;
++                            }
 +                        }
 +                        // Andromeda end
                          if (!worldserver.isClientSide) {
@@ -79,4 +85,17 @@ index 4141bb6a9a2493f3ed1d905a1e8461f602ea0fee..1fdb2af7cf1c799dd052b072dce3fdb6
 +        return null;
 +    }
 +    // Andromeda end
+ }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index e14bcf84fd626b86829e67a1c2e7b4fe8821b8cf..c58be8d5877b1503034bb98597307e62b680b93c 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -166,6 +166,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean avoidRespawnDesyncOfPlayerMetadata = true;
+ 
++        public boolean callMissingBlockDispenseEvent = true;
++
+     }
+ 
  }

@@ -5,27 +5,46 @@ Subject: [PATCH] Port PaperMC/Paper#7171
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index a8c878ed70845a417b8d892ff1aea1baceddb43b..0f3ce7483559bf986942b5b471f8a87115c89eb3 100644
+index a8c878ed70845a417b8d892ff1aea1baceddb43b..32cbc3e5ad030a6ea04ae8034a5510b6cc633359 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -287,12 +287,18 @@ public class Explosion {
+@@ -287,11 +287,26 @@ public class Explosion {
                              d14 = entity instanceof Player && level.paperConfig().environment.disableExplosionKnockback ? 0 : ProtectionEnchantment.getExplosionKnockbackAfterDampener((LivingEntity) entity, d13); // Paper - Disable explosion knockback
                          }
  
--                        entity.setDeltaMovement(entity.getDeltaMovement().add(d8 * d14, d9 * d14, d10 * d14));
 +                        // Andromeda start - Port PaperMC/Paper#7171
-+                        org.bukkit.util.Vector delta = new org.bukkit.util.Vector(d8 * d14, d9 * d14, d10 * d14);
-+                        if (this.source != null && this.damageSource.getEntity() == null && entity instanceof LivingEntity livingEntity)
-+                            if (!new com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent(livingEntity.getBukkitLivingEntity(), this.source.getBukkitEntity(), (float) d14, delta).callEvent())
-+                                return;
-+                        entity.setDeltaMovement(entity.getDeltaMovement().add(delta.getX(), delta.getY(), delta.getZ()));
++                        org.bukkit.util.Vector delta = null;
++                        if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.fireEntityKnockbackEventForOwnerlessTnt) {
++                            delta = new org.bukkit.util.Vector(d8 * d14, d9 * d14, d10 * d14);
++                            if (this.source != null && this.damageSource.getEntity() == null && entity instanceof LivingEntity livingEntity)
++                                if (!new com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent(livingEntity.getBukkitLivingEntity(), this.source.getBukkitEntity(), (float) d14, delta).callEvent())
++                                    return;
++                            entity.setDeltaMovement(entity.getDeltaMovement().add(delta.getX(), delta.getY(), delta.getZ()));
++                        } else
 +                        // Andromeda end
+                         entity.setDeltaMovement(entity.getDeltaMovement().add(d8 * d14, d9 * d14, d10 * d14));
                          if (entity instanceof Player) {
                              Player entityhuman = (Player) entity;
  
                              if (!entityhuman.isSpectator() && (!entityhuman.isCreative() || !entityhuman.getAbilities().flying) && !level.paperConfig().environment.disableExplosionKnockback) { // Paper - Disable explosion knockback
--                                this.hitPlayers.put(entityhuman, new Vec3(d8 * d13, d9 * d13, d10 * d13));
-+                                this.hitPlayers.put(entityhuman, org.bukkit.craftbukkit.util.CraftVector.toNMS(delta)); // Andromeda - Port PaperMC/Paper#7171
++                                // Andromeda start - Port PaperMC/Paper#7171
++                                if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.fireEntityKnockbackEventForOwnerlessTnt)
++                                    this.hitPlayers.put(entityhuman, org.bukkit.craftbukkit.util.CraftVector.toNMS(delta));
++                                else
++                                // Andromeda end
+                                 this.hitPlayers.put(entityhuman, new Vec3(d8 * d13, d9 * d13, d10 * d13));
                              }
                          }
-                     }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index b7c3a1f8e77b711d1af537faab90cc85a1283c0e..97d80c533161215abd0bd01d94f33b1398874221 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -191,6 +191,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean fixHumanEntityDropNotUpdatingTheClientInventory = true;
+ 
++        public boolean fireEntityKnockbackEventForOwnerlessTnt = true;
++
+     }
+ 
+ }

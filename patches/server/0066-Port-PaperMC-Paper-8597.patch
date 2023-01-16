@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8597
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java b/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java
-index 5d78348fc18b22ccb7ad109890f867e20efec047..552edd03a26c5dc6056f3aab052902184ac86fc0 100644
+index 5d78348fc18b22ccb7ad109890f867e20efec047..0392a7c8253d288a0e0d570761e119674f9ecb0e 100644
 --- a/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java
 @@ -89,7 +89,7 @@ public class MangrovePropaguleBlock extends SaplingBlock implements SimpleWaterl
@@ -13,7 +13,20 @@ index 5d78348fc18b22ccb7ad109890f867e20efec047..552edd03a26c5dc6056f3aab05290218
      public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
          if (!isHanging(state)) {
 -            if (random.nextInt(7) == 0) {
-+            if (random.nextFloat() < (world.spigotConfig.saplingModifier / (100.0F * 7))) { // Andromeda - Port PaperMC/Paper#8597
++            if (world.andromedaLevelConfiguration().paperPullRequestsPort.useSpigotConfigForMangrovePropaguleGrowth ? (random.nextFloat() < (world.spigotConfig.saplingModifier / (100.0F * 7))) : (random.nextInt(7) == 0)) { // Andromeda - Port PaperMC/Paper#8597
                  this.advanceTree(world, pos, state, random);
              }
  
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index c58be8d5877b1503034bb98597307e62b680b93c..94ad792d529d14c3645063157af078beff3e5b1e 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -168,6 +168,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean callMissingBlockDispenseEvent = true;
+ 
++        public boolean useSpigotConfigForMangrovePropaguleGrowth = true;
++
+     }
+ 
+ }

@@ -49,21 +49,35 @@ index 4c2351b03b58511b80017b58ee9b20ab5193adc9..f4ca8bbc75dd9f60846e41140badabbb
  
  }
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 88e675eb3e79b8f82cb7b40998010f2b209ed5fd..9608c5a3dbd7c747daf3e3434279f15c7ffc5f0a 100644
+index 0b7f19db743be9a7a25fab835a084eb25c3ff3eb..442728f37d1ebefff92971d065d2f0e78d0a9f0c 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -296,7 +296,13 @@ public abstract class PlayerList {
+@@ -296,6 +296,15 @@ public abstract class PlayerList {
          Component joinMessage = ichatmutablecomponent; // Paper - Adventure
  
          playerconnection.teleport(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot());
--        player.sendServerStatus(this.server.getStatus());
 +        // Andromeda start - Port PaperMC/Paper#8074
-+        io.papermc.paper.util.MCUtil.scheduleAsyncTask(() -> {
-+            if (player.hasDisconnected()) return;
-+            net.minecraft.network.protocol.status.ServerStatus status = com.destroystokyo.paper.network.StandardPaperServerListPingEventImpl.getEventResponse(this.server, connection);
-+            if (status != null) player.sendServerStatus(status);
-+        });
++        if (player.level.andromedaLevelConfiguration().paperPullRequestsPort.fireServerListPingEventForSecondaryMotdSend)
++            io.papermc.paper.util.MCUtil.scheduleAsyncTask(() -> {
++                if (player.hasDisconnected()) return;
++                net.minecraft.network.protocol.status.ServerStatus status = com.destroystokyo.paper.network.StandardPaperServerListPingEventImpl.getEventResponse(this.server, connection);
++                if (status != null) player.sendServerStatus(status);
++            });
++        else
 +        // Andromeda end
+         player.sendServerStatus(this.server.getStatus());
          // player.connection.send(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(this.players)); // Paper - use single player info update packet
          this.players.add(player);
-         this.playersByName.put(player.getScoreboardName().toLowerCase(java.util.Locale.ROOT), player); // Spigot
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 6bd71cd5b18e8a50fe81f6ba8c0faa7a617f569b..915c56d29b2bdd1e40257b00b272038d75081151 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -172,6 +172,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean doNotFireTntPrimeEventForEnderDragon = true;
+ 
++        public boolean fireServerListPingEventForSecondaryMotdSend = true;
++
+     }
+ 
+ }

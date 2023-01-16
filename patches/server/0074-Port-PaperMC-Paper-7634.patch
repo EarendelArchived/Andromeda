@@ -5,21 +5,36 @@ Subject: [PATCH] Port PaperMC/Paper#7634
 
 
 diff --git a/src/main/java/net/minecraft/core/MappedRegistry.java b/src/main/java/net/minecraft/core/MappedRegistry.java
-index 1e33434f9f361542e03da3e4812bc6d76768a202..936b1ad802d057aeb0e8a28a77408bf4cd1e16ac 100644
+index 1e33434f9f361542e03da3e4812bc6d76768a202..7d11560d0f33a6cb636ede19c5dada11e662744e 100644
 --- a/src/main/java/net/minecraft/core/MappedRegistry.java
 +++ b/src/main/java/net/minecraft/core/MappedRegistry.java
-@@ -402,13 +402,8 @@ public class MappedRegistry<T> implements WritableRegistry<T> {
+@@ -402,6 +402,7 @@ public class MappedRegistry<T> implements WritableRegistry<T> {
  
          });
          Set<TagKey<T>> set = Sets.difference(this.tags.keySet(), tagEntries.keySet());
--        if (!set.isEmpty()) {
--            LOGGER.warn("Not all defined tags for registry {} are present in data pack: {}", this.key(), set.stream().map((tag) -> {
--                return tag.location().toString();
--            }).sorted().collect(Collectors.joining(", ")));
--        }
--
++        if (!team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.cleanUpRemovedTagsAfterDatapackUnload) // Andromeda - Port PaperMC/Paper#7634
+         if (!set.isEmpty()) {
+             LOGGER.warn("Not all defined tags for registry {} are present in data pack: {}", this.key(), set.stream().map((tag) -> {
+                 return tag.location().toString();
+@@ -409,6 +410,8 @@ public class MappedRegistry<T> implements WritableRegistry<T> {
+         }
+ 
          Map<TagKey<T>, HolderSet.Named<T>> map2 = new IdentityHashMap<>(this.tags);
-+        set.forEach(removedTag -> map2.remove(removedTag).bind(Collections.emptyList())); // Andromeda - Port PaperMC/Paper#7634
++        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.cleanUpRemovedTagsAfterDatapackUnload) // Andromeda - Port PaperMC/Paper#7634
++            set.forEach(removedTag -> map2.remove(removedTag).bind(Collections.emptyList())); // Andromeda - Port PaperMC/Paper#7634
          tagEntries.forEach((tag, entries) -> {
              map2.computeIfAbsent(tag, this::createTag).bind(entries);
          });
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index e395280c3ff0849585ce0864f29b18cfaa516017..3f3ea4cebddc4693cea9f81d7214c37ebcf7d9dd 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -147,6 +147,8 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+         public boolean properlyCloneCustomNbtTagsInsideItemMeta = true;
+ 
++        public boolean cleanUpRemovedTagsAfterDatapackUnload = true;
++
+     }
+ 
+ }

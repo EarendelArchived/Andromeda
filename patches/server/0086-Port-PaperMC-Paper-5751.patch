@@ -5,30 +5,44 @@ Subject: [PATCH] Port PaperMC/Paper#5751
 
 
 diff --git a/src/main/java/net/minecraft/world/item/BlockItem.java b/src/main/java/net/minecraft/world/item/BlockItem.java
-index 193ae502acb622da3a42d49dc0c69da9d22f6ede..4cbc3c6821f6939c6f7a55861d16cd5c4fd1ad19 100644
+index 193ae502acb622da3a42d49dc0c69da9d22f6ede..51d6373eabf3e623c2a2662c24c40e279f9a4413 100644
 --- a/src/main/java/net/minecraft/world/item/BlockItem.java
 +++ b/src/main/java/net/minecraft/world/item/BlockItem.java
-@@ -268,7 +268,10 @@ public class BlockItem extends Item {
+@@ -268,7 +268,16 @@ public class BlockItem extends Item {
  
                      nbttagcompound1.merge(nbttagcompound);
                      if (!nbttagcompound1.equals(nbttagcompound2)) {
-+                        boolean prevForceLoadState = tileentity.forceLoad; // Andromeda - Port PaperMC/Paper#5751
-+                        tileentity.forceLoad = false; // Andromeda - Port PaperMC/Paper#5751
++                        // Andromeda start - Port PaperMC/Paper#5751
++                        Boolean prevForceLoadState = null;
++                        if (world.andromedaLevelConfiguration().paperPullRequestsPort.ignoreNbtLimitsWhenLoadedNotLoadedFromABlockPlace) {
++                            prevForceLoadState = tileentity.forceLoad;
++                            tileentity.forceLoad = false; // Andromeda - Port PaperMC/Paper#5751
++                        }
                          tileentity.load(nbttagcompound1);
-+                        tileentity.forceLoad = prevForceLoadState; // Andromeda - Port PaperMC/Paper#5751
++                        if (world.andromedaLevelConfiguration().paperPullRequestsPort.ignoreNbtLimitsWhenLoadedNotLoadedFromABlockPlace)
++                            tileentity.forceLoad = Boolean.TRUE.equals(prevForceLoadState);
++                        // Andromeda end
                          tileentity.setChanged();
                          return true;
                      }
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/BannerBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/BannerBlockEntity.java
-index 66e2137f9379e885294f2b9f67f7e35296792770..b2b43c1873e444f121e199fd0eca5ef3e2e1597c 100644
+index 66e2137f9379e885294f2b9f67f7e35296792770..b24fc9f490567b7cc875d02648da2b69aff5f0e7 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/BannerBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/BannerBlockEntity.java
-@@ -103,7 +103,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
+@@ -3,6 +3,7 @@ package net.minecraft.world.level.block.entity;
+ import com.google.common.collect.Lists;
+ import com.mojang.datafixers.util.Pair;
+ import java.util.List;
++import java.util.Objects;
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Holder;
+@@ -103,7 +104,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
  
          this.itemPatterns = nbt.getList("Patterns", 10);
          // CraftBukkit start
 -        while (this.itemPatterns.size() > 20) {
-+        while (this.itemPatterns.size() > 20 && !this.forceLoad) { // Andromeda - Port PaperMC/Paper#5751
++        while (this.itemPatterns.size() > 20 && (this.level.andromedaLevelConfiguration().paperPullRequestsPort.ignoreNbtLimitsWhenLoadedNotLoadedFromABlockPlace || !this.forceLoad)) { // Andromeda - Port PaperMC/Paper#5751
              this.itemPatterns.remove(20);
          }
          // CraftBukkit end
@@ -45,7 +59,7 @@ index efc1bdcaf141a2c2152173439d707f50feaaf91a..d818db1bb4bfe9eebaa61d65429589b8
      public BlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
          this.type = type;
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/SignBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/SignBlockEntity.java
-index 9e760a8e8244b15daaf0abdfc5f8a51d5c663e12..91cad8f3672dd5bcd69f27ece61b9d5b12358f1c 100644
+index 9e760a8e8244b15daaf0abdfc5f8a51d5c663e12..6d80ca82c102ca82b8dfa7c33d96aba848dad44d 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/SignBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/SignBlockEntity.java
 @@ -110,7 +110,7 @@ public class SignBlockEntity extends BlockEntity implements CommandSource { // C
@@ -53,7 +67,20 @@ index 9e760a8e8244b15daaf0abdfc5f8a51d5c663e12..91cad8f3672dd5bcd69f27ece61b9d5b
              String s = nbt.getString(SignBlockEntity.RAW_TEXT_FIELD_NAMES[i]);
              // CraftBukkit start
 -            if (s != null && s.length() > 2048) {
-+            if (s != null && s.length() > 2048 && !this.forceLoad) { // Andromeda - Port PaperMC/Paper#5751
++            if (s != null && s.length() > 2048 && (this.level.andromedaLevelConfiguration().paperPullRequestsPort.ignoreNbtLimitsWhenLoadedNotLoadedFromABlockPlace || !this.forceLoad)) { // Andromeda - Port PaperMC/Paper#5751
                  s = "\"\"";
              }
  
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 97d80c533161215abd0bd01d94f33b1398874221..8e2490414b653b32a1c8334d335c004fe66e31bd 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -193,6 +193,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean fireEntityKnockbackEventForOwnerlessTnt = true;
+ 
++        public boolean ignoreNbtLimitsWhenLoadedNotLoadedFromABlockPlace = true;
++
+     }
+ 
+ }

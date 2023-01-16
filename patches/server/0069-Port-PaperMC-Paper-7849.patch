@@ -5,15 +5,31 @@ Subject: [PATCH] Port PaperMC/Paper#7849
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index 58c1d07f41fc382b23df17739090f5031fd41aad..e455ea1470ff3aae609795a03050d64f1a9e57aa 100644
+index 58c1d07f41fc382b23df17739090f5031fd41aad..ea9034b17f4308a9e4ef00dc03dd55f39b1cfa89 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-@@ -342,7 +342,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -342,6 +342,11 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
              this.destroyableKeys = new java.util.HashSet<>(meta.destroyableKeys);
          }
          // Paper end
--        this.unhandledTags.putAll(meta.unhandledTags);
-+        meta.unhandledTags.forEach((key, tag) -> this.unhandledTags.put(key, tag.copy())); // Andromeda - Port PaperMC/Paper#7849
++        // Andromeda start - Port PaperMC/Paper#7849
++        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.properlyCloneCustomNbtTagsInsideItemMeta)
++            meta.unhandledTags.forEach((key, tag) -> this.unhandledTags.put(key, tag.copy()));
++        else
++        // Andromeda end
+         this.unhandledTags.putAll(meta.unhandledTags);
          this.persistentDataContainer.putAll(meta.persistentDataContainer.getRaw());
  
-         this.internalTag = meta.internalTag;
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index 2cb05a80662ef5690d493a074be88889f2207090..e395280c3ff0849585ce0864f29b18cfaa516017 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -145,6 +145,8 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+         public boolean useVelocityOptimizeVarInts = true;
+ 
++        public boolean properlyCloneCustomNbtTagsInsideItemMeta = true;
++
+     }
+ 
+ }

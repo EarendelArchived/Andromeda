@@ -31,23 +31,15 @@ index 0627c98cae0b5ebdd71a849ae1299d7d3d581850..328d68608aae9e3828a5f37d69770d70
 -    }
  }
 diff --git a/src/main/java/io/papermc/paper/console/BrigadierCommandHighlighter.java b/src/main/java/io/papermc/paper/console/BrigadierCommandHighlighter.java
-index dd9d77d7c7f1a5a130a1f4c15e5b1e68ae3753e1..17d28cf8d9fcd762c3c723264b8257a18929e615 100644
+index dd9d77d7c7f1a5a130a1f4c15e5b1e68ae3753e1..c0f165778d63f434f74700434047d17571981059 100644
 --- a/src/main/java/io/papermc/paper/console/BrigadierCommandHighlighter.java
 +++ b/src/main/java/io/papermc/paper/console/BrigadierCommandHighlighter.java
-@@ -2,6 +2,7 @@ package io.papermc.paper.console;
- 
- import com.google.common.base.Suppliers;
- import com.mojang.brigadier.ParseResults;
-+import com.mojang.brigadier.StringReader;
- import com.mojang.brigadier.context.ParsedCommandNode;
- import com.mojang.brigadier.tree.LiteralCommandNode;
- import java.util.function.Supplier;
-@@ -32,12 +33,8 @@ public final class BrigadierCommandHighlighter implements Highlighter {
+@@ -32,12 +32,8 @@ public final class BrigadierCommandHighlighter implements Highlighter {
              return new AttributedString(buffer, AttributedStyle.DEFAULT.foreground(AttributedStyle.RED));
          }
          final AttributedStringBuilder builder = new AttributedStringBuilder();
 -        final ParseResults<CommandSourceStack> results = this.server.getCommands().getDispatcher().parse(BrigadierCommandCompleter.prepareStringReader(buffer), this.commandSourceStack.get());
-+        final ParseResults<CommandSourceStack> results = this.server.getCommands().getDispatcher().parse(new StringReader(buffer), this.commandSourceStack.get()); // Andromeda - Port PaperMC/Paper#7603
++        final ParseResults<CommandSourceStack> results = this.server.getCommands().getDispatcher().parse(new com.mojang.brigadier.StringReader(buffer), this.commandSourceStack.get()); // Andromeda - Port PaperMC/Paper#7603
          int pos = 0;
 -        if (buffer.startsWith("/")) {
 -            builder.append("/", AttributedStyle.DEFAULT);

@@ -37,7 +37,7 @@ index 7909ba26bb7a883c74eda1ffd2d3e2bad286bc8b..232f4546ac4af35c4f4b5c10a63578e0
          int i = 0;
          if (this.background != null) {
 diff --git a/src/main/java/net/minecraft/network/FriendlyByteBuf.java b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
-index 92b30af59cc2e26b0a86721c3cdd88ba3d7b1b97..f44bd7ad773df9f82313cc9350235745e26ef555 100644
+index 4ef583c54988b9ea699e10de3c1bed1d0dfd4825..cd0414e39d9851a11760754de1926966e667a2d9 100644
 --- a/src/main/java/net/minecraft/network/FriendlyByteBuf.java
 +++ b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
 @@ -657,6 +657,12 @@ public class FriendlyByteBuf extends ByteBuf {
@@ -131,10 +131,10 @@ index c5e82ec453a431486a9aed1d6c2637e8b335d0d6..240bda992b701c75fc76a6c5ce1a6a0d
  
          @Override
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index f558998f83462e9c9846ae1d2e0dafbe3af61531..3c37a656f63db811deb84fb31c2971b9668dace9 100644
+index 4053372a2e1db22770098e78b0c145818eff9bf2..c7d6fae6e283c80fc6e1ca5062cdbfbe02340df8 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -2041,12 +2041,12 @@ public class ServerPlayer extends Player {
+@@ -2046,12 +2046,12 @@ public class ServerPlayer extends Player {
              PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent(this.getBukkitEntity(), packet.language);
              this.server.server.getPluginManager().callEvent(event);
              this.server.server.getPluginManager().callEvent(new com.destroystokyo.paper.event.player.PlayerLocaleChangeEvent(this.getBukkitEntity(), this.locale, packet.language)); // Paper

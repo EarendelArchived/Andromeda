@@ -357,7 +357,7 @@ index fcc0f17c288242eb5547470003c4ea79dc0307c4..986adc669867f5c552654d421ce07203
                      this.updatePlayer(conn.getPlayer());
                  }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 91483bdfb7c89337b7c7e608e0c8cdb9ad7231cb..d9561d0b11f1e9eb7cb35e1e1af78d24208801d8 100644
+index 7f9241b011bd6eb5ea0395d21d3c8f32d3f1d9b7..3d0f8578eb31d3e718df9641033641c93b360570 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -1265,7 +1265,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -370,7 +370,7 @@ index 91483bdfb7c89337b7c7e608e0c8cdb9ad7231cb..d9561d0b11f1e9eb7cb35e1e1af78d24
          return ret;
      }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 77787add0eb3861aca573c69f8c43874425372c6..80314183e5b0e07e2d8928d92101b9340ed713b0 100644
+index 861c74e0c71bb0ea25b2262f115cef43da240990..5e4d1b23a6e6e7dcbed8d40ccf5355cd3bb1e565 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -429,7 +429,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -433,10 +433,10 @@ index 0e6b2f1815b1da878a4227c652ea9a45eee3754a..2924515d79110efabdd2ac931df46406
          final String s;
  
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 82649a4105155a832e6504c3d4f0b2304c618599..002615cad71afd78eb8b73a2d3e41056a6aa0d75 100644
+index 4c103ed1e9e0dc14946f07f862e87aac9c75b59c..73aa6c7f14ea4417b131d9e8a627bc7617ad0f0f 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -687,7 +687,7 @@ public abstract class PlayerList {
+@@ -690,7 +690,7 @@ public abstract class PlayerList {
          while (iterator.hasNext()) {
              entityplayer = (ServerPlayer) iterator.next();
              this.save(entityplayer); // CraftBukkit - Force the player's inventory to be saved
@@ -498,7 +498,7 @@ index 0292690b9c99f66210a03817e512c65ca65bc749..122277d210e721b2db2e10c74b6ae603
          this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, false, false, (entityliving) -> {
              return entityliving instanceof Enemy && !(entityliving instanceof Creeper);
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Panda.java b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-index 289bdd39c61219f8895816c1dd4bf41bb0c70a3a..902483155a03f7dc73565b37d988e07c4ecd467d 100644
+index 519136a8a63332a280d7a53c0c6a76ea4265ebd1..e31010b6b4bfdbf67a4bd65d09a368a319bbfaef 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Panda.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Panda.java
 @@ -333,7 +333,7 @@ public class Panda extends Animal {
@@ -550,7 +550,7 @@ index dbccd46b1f26f9d02cb2e76d4bf6bff4b0beffe5..c107dc8ec24ef587875fa3ab5c519ca8
      private final DynamicGameEventListener<VibrationListener> dynamicVibrationListener;
      private final VibrationListener.VibrationListenerConfig vibrationListenerConfig;
 diff --git a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
-index 8c16bfcc3446ca5419a13abc2378ecc5c0a4eb54..46c481f48505d3a69cd921617e5f8c9a7d165cd7 100644
+index 6ae9c9ae44d5a886e4c6bc9b99f3ac8dcf1a75f7..60977575b4de739ca5e26fa5e868e3529d39392b 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 @@ -264,7 +264,7 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob
@@ -935,7 +935,7 @@ index 9a2ec50be757dfa3780a49ec96942fed89ed530c..e6d48ec1c913aeae41e8e149326c5134
              System.out.println("Starting server");
              Thread runThread = new Thread(() -> {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 16e31bb379b2e555963a81e69a51a4825f5b91a3..9d64ffc9a53a9b159ce565e43c49edac07ff7ed0 100644
+index 09ce5743ed20e2dba58a57739a01a95e6c2e5b6d..3cd86edc4c806b2e9119abdf67f7903b5ebe13f1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -462,7 +462,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
