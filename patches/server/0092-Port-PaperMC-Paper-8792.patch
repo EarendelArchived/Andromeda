@@ -33,12 +33,12 @@ index 3e5abea2f814a0a364cf87ff4ce1b1718ba2ddac..67ae3270e477115984fd92c0e8097501
      }
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 3f3ea4cebddc4693cea9f81d7214c37ebcf7d9dd..bab87edfbd2ef2d4453496b441881f92c234471c 100644
+index e395280c3ff0849585ce0864f29b18cfaa516017..3f0ccbbe7e198a3f81047c085bd3f9fe9f35c780 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -149,6 +149,8 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -147,6 +147,8 @@ public class GlobalConfiguration extends ConfigurationPart {
  
-         public boolean cleanUpRemovedTagsAfterDatapackUnload = true;
+         public boolean properlyCloneCustomNbtTagsInsideItemMeta = true;
  
 +        public boolean fixCisCimEnchantmentLevelInconsistency = true;
 +
