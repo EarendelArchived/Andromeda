@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8606
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 29aa5c6f929cef168ee197a7a09bdd247c3511ae..0cac292c3f35b19c1ea8380b8453badd85f1566f 100644
+index 29aa5c6f929cef168ee197a7a09bdd247c3511ae..ecd09f3b8acb6bb3ad4e3c7e5533ac55d01037ac 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -2110,10 +2110,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -17,7 +17,7 @@ index 29aa5c6f929cef168ee197a7a09bdd247c3511ae..0cac292c3f35b19c1ea8380b8453badd
  
          this.levelData.setSpawn(pos, angle);
 -        new org.bukkit.event.world.SpawnChangeEvent(getWorld(), MCUtil.toLocation(this, prevSpawn)).callEvent(); // Paper
-+        new org.bukkit.event.world.SpawnChangeEvent(this.getWorld(), this.andromedaLevelConfiguration().paperPullRequestsPort.includePreviousSpawnAngleInSpawnChangeEvent.enabled ? prevSpawnLoc : MCUtil.toLocation(this, prevSpawn)).callEvent(); // Paper // Andromeda - Port PaperMC/Paper#8606
++        new org.bukkit.event.world.SpawnChangeEvent(this.getWorld(), this.andromedaLevelConfiguration().paperPullRequestsPort.includePreviousSpawnAngleInSpawnChangeEvent ? prevSpawnLoc : MCUtil.toLocation(this, prevSpawn)).callEvent(); // Paper // Andromeda - Port PaperMC/Paper#8606
          if (this.keepSpawnInMemory) {
              // if this keepSpawnInMemory is false a plugin has already removed our tickets, do not re-add
              this.removeTicketsForSpawn(this.paperConfig().spawn.keepSpawnLoadedRange * 16, prevSpawn);
@@ -39,19 +39,14 @@ index d344a20759348da88b92a4155b4dcf5f9994c9b6..f8f29432f7819fbdc39ee07919e622d8
              // SpawnChangeEvent event = new SpawnChangeEvent(this, previousLocation);
              // server.getPluginManager().callEvent(event);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 1cc1e30dc2ea34ad65d4d93d6766e730d8227cb0..409b148caabf5cda6eaa840f8133cf80bba60f96 100644
+index a160f1e38cddab6426395ee56475400d700032fd..1e43e4a81d43850fc454c445fdf2360c9762bd96 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -187,6 +187,13 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -152,6 +152,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
-         }
+         public boolean takeInAccountWaterloggedBlockForTheEvent = true;
  
-+        public IncludePreviousSpawnAngleInSpawnChangeEvent includePreviousSpawnAngleInSpawnChangeEvent;
-+        public class IncludePreviousSpawnAngleInSpawnChangeEvent extends ConfigurationPart {
-+
-+            public boolean enabled = true;
-+
-+        }
++        public boolean includePreviousSpawnAngleInSpawnChangeEvent = true;
 +
      }
  

@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8600
 
 
 diff --git a/src/main/java/net/minecraft/world/item/RecordItem.java b/src/main/java/net/minecraft/world/item/RecordItem.java
-index 4c6f60cc1269ed0315b7e5a54235b9c95d1f039c..04958a309cfcd99ef27e002e8bcca07b59c0dcd6 100644
+index 4c6f60cc1269ed0315b7e5a54235b9c95d1f039c..a6a991ce640620f80ff0649a015c6fffb4b2e7d7 100644
 --- a/src/main/java/net/minecraft/world/item/RecordItem.java
 +++ b/src/main/java/net/minecraft/world/item/RecordItem.java
 @@ -43,7 +43,11 @@ public class RecordItem extends Item {
@@ -14,7 +14,7 @@ index 4c6f60cc1269ed0315b7e5a54235b9c95d1f039c..04958a309cfcd99ef27e002e8bcca07b
              if (!world.isClientSide) {
 -                if (true) return InteractionResult.SUCCESS; // CraftBukkit - handled in ItemStack
 +                // Andromeda start - Port PaperMC/Paper#8600
-+                if (world.andromedaLevelConfiguration().paperPullRequestsPort.removeDuplicateAnimatePacketForRecords.enabled) return InteractionResult.sidedSuccess(world.isClientSide); // CraftBukkit - handled in ItemStack
++                if (world.andromedaLevelConfiguration().paperPullRequestsPort.removeDuplicateAnimatePacketForRecords) return InteractionResult.sidedSuccess(world.isClientSide); // CraftBukkit - handled in ItemStack
 +                else return InteractionResult.SUCCESS;
 +                /*
 +                // Andromeda end
@@ -30,19 +30,14 @@ index 4c6f60cc1269ed0315b7e5a54235b9c95d1f039c..04958a309cfcd99ef27e002e8bcca07b
  
              return InteractionResult.sidedSuccess(world.isClientSide);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 409b148caabf5cda6eaa840f8133cf80bba60f96..9c67548985d5a34c328d0084c7c29149b3221de7 100644
+index 1e43e4a81d43850fc454c445fdf2360c9762bd96..a654834d93542905c6d102dfa76e3d4d2553f197 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -194,6 +194,13 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -154,6 +154,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
-         }
+         public boolean includePreviousSpawnAngleInSpawnChangeEvent = true;
  
-+        public RemoveDuplicateAnimatePacketForRecords removeDuplicateAnimatePacketForRecords;
-+        public class RemoveDuplicateAnimatePacketForRecords extends ConfigurationPart {
-+
-+            public boolean enabled = true;
-+
-+        }
++        public boolean removeDuplicateAnimatePacketForRecords = true;
 +
      }
  

@@ -5,31 +5,26 @@ Subject: [PATCH] Port PaperMC/Paper#8744
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
-index 0554afa72ae6d2f01886916031c8b90b0d45eb52..c1cd4b873a3556be7b63660634f7409e7149cd49 100644
+index 0554afa72ae6d2f01886916031c8b90b0d45eb52..54c525b6b3faeda9845ebca28a70d158d5643282 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/SculkShriekerBlockEntity.java
 @@ -198,6 +198,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
      }
  
      private boolean trySummonWarden(ServerLevel world) {
-+        if (world.andromedaLevelConfiguration().paperPullRequestsPort.setWardenSpawnReasonToNatural.enabled) return this.warningLevel >= 4 && SpawnUtil.trySpawnMob(EntityType.WARDEN, MobSpawnType.TRIGGERED, world, this.getBlockPos(), 20, 5, 6, SpawnUtil.Strategy.ON_TOP_OF_COLLIDER, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL, null).isPresent(); // Andromeda - Port PaperMC/Paper#8744
++        if (world.andromedaLevelConfiguration().paperPullRequestsPort.setWardenSpawnReasonToNatural) return this.warningLevel >= 4 && SpawnUtil.trySpawnMob(EntityType.WARDEN, MobSpawnType.TRIGGERED, world, this.getBlockPos(), 20, 5, 6, SpawnUtil.Strategy.ON_TOP_OF_COLLIDER, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL, null).isPresent(); // Andromeda - Port PaperMC/Paper#8744
          return this.warningLevel < 4 ? false : SpawnUtil.trySpawnMob(EntityType.WARDEN, MobSpawnType.TRIGGERED, world, this.getBlockPos(), 20, 5, 6, SpawnUtil.Strategy.ON_TOP_OF_COLLIDER).isPresent();
      }
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index ea27b2c20d29a69c0df9f3b03b8dc002cc26c817..2594aabb99c8deb15f4f38544fd1b7baca2dfbae 100644
+index ee3b28d5d6991212852f62b15616942a26be6618..f1ad46fde032a9ae3587390b9eba49b510b39e96 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -152,6 +152,13 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -142,6 +142,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
-         }
+         public boolean makePlayerPurchaseEventRespectResultItem = true;
  
-+        public SetWardenSpawnReasonToNatural setWardenSpawnReasonToNatural;
-+        public class SetWardenSpawnReasonToNatural extends ConfigurationPart {
-+
-+            public boolean enabled = true;
-+
-+        }
++        public boolean setWardenSpawnReasonToNatural = true;
 +
      }
  

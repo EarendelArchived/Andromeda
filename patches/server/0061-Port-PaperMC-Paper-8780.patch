@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8780
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index b270321d17b51beb314b8858d28d97b802f990b5..c09e81af44276def11b13b2daa17e0b505304f65 100644
+index b270321d17b51beb314b8858d28d97b802f990b5..d5f5d66d8a7406f0cc2b6256795b3299394ee71e 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -1610,7 +1610,7 @@ public abstract class LivingEntity extends Entity {
@@ -13,7 +13,20 @@ index b270321d17b51beb314b8858d28d97b802f990b5..c09e81af44276def11b13b2daa17e0b5
  
              if (!event.isCancelled()) {
 -                if (!itemstack1.isEmpty()) {
-+                if (!itemstack1.isEmpty() && itemstack != null) { // Andromeda - Port PaperMC/Paper#8780
++                if (!itemstack1.isEmpty() && (itemstack != null || this.level.andromedaLevelConfiguration().paperPullRequestsPort.correctlyShrinkItemsDuringEntityResurrectEvent)) { // Andromeda - Port PaperMC/Paper#8780
                      itemstack1.shrink(1);
                  }
                  if (itemstack != null && this instanceof ServerPlayer) {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index ca2e0c1f95484e73383f6d5800c285f0b6e48f5b..c281ec655e89ae3165c29987c8fee90b77e13cee 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -162,6 +162,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean checkCommandBlockPermissionInCanUseGameMasterBlocks = true;
+ 
++        public boolean correctlyShrinkItemsDuringEntityResurrectEvent = true;
++
+     }
+ 
+ }

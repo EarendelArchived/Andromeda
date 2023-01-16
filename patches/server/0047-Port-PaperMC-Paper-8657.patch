@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8657
 
 
 diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-index 2df7bb73a004c9b3f1e5eaff2557e3cfafb9b3fb..98f3711886361077015ba6e08f4566c5b01846a5 100644
+index 88ce7d0c049cefdfa99a21ddecc5d16e9435a4f0..4cb6f7f54731feb43e2990b27b5c5060a351a8c3 100644
 --- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 @@ -756,6 +756,13 @@ public interface DispenseItemBehavior {
@@ -16,7 +16,7 @@ index 2df7bb73a004c9b3f1e5eaff2557e3cfafb9b3fb..98f3711886361077015ba6e08f4566c5
 +                Direction enumdirection = (Direction) pointer.getBlockState().getValue(DispenserBlock.FACING);
 +                BlockPos blockposition = pointer.getPos().relative(enumdirection);
 +                BlockState iblockdata = worldserver.getBlockState(blockposition);
-+                if (BaseFireBlock.canBePlacedAt(worldserver, blockposition, enumdirection) || CampfireBlock.canLight(iblockdata) || CandleBlock.canLight(iblockdata) || CandleCakeBlock.canLight(iblockdata) || iblockdata.getBlock() instanceof TntBlock || !worldserver.andromedaLevelConfiguration().paperPullRequestsPort.fixBlockDispenseEventBeingCalledWhenNothingActuallyHappens.enabled) {
++                if (BaseFireBlock.canBePlacedAt(worldserver, blockposition, enumdirection) || CampfireBlock.canLight(iblockdata) || CandleBlock.canLight(iblockdata) || CandleCakeBlock.canLight(iblockdata) || iblockdata.getBlock() instanceof TntBlock || !worldserver.andromedaLevelConfiguration().paperPullRequestsPort.fixBlockDispenseEventBeingCalledWhenNothingActuallyHappens) {
 +                // Andromeda end
 +
                  // CraftBukkit start
@@ -41,7 +41,7 @@ index 2df7bb73a004c9b3f1e5eaff2557e3cfafb9b3fb..98f3711886361077015ba6e08f4566c5
                  BlockPos blockposition = pointer.getPos().relative((Direction) pointer.getBlockState().getValue(DispenserBlock.FACING));
 +                // Andromeda start - Port PaperMC/Paper#8657
 +                final BlockState blockState = worldserver.getBlockState(blockposition);
-+                if ((blockState.getBlock() instanceof net.minecraft.world.level.block.BonemealableBlock bonemealableBlock && bonemealableBlock.isValidBonemealTarget(worldserver, blockposition, blockState, worldserver.isClientSide)) || (blockState.is(Blocks.WATER) && blockState.getFluidState().getAmount() == 8) || !worldserver.andromedaLevelConfiguration().paperPullRequestsPort.fixBlockDispenseEventBeingCalledWhenNothingActuallyHappens.enabled) {
++                if ((blockState.getBlock() instanceof net.minecraft.world.level.block.BonemealableBlock bonemealableBlock && bonemealableBlock.isValidBonemealTarget(worldserver, blockposition, blockState, worldserver.isClientSide)) || (blockState.is(Blocks.WATER) && blockState.getFluidState().getAmount() == 8) || !worldserver.andromedaLevelConfiguration().paperPullRequestsPort.fixBlockDispenseEventBeingCalledWhenNothingActuallyHappens) {
 +                // Andromeda end
                  // CraftBukkit start
                  org.bukkit.block.Block block = worldserver.getWorld().getBlockAt(pointer.getPos().getX(), pointer.getPos().getY(), pointer.getPos().getZ());
@@ -55,19 +55,14 @@ index 2df7bb73a004c9b3f1e5eaff2557e3cfafb9b3fb..98f3711886361077015ba6e08f4566c5
                  worldserver.captureTreeGeneration = true;
                  // CraftBukkit end
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 9eb40feb1870c1601c7be8ab573f902e7f26d55f..042e25b01e2fa78aa8c79865a1d057f354a6170f 100644
+index b54347d0818bf8beed4812331cf7cc8bf24675f7..e9c4e5e8552478e70bd4f2b297942a5ea58d71ec 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -173,6 +173,13 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -148,6 +148,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
-         }
+         public boolean fixSeveralIsuesWithEntityBreedEvent = true;
  
-+        public FixBlockDispenseEventBeingCalledWhenNothingActuallyHappens fixBlockDispenseEventBeingCalledWhenNothingActuallyHappens;
-+        public class FixBlockDispenseEventBeingCalledWhenNothingActuallyHappens extends ConfigurationPart {
-+
-+            public boolean enabled = true;
-+
-+        }
++        public boolean fixBlockDispenseEventBeingCalledWhenNothingActuallyHappens = true;
 +
      }
  

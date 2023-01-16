@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8750
 
 
 diff --git a/src/main/java/net/minecraft/world/inventory/MerchantResultSlot.java b/src/main/java/net/minecraft/world/inventory/MerchantResultSlot.java
-index 7acf5ab9339e0134819aab5f270e99e927cc7a62..9a5d99b8a2627fd6eaa6322c84b8274cd50efe30 100644
+index 7acf5ab9339e0134819aab5f270e99e927cc7a62..234e68c6ec5e459d7e2807b0ddf66849ab7bbbb9 100644
 --- a/src/main/java/net/minecraft/world/inventory/MerchantResultSlot.java
 +++ b/src/main/java/net/minecraft/world/inventory/MerchantResultSlot.java
 @@ -64,6 +64,13 @@ public class MerchantResultSlot extends Slot {
@@ -13,7 +13,7 @@ index 7acf5ab9339e0134819aab5f270e99e927cc7a62..9a5d99b8a2627fd6eaa6322c84b8274c
                  }
                  merchantOffer = org.bukkit.craftbukkit.inventory.CraftMerchantRecipe.fromBukkit(event.getTrade()).toMinecraft();
 +                // Andromeda start - Port PaperMC/Paper#8750
-+                if (player.getLevel().andromedaLevelConfiguration().paperPullRequestsPort.makePlayerPurchaseEventRespectResultItem.enabled) {
++                if (player.getLevel().andromedaLevelConfiguration().paperPullRequestsPort.makePlayerPurchaseEventRespectResultItem) {
 +                    stack.setItem(merchantOffer.result.getItem());
 +                    stack.setTag(merchantOffer.result.getTag());
 +                    stack.setCount(merchantOffer.result.getCount());
@@ -23,19 +23,14 @@ index 7acf5ab9339e0134819aab5f270e99e927cc7a62..9a5d99b8a2627fd6eaa6322c84b8274c
          }
          this.checkTakeAchievements(stack);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index b798c5ab5ca6acd867eecaa6df912bb8ab71dbca..ea27b2c20d29a69c0df9f3b03b8dc002cc26c817 100644
+index a9fc869ff2cb7585cc4cb315811570c79641d9a8..ee3b28d5d6991212852f62b15616942a26be6618 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -145,6 +145,13 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -140,6 +140,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
-         }
+         public boolean fixCampfireRecipesNotAlwaysOutputtingFullResult = true;
  
-+        public MakePlayerPurchaseEventRespectResultItem makePlayerPurchaseEventRespectResultItem;
-+        public class MakePlayerPurchaseEventRespectResultItem extends ConfigurationPart {
-+
-+            public boolean enabled = true;
-+
-+        }
++        public boolean makePlayerPurchaseEventRespectResultItem = true;
 +
      }
  

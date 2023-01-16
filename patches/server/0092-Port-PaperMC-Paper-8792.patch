@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Mon, 16 Jan 2023 14:30:01 +0900
+Subject: [PATCH] Port PaperMC/Paper#8792
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
+index 3e5abea2f814a0a364cf87ff4ce1b1718ba2ddac..a84ad9559ad38ccdfb4b85621d41354fdf0c1ede 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
+@@ -214,7 +214,21 @@ public final class CraftItemStack extends ItemStack {
+         if (this.handle == null) {
+             return 0;
+         }
+-        return net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(CraftEnchantment.getRaw(ench), handle); // Paper
++
++        // Andromeda start - Port PaperMC/Paper#8792
++        ListTag enchantments = this.handle.getEnchantmentTags();
++
++        for (int i = 0; i < enchantments.size(); i++) {
++            CompoundTag tag = enchantments.getCompound(i);
++            String id = tag.getString(ENCHANTMENTS_ID.NBT);
++            Enchantment enchantment = Enchantment.getByKey(CraftNamespacedKey.fromStringOrNull(id));
++
++            if (ench.equals(enchantment))
++                return 0xffff & tag.getShort(ENCHANTMENTS_LVL.NBT);
++        }
++
++        return 0;
++        // Andromeda end
+     }
+ 
+     @Override

@@ -5,23 +5,21 @@ Subject: [PATCH] Port PaperMC/Paper#8602
 
 
 diff --git a/src/main/java/net/minecraft/commands/CommandSourceStack.java b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-index 613b3fb0a90ef19161f0df09a014c3811e5b8c9e..1feaaa2b8958b12462b0f7f0398ee1cc30c19a70 100644
+index 613b3fb0a90ef19161f0df09a014c3811e5b8c9e..9deffdc96469d213120fb08723644cf067639223 100644
 --- a/src/main/java/net/minecraft/commands/CommandSourceStack.java
 +++ b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-@@ -207,8 +207,20 @@ public class CommandSourceStack implements SharedSuggestionProvider, com.destroy
+@@ -207,8 +207,18 @@ public class CommandSourceStack implements SharedSuggestionProvider, com.destroy
  
      // CraftBukkit start
      public boolean hasPermission(int i, String bukkitPermission) {
 -        // World is null when loading functions
 -        return ((this.getLevel() == null || !this.getLevel().getCraftServer().ignoreVanillaPermissions) && this.permissionLevel >= i) || this.getBukkitSender().hasPermission(bukkitPermission);
 +        // Andromeda start - Port PaperMC/Paper#8602
-+        Boolean flag = true;
++        boolean flag = true;
 +        try {
-+            flag = team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.fixCommandFunctionPermChecking.enabled;
-+        } catch (Exception ignored) {
-+            ;
-+        }
-+        if (flag)
++            flag = team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.fixCommandFunctionPermChecking;
++        } catch (Exception ignored) {;}
++        if (!flag)
 +            return ((this.getLevel() == null || !this.getLevel().getCraftServer().ignoreVanillaPermissions) && this.permissionLevel >= i) || this.getBukkitSender().hasPermission(bukkitPermission);
 +        if (this.source == CommandSource.NULL)
 +            return this.permissionLevel >= i;
@@ -32,19 +30,14 @@ index 613b3fb0a90ef19161f0df09a014c3811e5b8c9e..1feaaa2b8958b12462b0f7f0398ee1cc
      // CraftBukkit end
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index e4644ee4551d723c7cb6e273ba2af761211695d1..10537599d0c634c7d790b28d2c0d8906ea99aa4a 100644
+index 17e36956e2b9e2e6fc0fbcadb7f73d73ecdcd6b9..d15b78ff9cb67686e14fc43414b4d23d14124d09 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -150,6 +150,13 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -140,6 +140,8 @@ public class GlobalConfiguration extends ConfigurationPart {
  
-         }
+         public boolean properlyTrackTheChangedItemFromDispenseEvents = true;
  
-+        public FixCommandFunctionPermChecking fixCommandFunctionPermChecking;
-+        public class FixCommandFunctionPermChecking extends ConfigurationPart {
-+
-+            public boolean enabled = true;
-+
-+        }
++        public boolean fixCommandFunctionPermChecking = true;
 +
      }
  

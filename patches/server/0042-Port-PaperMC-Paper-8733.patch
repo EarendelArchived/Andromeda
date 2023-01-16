@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8733
 
 
 diff --git a/src/main/java/io/papermc/paper/voxel/AABBVoxelShape.java b/src/main/java/io/papermc/paper/voxel/AABBVoxelShape.java
-index d67a40e7be030142443680c89e1763fc9ecdfe0a..94318ee099001f9363e919bb02759aab7824fade 100644
+index d67a40e7be030142443680c89e1763fc9ecdfe0a..ff5dd1047a3e95311d2dd1bba73e99ae1f136645 100644
 --- a/src/main/java/io/papermc/paper/voxel/AABBVoxelShape.java
 +++ b/src/main/java/io/papermc/paper/voxel/AABBVoxelShape.java
 @@ -178,7 +178,7 @@ public final class AABBVoxelShape extends VoxelShape {
@@ -13,27 +13,22 @@ index d67a40e7be030142443680c89e1763fc9ecdfe0a..94318ee099001f9363e919bb02759aab
      @Override
      public double collide(Direction.Axis enumdirection_enumaxis, AABB axisalignedbb, double d0) {
 -        if (CollisionUtil.isEmpty(this.aabb) || CollisionUtil.isEmpty(axisalignedbb)) {
-+        if (CollisionUtil.isEmpty(this.aabb) || (CollisionUtil.isEmpty(axisalignedbb) && !team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.fixCollisionBetweenAabbAndADot.enabled)) { // Andromeda - Port PaperMC/Paper#8733
++        if (CollisionUtil.isEmpty(this.aabb) || (CollisionUtil.isEmpty(axisalignedbb) && !team.earendel.andromeda.configurations.GlobalConfiguration.get().paperPullRequestsPort.fixCollisionBetweenAabbAndADot)) { // Andromeda - Port PaperMC/Paper#8733
              return d0;
          }
          switch (enumdirection_enumaxis.ordinal()) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 02816f11db66cdd6d5cbbce5e65fe8cc213d8897..084d925df3339dbed19a45d200aa30b8f916f45e 100644
+index 02816f11db66cdd6d5cbbce5e65fe8cc213d8897..d0e07dc835abb0c5e574a5ab0e92258288e18c1b 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -133,4 +133,16 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -133,4 +133,11 @@ public class GlobalConfiguration extends ConfigurationPart {
  
      }
  
 +    public PaperPullRequestsPort paperPullRequestsPort;
 +    public class PaperPullRequestsPort extends ConfigurationPart {
 +
-+        public FixCollisionBetweenAabbAndADot fixCollisionBetweenAabbAndADot;
-+        public class FixCollisionBetweenAabbAndADot extends ConfigurationPart {
-+
-+            public boolean enabled = true;
-+
-+        }
++        public boolean fixCollisionBetweenAabbAndADot = true;
 +
 +    }
 +
