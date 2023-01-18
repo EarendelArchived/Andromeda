@@ -19,7 +19,7 @@ jobs:
         java: ['temurin']
         os: [ubuntu-20.04]
 
-    if: github.event.label.name == 'build' && "!startsWith(github.event.commits[0].message, '[CI-Skip]')"
+    if: github.event.label.name == 'build' && !startsWith(github.event.commits[0].message, '[CI-Skip]')
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout action
