@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8524
 
 
 diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-index bba2b52802eddc1639c977057b5c6097a11684c7..8900a2e4017c57f3e5230e06b31ba44a44ce0b9b 100644
+index fd822628af1c633a31116384572b1815255bc9c8..af58729405e9138c2c2fc094d95a4962edcb402b 100644
 --- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 @@ -351,7 +351,7 @@ public interface DispenseItemBehavior {

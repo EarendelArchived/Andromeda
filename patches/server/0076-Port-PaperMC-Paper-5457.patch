@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#5457
 
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 9608c5a3dbd7c747daf3e3434279f15c7ffc5f0a..f32184894ffc8fe3349bef71ddbe266d580c9169 100644
+index 442728f37d1ebefff92971d065d2f0e78d0a9f0c..4c103ed1e9e0dc14946f07f862e87aac9c75b59c 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -138,7 +138,7 @@ public abstract class PlayerList {

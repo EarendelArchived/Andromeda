@@ -87,10 +87,10 @@ index 4141bb6a9a2493f3ed1d905a1e8461f602ea0fee..1fdb2af7cf1c799dd052b072dce3fdb6
 +    // Andromeda end
  }
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index e14bcf84fd626b86829e67a1c2e7b4fe8821b8cf..c58be8d5877b1503034bb98597307e62b680b93c 100644
+index 0acb93af3d935c8032e334e4d091a76846a5751b..ec401722fe6afaa3d81d3df3b91a4c091b513e6a 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -166,6 +166,8 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -164,6 +164,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
          public boolean avoidRespawnDesyncOfPlayerMetadata = true;
  

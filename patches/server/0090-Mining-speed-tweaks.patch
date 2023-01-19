@@ -5,7 +5,7 @@ Subject: [PATCH] Mining speed tweaks
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 09f0212162b3790c632479ce9b5331c45c963b70..88f53b00faf74d11314464ce8753aa67ae1bfdb1 100644
+index bfee4d75736b91503d3ec8bea57754b574d0c6f2..18223e73ba4bceb8fcf7cd3f65151682c6be5b37 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -185,6 +185,7 @@ public abstract class Player extends LivingEntity {
@@ -36,7 +36,7 @@ index 09f0212162b3790c632479ce9b5331c45c963b70..88f53b00faf74d11314464ce8753aa67
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index e1d6dca1bb7406f76cdd06d2a30b10d9f59b2e9d..b5b67bce7797a6d54039525b6d3709e671cc28f3 100644
+index 3cd86edc4c806b2e9119abdf67f7903b5ebe13f1..41c1f7dc84a5139413e16ffb846ce1baba2ffd9f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -3154,5 +3154,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -56,7 +56,7 @@ index e1d6dca1bb7406f76cdd06d2a30b10d9f59b2e9d..b5b67bce7797a6d54039525b6d3709e6
      // Andromeda end
  }
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 37c6d03b2941178fef79e4b724ab4fd2f3403a68..a82d03bdc357524863e5d833103a98924bfff92d 100644
+index 6a7cdd347e1c1527c855dc0791170e6174cf49b5..b62b37ac95a15f9107154832f1d9010549f150b0 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 @@ -32,6 +32,27 @@ public class LevelConfigurations extends ConfigurationPart {

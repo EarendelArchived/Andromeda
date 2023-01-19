@@ -21,7 +21,7 @@ index c029d6eb7893d41432e3de15fbf94768ef595d3f..fc0eebda32fe193c725252171c5277c5
  
      public static AttributeSupplier.Builder createAttributes() {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 6adead94485ad859f8566be56f0e5dc4fbe70ef7..81530fbe101b54f65afa303b781d3bb1169bcd7c 100644
+index 7370a1e7aa1b78068cf3f100417fec06ae2388a3..9b8952f3bc04cfd3aa29167ae331a01271dacf68 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 @@ -68,6 +68,17 @@ public class LevelConfigurations extends ConfigurationPart {

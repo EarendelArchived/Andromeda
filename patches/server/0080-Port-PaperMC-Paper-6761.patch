@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#6761
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index c7d6fae6e283c80fc6e1ca5062cdbfbe02340df8..ae4380436e159bef2d2a48158d54f07c509e85b6 100644
+index 724bcbadb1e96f251b412b0fa8aa6de5247c3ec6..44ad5dc9f580dd47915e4585c9f74e0a399fe561 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -228,7 +228,7 @@ public class ServerPlayer extends Player {
@@ -42,10 +42,10 @@ index e4afb366ba6f03c1e852e31ca14b58e21abe99d8..2d9bec9ffc2a4137f20b522e41a90588
  
      @Override
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 821f02a72e367f4f9bc8fb2f6ff8ac959cf782be..b7c3a1f8e77b711d1af537faab90cc85a1283c0e 100644
+index 4fade9f69296d80c28cfc274e35e8def993ae6d5..05ae089b938e7e11d55105a86f46c8d5f0990ad4 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -189,6 +189,8 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -187,6 +187,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
          public boolean improveEntityTransformEventCancellationHandling = true;
  

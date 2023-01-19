@@ -17,7 +17,7 @@ index af7e78f75095c598b5cf46e94408b25e177bfa15..bc4fcbc0805841efec81fca56f9afd66
              public int experienceMergeMaxValue = -1;
              public boolean shouldRemoveDragon = false;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 41c43c7aa99f2b46ee094a8e1d46262b988f223f..95ab7e6731e22e001249b5925ebf4596c8a981b6 100644
+index cf802a69ed84d158af92f6b5c72f4cfd908bad37..05a55e89ffa6bad9e5f5670886aab3da0fe8318b 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -447,7 +447,7 @@ public class LevelChunk extends ChunkAccess {

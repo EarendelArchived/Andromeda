@@ -34,10 +34,10 @@ index 832469e39901d9ec666ddaf3aff77419f6195b1c..90c0d12fd87398b46e9577a6e3e023da
                  // CraftBukkit end
                  this.releaseAllPois();
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 711191e109275c1088de65963ee089a9e346c114..821f02a72e367f4f9bc8fb2f6ff8ac959cf782be 100644
+index 9b8952f3bc04cfd3aa29167ae331a01271dacf68..4fade9f69296d80c28cfc274e35e8def993ae6d5 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -187,6 +187,8 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -185,6 +185,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
          public boolean fixSettingInvalidDirectionStatePropInUpgradeData = true;
  
