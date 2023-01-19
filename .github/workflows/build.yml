@@ -7,10 +7,9 @@ on:
 
 env:
   ORG_NAME: TeamEarendel
-
-  version: 1.19.3
-  branch: ver/1.19.3
-  debug: 'false'
+  MC_VERSION: 1.19.3
+  MAIN_BRANCH: ver/1.19.3
+  DEBUG: 'false'
 
 jobs:
   release:
@@ -61,7 +60,7 @@ jobs:
 
       - name: Update Javadoc
         continue-on-error: true
-        if: github.ref_name == env.branch
+        if: github.ref_name == env.MAIN_BRANCH
         run: |
           (cd Andromeda-API/build/docs/javadoc && tar c .) | (cd javadoc && tar xf -)
           cd javadoc
@@ -69,14 +68,14 @@ jobs:
           git push
 
       - name: Publish Packages
-        if: github.ref_name == env.branch
+        if: github.ref_name == env.MAIN_BRANCH
         run: |
           export GITHUB_USERNAME=${{ env.ORG_NAME }}
           export GITHUB_TOKEN=${{ secrets.GH_PAT }}
           ./gradlew publish --stacktrace
 
       - name: Upload Artifacts
-        if: env.debug == 'true' || github.ref_name != env.branch
+        if: env.DEBUG == 'true' || github.ref_name != env.MAIN_BRANCH
         uses: actions/upload-artifact@v3
         with:
           name: Artifacts
@@ -85,7 +84,7 @@ jobs:
             Andromeda-API/build/docs/javadoc
 
       - name: Release Artifacts
-        if: github.ref_name == env.branch
+        if: github.ref_name == env.MAIN_BRANCH
         uses: marvinpinto/action-automatic-releases@latest
         with:
           title: "Release #${{ env.workflow }}"
@@ -95,11 +94,11 @@ jobs:
           prerelease: false
           
       - name: Release Artifacts (Latest)
-        if: github.ref_name == env.branch
+        if: github.ref_name == env.MAIN_BRANCH
         uses: marvinpinto/action-automatic-releases@latest
         with:
           title: "Release #${{ env.workflow }}"
-          automatic_release_tag: latest-${{ env.version }}
+          automatic_release_tag: latest-${{ env.MC_VERSION }}
           repo_token: "${{ secrets.GH_PAT }}"
           files: build/libs/*.jar
           prerelease: false
