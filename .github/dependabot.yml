@@ -7,10 +7,12 @@ version: 2
 updates:
   - package-ecosystem: "github-actions" # See documentation for possible values
     directory: "/" # Location of package manifests
+    target-branch: "*"
     schedule:
       interval: "daily"
   
   - package-ecosystem: "gradle"
     directory: "/"
+    target-branch: "*"
     schedule:
       interval: "daily"
