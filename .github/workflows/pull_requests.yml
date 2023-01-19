@@ -19,7 +19,7 @@ jobs:
         java: ['temurin']
         os: [ubuntu-20.04]
 
-    if: github.event.label.name == 'build' && !startsWith(github.event.commits[0].message, '[CI-Skip]')
+    if: contains(github.event.pull_request.labels.*.name, 'build') && !startsWith(github.event.commits[0].message, '[CI-Skip]')
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout action
@@ -51,11 +51,8 @@ jobs:
       - name: Create Mojmap Jar
         run: ./gradlew createMojmapPaperclipJar --stacktrace
 
-      - name: Update Javadoc
-        run: |
-          ./gradlew Andromeda-API:javadoc
-
       - name: Upload Artifacts
+        if: contains(github.event.pull_request.labels.*.name, 'upload_artifact')
         uses: actions/upload-artifact@v3
         with:
           name: Artifacts
