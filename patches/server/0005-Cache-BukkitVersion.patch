@@ -5,30 +5,31 @@ Subject: [PATCH] Cache BukkitVersion
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index dddea464dcae91def0ac56c8ff0477f51a8c0784..e17371bbef3404536c4fdc2e7e27c65079a3a940 100644
+index fb87620c742ff7912f5e8ccd2a7930dd605576d9..345933a141f94bd990c654b7f64e39be9ea4945a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-@@ -8,9 +8,9 @@ import java.util.logging.Logger;
+@@ -8,22 +8,25 @@ import java.util.logging.Logger;
  import org.bukkit.Bukkit;
  
  public final class Versioning {
 -    public static String getBukkitVersion() {
 -        String result = "Unknown-Version";
 -
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Purpur
 +    // Andromeda start - Cache Version
 +    public static String version = "Unknown-Version";
 +    static {
-         InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/team.earendel.andromeda/andromeda-api/pom.properties"); // Purpur // Andromeda
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/team.earendel.andromeda/andromeda-api/pom.properties"); // Purpur // Andromeda
          Properties properties = new Properties();
  
-@@ -18,12 +18,15 @@ public final class Versioning {
+         if (stream != null) {
              try {
                  properties.load(stream);
  
 -                result = properties.getProperty("version");
 +                version = properties.getProperty("version");
              } catch (IOException ex) {
-                 Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Andromeda version!", ex); // Andromeda
+                 Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Bukkit version!", ex);
              }
          }
 +    }

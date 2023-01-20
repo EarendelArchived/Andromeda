@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: AlphaKR93 <alphakr93@outlook.com>
-Date: Thu, 12 Jan 2023 02:55:04 +0000
+From: AlphaKR93 <alphakr93@gmail.com>
+Date: Fri, 20 Jan 2023 09:51:45 +0000
 Subject: [PATCH] Purpur API Changes
 
 Original: PurpurMC
@@ -1124,18 +1124,10 @@ index 655e37cb3a09610a3f3df805d6dcad17d722da62..09fd716c8fc9ea34a1cbf87bcbe22df0
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Item.java b/src/main/java/org/bukkit/entity/Item.java
-index 58017fce436cdbda255f7172fbdadb726d4b113c..932e65f3aff0d7b15663ef9855b8b74dcb066dd6 100644
+index 58017fce436cdbda255f7172fbdadb726d4b113c..05600fc8bf2a61aca8094029bc4c208a710da952 100644
 --- a/src/main/java/org/bukkit/entity/Item.java
 +++ b/src/main/java/org/bukkit/entity/Item.java
-@@ -1,6 +1,7 @@
- package org.bukkit.entity;
- 
- import java.util.UUID;
-+
- import org.bukkit.inventory.ItemStack;
- import org.jetbrains.annotations.NotNull;
- import org.jetbrains.annotations.Nullable;
-@@ -153,4 +154,64 @@ public interface Item extends Entity, io.papermc.paper.entity.Frictional { // Pa
+@@ -153,4 +153,62 @@ public interface Item extends Entity, io.papermc.paper.entity.Frictional { // Pa
       */
      public void setHealth(int health);
      // Paper end
@@ -1173,9 +1165,7 @@ index 58017fce436cdbda255f7172fbdadb726d4b113c..932e65f3aff0d7b15663ef9855b8b74d
 +     * Set whether or not this item is immune to fire
 +     *
 +     * @param immuneToFire True to make immune to fire
-+     @deprecated use {@link #setImmuneToFire(Boolean)} instead
 +     */
-+    @Deprecated
 +    void setImmuneToFire(boolean immuneToFire);
 +
 +    /**
