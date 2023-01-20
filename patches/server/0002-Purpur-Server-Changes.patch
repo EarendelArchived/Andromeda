@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: AlphaKR93 <alphakr93@outlook.com>
-Date: Thu, 12 Jan 2023 02:55:04 +0000
+From: AlphaKR93 <alphakr93@gmail.com>
+Date: Fri, 20 Jan 2023 03:03:29 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 5752339f2d081c36944d568e0b29ec4fe24f37f9..d5b7458f6b79addf1a12eb82443ba5bdbe2ea5d3 100644
+index 80f9b35413552c4aba3ba01a95290c55f4e77106..020927dfe9624453311d1d171a10f44344ec8710 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -7,9 +7,9 @@ plugins {
@@ -3209,7 +3209,7 @@ index a50af1f62661622f4a162c7dbad4e7ff056a64ef..a8e205af936efe0909c94575e3b7f8ca
              try {
                  byte[] data = new byte[packet.data.readableBytes()];
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 3f7fab2f80ded9a7a720bd623f1ef028a4d0dca6..f7f085a2dc5dc8d09bc665a371afac04b0e118fc 100644
+index a25306fe8a35bb70a490e6a0c01d0340bbc0d781..cd718c7a9f95d003014ea28642b375297872e5f9 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -220,6 +220,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -4253,7 +4253,7 @@ index 72abebff2018cde2922e97ad6478f93da9aed3ec..412963d7af38a53b6010007278d959a5
      private EntitySelector() {}
      // Paper start
 diff --git a/src/main/java/net/minecraft/world/entity/EntityType.java b/src/main/java/net/minecraft/world/entity/EntityType.java
-index 3e0d38ed6959d5d9f7dbae8d604acb9299b8621d..f2336e0915a9fb3a636d7873e1c5ce2ebf16e27a 100644
+index ac7ee31f2bfe5d4139b793a698317db50b39fe40..f22ceffdc95224f2de8d19f501b43b266de196d4 100644
 --- a/src/main/java/net/minecraft/world/entity/EntityType.java
 +++ b/src/main/java/net/minecraft/world/entity/EntityType.java
 @@ -301,13 +301,24 @@ public class EntityType<T extends Entity> implements FeatureElement, EntityTypeT
@@ -4414,7 +4414,7 @@ index c1e9b40a4a0f9cdc650caa88b5ea132e06ee2496..5d6cddc221887be20ef75d688817dfe5
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 120c0804010fd5b38a5f806ca580962ff8b47339..094afd5636590608c8ec31c9fec97614dfef60db 100644
+index 413652284e229a51e3eefe47f239e8fa9a09ccb2..b2e4b5c463ceb19356da18e7fc52d20801b674cd 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -221,9 +221,9 @@ public abstract class LivingEntity extends Entity {
