@@ -1,226 +1,84 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
-Date: Fri, 20 Jan 2023 08:07:49 +0900
+Date: Sat, 21 Jan 2023 20:14:38 +0900
 Subject: [PATCH] Port PaperMC/Paper#8799
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/antixray/ChunkPacketBlockControllerAntiXray.java b/src/main/java/com/destroystokyo/paper/antixray/ChunkPacketBlockControllerAntiXray.java
-index a9edfe505667a5b543040b7d8739373a5847f2fe..d2305c6b8394186b7680af7a4afbd6bf813e6c1f 100644
+index a9edfe505667a5b543040b7d8739373a5847f2fe..63b78e153a074fddcca58af2053c35a4cddb0e40 100644
 --- a/src/main/java/com/destroystokyo/paper/antixray/ChunkPacketBlockControllerAntiXray.java
 +++ b/src/main/java/com/destroystokyo/paper/antixray/ChunkPacketBlockControllerAntiXray.java
-@@ -352,191 +352,33 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
-     }
- 
-     private void obfuscateLayer(int y, BitStorageReader bitStorageReader, BitStorageWriter bitStorageWriter, boolean[] solid, boolean[] obfuscate, int[] presetBlockStateBits, boolean[][] current, boolean[][] next, boolean[][] nextNext, LevelChunkSection[] nearbyChunkSections, IntSupplier random) {
--        // First block of first line
--        int bits = bitStorageReader.read();
--
--        if (nextNext[0][0] = !solid[bits]) {
--            bitStorageWriter.skip();
--            next[0][1] = true;
--            next[1][0] = true;
--        } else {
--            if (current[0][0] || isTransparent(nearbyChunkSections[2], 0, y, 15) || isTransparent(nearbyChunkSections[0], 15, y, 0)) {
--                bitStorageWriter.skip();
--            } else {
--                bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
--            }
--        }
--
--        if (!obfuscate[bits]) {
--            next[0][0] = true;
--        }
--
--        // First line
--        for (int x = 1; x < 15; x++) {
--            bits = bitStorageReader.read();
--
--            if (nextNext[0][x] = !solid[bits]) {
--                bitStorageWriter.skip();
--                next[0][x - 1] = true;
--                next[0][x + 1] = true;
--                next[1][x] = true;
--            } else {
--                if (current[0][x] || isTransparent(nearbyChunkSections[2], x, y, 15)) {
--                    bitStorageWriter.skip();
--                } else {
--                    bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
--                }
--            }
--
--            if (!obfuscate[bits]) {
--                next[0][x] = true;
--            }
--        }
--
--        // Last block of first line
--        bits = bitStorageReader.read();
--
--        if (nextNext[0][15] = !solid[bits]) {
--            bitStorageWriter.skip();
--            next[0][14] = true;
--            next[1][15] = true;
--        } else {
--            if (current[0][15] || isTransparent(nearbyChunkSections[2], 15, y, 15) || isTransparent(nearbyChunkSections[1], 0, y, 0)) {
--                bitStorageWriter.skip();
--            } else {
--                bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
--            }
--        }
--
--        if (!obfuscate[bits]) {
--            next[0][15] = true;
--        }
--
--        // All inner lines
--        for (int z = 1; z < 15; z++) {
--            // First block
--            bits = bitStorageReader.read();
--
--            if (nextNext[z][0] = !solid[bits]) {
--                bitStorageWriter.skip();
--                next[z][1] = true;
--                next[z - 1][0] = true;
--                next[z + 1][0] = true;
--            } else {
--                if (current[z][0] || isTransparent(nearbyChunkSections[0], 15, y, z)) {
--                    bitStorageWriter.skip();
--                } else {
--                    bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
--                }
--            }
--
--            if (!obfuscate[bits]) {
--                next[z][0] = true;
--            }
--
--            // All inner blocks
--            for (int x = 1; x < 15; x++) {
+@@ -223,7 +223,30 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
+         bitStorageWriter.setBuffer(chunkPacketInfoAntiXray.getBuffer());
+         int numberOfBlocks = presetBlockStateBits.length;
+         // Keep the lambda expressions as simple as possible. They are used very frequently.
+-        IntSupplier random = numberOfBlocks == 1 ? (() -> 0) : new IntSupplier() {
 +        // Andromeda start - Port PaperMC/Paper#8799
-+        int presetBlockState = random.getAsInt();
-+        int bits;
-+        for (int z = 0; z <= 15; z++)
-+            for (int x = 0; x <= 15; x++) {
-                 bits = bitStorageReader.read();
--
--                if (nextNext[z][x] = !solid[bits]) {
-+                if (nextNext[z][x] != solid[bits]) {
-                     bitStorageWriter.skip();
--                    next[z][x - 1] = true;
--                    next[z][x + 1] = true;
--                    next[z - 1][x] = true;
--                    next[z + 1][x] = true;
-+                    if (x > 0) next[z][x - 1] = true;
-+                    if (x < 15) next[z][x + 1] = true;
-+                    if (z > 0) next[z - 1][x] = true;
-+                    if (z < 15) next[z + 1][x] = true;
-                 } else {
--                    if (current[z][x]) {
-+                    boolean negX = x == 0 && isTransparent(nearbyChunkSections[0], 15, y, z);
-+                    boolean posX = x == 15 && isTransparent(nearbyChunkSections[1], 0, y, z);
-+                    boolean negZ = z == 0 && isTransparent(nearbyChunkSections[2], x, y, 15);
-+                    boolean posZ = z == 15 && isTransparent(nearbyChunkSections[3], x, y, 0);
-+                    if (current[z][x] || negX || posX || negZ || posZ)
-                         bitStorageWriter.skip();
--                    } else {
--                        bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
--                    }
-+                    else
-+                        bitStorageWriter.write(presetBlockStateBits[engineMode == EngineMode.OBFUSCATE_LAYER ? presetBlockState : random.getAsInt()]);
++        LayeredIntSupplier random = numberOfBlocks == 1 ? (() -> 0) : engineMode == EngineMode.OBFUSCATE_LAYER ? new LayeredIntSupplier() {
++            // engine-mode: 3
++            private int state;
++            private int next;
++
++            {
++                while ((state = ThreadLocalRandom.current().nextInt()) == 0);
++            }
++
++            @Override
++            public void nextLayer() {
++                state ^= state << 13;
++                state ^= state >>> 17;
++                state ^= state << 5;
++                next = (int) ((Integer.toUnsignedLong(state) * numberOfBlocks) >>> 32);
++            }
++
++            @Override
++            public int getAsInt() {
++                return next;
++            }
++        } : new LayeredIntSupplier() {
++        // Andromeda end
+             private int state;
+ 
+             {
+@@ -304,6 +327,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
+                     current = next;
+                     next = nextNext;
+                     nextNext = temp;
++                    random.nextLayer(); // Andromeda - Port PaperMC/Paper#8799
+                     obfuscateLayer(y, bitStorageReader, bitStorageWriter, solidTemp, obfuscateTemp, presetBlockStateBitsTemp, current, next, nextNext, nearbyChunkSections, random);
                  }
  
--                if (!obfuscate[bits]) {
-+                if (!obfuscate[bits])
-                     next[z][x] = true;
--                }
--            }
--
--            // Last block
--            bits = bitStorageReader.read();
--
--            if (nextNext[z][15] = !solid[bits]) {
--                bitStorageWriter.skip();
--                next[z][14] = true;
--                next[z - 1][15] = true;
--                next[z + 1][15] = true;
--            } else {
--                if (current[z][15] || isTransparent(nearbyChunkSections[1], 0, y, z)) {
--                    bitStorageWriter.skip();
--                } else {
--                    bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
--                }
--            }
--
--            if (!obfuscate[bits]) {
--                next[z][15] = true;
--            }
--        }
--
--        // First block of last line
--        bits = bitStorageReader.read();
--
--        if (nextNext[15][0] = !solid[bits]) {
--            bitStorageWriter.skip();
--            next[15][1] = true;
--            next[14][0] = true;
--        } else {
--            if (current[15][0] || isTransparent(nearbyChunkSections[3], 0, y, 0) || isTransparent(nearbyChunkSections[0], 15, y, 15)) {
--                bitStorageWriter.skip();
--            } else {
--                bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
--            }
--        }
--
--        if (!obfuscate[bits]) {
--            next[15][0] = true;
--        }
--
--        // Last line
--        for (int x = 1; x < 15; x++) {
--            bits = bitStorageReader.read();
--
--            if (nextNext[15][x] = !solid[bits]) {
--                bitStorageWriter.skip();
--                next[15][x - 1] = true;
--                next[15][x + 1] = true;
--                next[14][x] = true;
--            } else {
--                if (current[15][x] || isTransparent(nearbyChunkSections[3], x, y, 0)) {
--                    bitStorageWriter.skip();
--                } else {
--                    bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
--                }
--            }
--
--            if (!obfuscate[bits]) {
--                next[15][x] = true;
-             }
--        }
--
--        // Last block of last line
--        bits = bitStorageReader.read();
--
--        if (nextNext[15][15] = !solid[bits]) {
--            bitStorageWriter.skip();
--            next[15][14] = true;
--            next[14][15] = true;
--        } else {
--            if (current[15][15] || isTransparent(nearbyChunkSections[3], 15, y, 0) || isTransparent(nearbyChunkSections[1], 0, y, 15)) {
--                bitStorageWriter.skip();
--            } else {
--                bitStorageWriter.write(presetBlockStateBits[random.getAsInt()]);
--            }
--        }
--
--        if (!obfuscate[bits]) {
--            next[15][15] = true;
--        }
-+        // Andromeda end
-     }
+@@ -329,6 +353,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
+                         // There is nothing to read anymore
+                         bitStorageReader.setBits(0);
+                         solid[0] = true;
++                        random.nextLayer(); // Andromeda - Port PaperMC/Paper#8799
+                         obfuscateLayer(15, bitStorageReader, bitStorageWriter, solid, obfuscateTemp, presetBlockStateBitsTemp, current, next, nextNext, nearbyChunkSections, random);
+                     }
+                 } else {
+@@ -341,6 +366,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
+                     current = next;
+                     next = nextNext;
+                     nextNext = temp;
++                    random.nextLayer(); // Andromeda - Port PaperMC/Paper#8799
+                     obfuscateLayer(15, bitStorageReader, bitStorageWriter, solidTemp, obfuscateTemp, presetBlockStateBitsTemp, current, next, nextNext, nearbyChunkSections, random);
+                 }
  
-     private boolean isTransparent(LevelChunkSection chunkSection, int x, int y, int z) {
+@@ -633,4 +659,12 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
+             ((ServerLevel) level).getChunkSource().blockChanged(blockPos);
+         }
+     }
++
++    // Andromeda start - Port PaperMC/Paper#8799
++    @FunctionalInterface
++    public interface LayeredIntSupplier extends IntSupplier {
++        default void nextLayer() {
++        }
++    }
++    // Andromeda end
+ }
 diff --git a/src/main/java/io/papermc/paper/configuration/type/EngineMode.java b/src/main/java/io/papermc/paper/configuration/type/EngineMode.java
-index 99e90636051fa0c770ee2eafb7f0d29c8195f9ae..ced8bd70557991d981d8e2b51feb09056f8296bb 100644
+index 99e90636051fa0c770ee2eafb7f0d29c8195f9ae..5d6657939595220a4cf6f1bf3ccfca3619b5bce1 100644
 --- a/src/main/java/io/papermc/paper/configuration/type/EngineMode.java
 +++ b/src/main/java/io/papermc/paper/configuration/type/EngineMode.java
 @@ -5,7 +5,7 @@ import org.spongepowered.configurate.serialize.ScalarSerializer;
@@ -228,7 +86,7 @@ index 99e90636051fa0c770ee2eafb7f0d29c8195f9ae..ced8bd70557991d981d8e2b51feb0905
  public enum EngineMode {
  
 -    HIDE(1, "hide ores"), OBFUSCATE(2, "obfuscate");
-+    HIDE(1, "hide ores"), OBFUSCATE(2, "obfuscate"), OBFUSCATE_LAYER(3, "obfuscate_layer"); // Andromeda - Port PaperMC/Paper#8799
++    HIDE(1, "hide ores"), OBFUSCATE(2, "obfuscate"), OBFUSCATE_LAYER(3, "obfuscate_layer");
  
      public static final ScalarSerializer<EngineMode> SERIALIZER = new EngineModeSerializer();
  

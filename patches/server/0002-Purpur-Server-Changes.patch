@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
-Date: Fri, 20 Jan 2023 09:51:44 +0000
+Date: Sat, 21 Jan 2023 10:36:55 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -4870,7 +4870,7 @@ index 413652284e229a51e3eefe47f239e8fa9a09ccb2..b2e4b5c463ceb19356da18e7fc52d208
                          });
                      }
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index 94b45579dc371ee980565aed2f5dee78ebd44427..7bd4e95fcaf3855a4fe412b5898a97d7992caad3 100644
+index 94b45579dc371ee980565aed2f5dee78ebd44427..43cc8e8f07adecef21c70954918b8945a7c3ef62 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
 @@ -65,6 +65,7 @@ import net.minecraft.world.item.ProjectileWeaponItem;
@@ -5119,7 +5119,7 @@ index 94b45579dc371ee980565aed2f5dee78ebd44427..7bd4e95fcaf3855a4fe412b5898a97d7
      }
  
      @Override
-@@ -1728,4 +1755,52 @@ public abstract class Mob extends LivingEntity {
+@@ -1728,4 +1755,56 @@ public abstract class Mob extends LivingEntity {
  
          return itemmonsteregg == null ? null : new ItemStack(itemmonsteregg);
      }
@@ -5130,8 +5130,12 @@ index 94b45579dc371ee980565aed2f5dee78ebd44427..7bd4e95fcaf3855a4fe412b5898a97d7
 +    }
 +
 +    public InteractionResult tryRide(Player player, InteractionHand hand) {
++        return tryRide(player, hand, InteractionResult.PASS);
++    }
++
++    public InteractionResult tryRide(Player player, InteractionHand hand, InteractionResult result) {
 +        if (!isRidable()) {
-+            return InteractionResult.PASS;
++            return result;
 +        }
 +        if (hand != InteractionHand.MAIN_HAND) {
 +            return InteractionResult.PASS;
@@ -9142,7 +9146,7 @@ index 02219f5ca614fefffa1ceb3c7036dfe1c90c8676..867091706521dbb16e66bdf5c9f41367
  
          }
 diff --git a/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java b/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
-index d9104d996c854cce1ff167706c93747cd69c3969..f9d77ad2493b9ba67e8f45ce248d29a8e9ab7b80 100644
+index d9104d996c854cce1ff167706c93747cd69c3969..c942f0093e0b88ec8a904698a613c64a8c42bc43 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
 @@ -80,6 +80,13 @@ public class Camel extends AbstractHorse implements PlayerRideableJumping, Rider
@@ -9177,6 +9181,30 @@ index d9104d996c854cce1ff167706c93747cd69c3969..f9d77ad2493b9ba67e8f45ce248d29a8
          super.customServerAiStep();
      }
  
+@@ -294,6 +301,23 @@ public class Camel extends AbstractHorse implements PlayerRideableJumping, Rider
+         return this.dashCooldown;
+     }
+ 
++    // Purpur start
++    @Override
++    public float generateRandomMaxHealth(net.minecraft.util.RandomSource random) {
++        return (float) generateRandomMaxHealth(this.level.purpurConfig.camelMaxHealthMin, this.level.purpurConfig.camelMaxHealthMax);
++    }
++
++    @Override
++    public double generateRandomJumpStrength(net.minecraft.util.RandomSource random) {
++        return generateRandomJumpStrength(this.level.purpurConfig.camelJumpStrengthMin, this.level.purpurConfig.camelJumpStrengthMax);
++    }
++
++    @Override
++    public double generateRandomSpeed(net.minecraft.util.RandomSource random) {
++        return generateRandomSpeed(this.level.purpurConfig.camelMovementSpeedMin, this.level.purpurConfig.camelMovementSpeedMax);
++    }
++    // Purpur end
++
+     @Override
+     protected SoundEvent getAmbientSound() {
+         return SoundEvents.CAMEL_AMBIENT;
 diff --git a/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java b/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
 index 0a051c7e7f5a172a9b906de04ef2a0419eda26eb..fe1f01d7aa27907298dd2e97e6b4d4fa9c507628 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
@@ -14556,7 +14584,7 @@ index 5f407535298a31a34cfe114dd863fd6a9b977707..29c7e33fe961020e5a0007287fe9b663
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-index 76a9da8209d557b913c49ccd281bf147b9ac4fa4..832469e39901d9ec666ddaf3aff77419f6195b1c 100644
+index 76a9da8209d557b913c49ccd281bf147b9ac4fa4..aed1d9ccffe471b6c2a1d52d2d3d097f6431318b 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
 @@ -139,6 +139,8 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
@@ -14706,7 +14734,7 @@ index 76a9da8209d557b913c49ccd281bf147b9ac4fa4..832469e39901d9ec666ddaf3aff77419
              if (this.isBaby()) {
                  this.setUnhappy();
 -                return InteractionResult.sidedSuccess(this.level.isClientSide);
-+                return tryRide(player, hand); // Purpur
++                return tryRide(player, hand, InteractionResult.sidedSuccess(this.level.isClientSide)); // Purpur
              } else {
                  boolean flag = this.getOffers().isEmpty();
  
@@ -14715,7 +14743,7 @@ index 76a9da8209d557b913c49ccd281bf147b9ac4fa4..832469e39901d9ec666ddaf3aff77419
  
                  if (flag) {
 -                    return InteractionResult.sidedSuccess(this.level.isClientSide);
-+                    return tryRide(player, hand); // Purpur
++                    return tryRide(player, hand, InteractionResult.sidedSuccess(this.level.isClientSide)); // Purpur
                  } else {
 -                    if (!this.level.isClientSide && !this.offers.isEmpty()) {
 +                    if (level.purpurConfig.villagerRidable && itemstack.isEmpty()) return tryRide(player, hand); // Purpur
@@ -14788,7 +14816,7 @@ index ac70c2c03241e73943bd517a8c69dd05e0873634..0318663a824d2a9515f867a075d148c3
      public static final VillagerProfession FISHERMAN = register("fisherman", PoiTypes.FISHERMAN, SoundEvents.VILLAGER_WORK_FISHERMAN);
      public static final VillagerProfession FLETCHER = register("fletcher", PoiTypes.FLETCHER, SoundEvents.VILLAGER_WORK_FLETCHER);
 diff --git a/src/main/java/net/minecraft/world/entity/npc/WanderingTrader.java b/src/main/java/net/minecraft/world/entity/npc/WanderingTrader.java
-index e92e6fb4cf97f4d5406b5b5d5786bfa5fb55f536..6a4983999666c6b59c2c46f194190059574fb9df 100644
+index e92e6fb4cf97f4d5406b5b5d5786bfa5fb55f536..a2ad029160065baa395cfe20fa40881d8252fcb3 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/WanderingTrader.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/WanderingTrader.java
 @@ -66,6 +66,43 @@ public class WanderingTrader extends net.minecraft.world.entity.npc.AbstractVill
@@ -14857,7 +14885,7 @@ index e92e6fb4cf97f4d5406b5b5d5786bfa5fb55f536..6a4983999666c6b59c2c46f194190059
  
              if (this.getOffers().isEmpty()) {
 -                return InteractionResult.sidedSuccess(this.level.isClientSide);
-+                return tryRide(player, hand); // Purpur
++                return tryRide(player, hand, InteractionResult.sidedSuccess(this.level.isClientSide)); // Purpur
              } else {
 -                if (!this.level.isClientSide) {
 +                if (level.purpurConfig.wanderingTraderRidable && itemstack.isEmpty()) return tryRide(player, hand); // Purpur
@@ -21656,10 +21684,10 @@ index 0000000000000000000000000000000000000000..c7c0ed8dfe58c841faf684a1fe228eed
 +}
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d3eaf4c2983d16dcfed9f6b376b462d24b11be7f
+index 0000000000000000000000000000000000000000..4cd080a0db99a5c36394bcf54526b96fe22a206a
 --- /dev/null
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -0,0 +1,3155 @@
+@@ -0,0 +1,3167 @@
 +package org.purpurmc.purpur;
 +
 +//import gg.pufferfish.pufferfish.PufferfishConfig;
@@ -22842,7 +22870,19 @@ index 0000000000000000000000000000000000000000..d3eaf4c2983d16dcfed9f6b376b462d2
 +    }
 +
 +    public int camelBreedingTicks = 6000;
++    public double camelMaxHealthMin = 32.0D;
++    public double camelMaxHealthMax = 32.0D;
++    public double camelJumpStrengthMin = 0.42D;
++    public double camelJumpStrengthMax = 0.42D;
++    public double camelMovementSpeedMin = 0.09D;
++    public double camelMovementSpeedMax = 0.09D;
 +    private void camelSettings() {
++        camelMaxHealthMin = getDouble("mobs.camel.attributes.max_health.min", camelMaxHealthMin);
++        camelMaxHealthMax = getDouble("mobs.camel.attributes.max_health.max", camelMaxHealthMax);
++        camelJumpStrengthMin = getDouble("mobs.camel.attributes.jump_strength.min", camelJumpStrengthMin);
++        camelJumpStrengthMax = getDouble("mobs.camel.attributes.jump_strength.max", camelJumpStrengthMax);
++        camelMovementSpeedMin = getDouble("mobs.camel.attributes.movement_speed.min", camelMovementSpeedMin);
++        camelMovementSpeedMax = getDouble("mobs.camel.attributes.movement_speed.max", camelMovementSpeedMax);
 +        camelBreedingTicks = getInt("mobs.camel.breeding-delay-ticks", camelBreedingTicks);
 +    }
 +

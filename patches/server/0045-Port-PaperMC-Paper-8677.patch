@@ -46,10 +46,10 @@ index 841838562ffed67127b03e27f61d692d9933fbe3..519136a8a63332a280d7a53c0c6a76ea
                  this.setInLove(player);
              } else {
 diff --git a/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java b/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
-index 0600b2fca10ed994cfe652643e7df5a020987bab..7a62b5910f4217e24c20245c397e1b1ed2fa52f7 100644
+index 7f3d93a3c41c1e28afba1051fe7403a1fa045a2d..64090385fd61bac8c4b72ff11f62ebd71f641661 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
-@@ -407,6 +407,7 @@ public class Camel extends AbstractHorse implements PlayerRideableJumping, Rider
+@@ -419,6 +419,7 @@ public class Camel extends AbstractHorse implements PlayerRideableJumping, Rider
  
              boolean bl2 = this.isTamed() && this.getAge() == 0 && this.canFallInLove();
              if (bl2) {

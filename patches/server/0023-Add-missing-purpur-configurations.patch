@@ -33,10 +33,10 @@ index e8f42ad6cc32cb21584d8988fcf3d1e4b6552f0c..dbccd46b1f26f9d02cb2e76d4bf6bff4
      protected Brain.Provider<Allay> brainProvider() {
          return Brain.provider(Allay.MEMORY_TYPES, Allay.SENSOR_TYPES);
 diff --git a/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java b/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
-index f9d77ad2493b9ba67e8f45ce248d29a8e9ab7b80..0600b2fca10ed994cfe652643e7df5a020987bab 100644
+index c942f0093e0b88ec8a904698a613c64a8c42bc43..7f3d93a3c41c1e28afba1051fe7403a1fa045a2d 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
-@@ -127,9 +127,43 @@ public class Camel extends AbstractHorse implements PlayerRideableJumping, Rider
+@@ -127,9 +127,38 @@ public class Camel extends AbstractHorse implements PlayerRideableJumping, Rider
          return CamelAi.brainProvider();
      }
  
@@ -70,11 +70,6 @@ index f9d77ad2493b9ba67e8f45ce248d29a8e9ab7b80..0600b2fca10ed994cfe652643e7df5a0
 +    @Override
 +    protected boolean isAlwaysExperienceDropper() {
 +        return this.level.purpurConfig.camelAlwaysDropExp;
-+    }
-+
-+    @Override
-+    public void initAttributes() {
-+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.level.purpurConfig.camelMaxHealth);
      }
 +    // Andromeda end
  
@@ -165,7 +160,7 @@ index 17df2b09542f67cdd1d83f795d9b2aad9ccd4e05..faee4b5fd9906511a00cee171c5efc2a
      public Packet<ClientGamePacketListener> getAddEntityPacket() {
          return new ClientboundAddEntityPacket(this, this.hasPose(Pose.EMERGING) ? 1 : 0);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..236fc1bedc1ec6eba9a45f2c12a522f92e74564e 100644
+index 4cd080a0db99a5c36394bcf54526b96fe22a206a..eef84d906ac065a5b3d47e66b9f47d58148b6c02 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -1074,11 +1074,21 @@ public class PurpurWorldConfig {
@@ -190,7 +185,7 @@ index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..236fc1bedc1ec6eba9a45f2c12a522f9
          allayRespectNBT.clear();
          getList("mobs.allay.respect-nbt", new ArrayList<>()).forEach(key -> allayRespectNBT.add(key.toString()));
      }
-@@ -1179,8 +1189,24 @@ public class PurpurWorldConfig {
+@@ -1179,6 +1189,13 @@ public class PurpurWorldConfig {
          blazeAlwaysDropExp = getBoolean("mobs.blaze.always-drop-exp", blazeAlwaysDropExp);
      }
  
@@ -198,24 +193,27 @@ index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..236fc1bedc1ec6eba9a45f2c12a522f9
 +    public boolean camelRidable = false;
 +    public boolean camelRidableInWater = false;
 +    public boolean camelControllable = true;
-+    public double camelMaxHealth = 32.0D;
 +    public boolean camelTakeDamageFromWater = false;
 +    public boolean camelAlwaysDropExp = false;
 +    // Andromeda end
      public int camelBreedingTicks = 6000;
-     private void camelSettings() {
+     public double camelMaxHealthMin = 32.0D;
+     public double camelMaxHealthMax = 32.0D;
+@@ -1193,6 +1210,13 @@ public class PurpurWorldConfig {
+         camelJumpStrengthMax = getDouble("mobs.camel.attributes.jump_strength.max", camelJumpStrengthMax);
+         camelMovementSpeedMin = getDouble("mobs.camel.attributes.movement_speed.min", camelMovementSpeedMin);
+         camelMovementSpeedMax = getDouble("mobs.camel.attributes.movement_speed.max", camelMovementSpeedMax);
 +        // Andromeda start
 +        camelRidable = getBoolean("mobs.camel.ridable", camelRidable);
 +        camelRidableInWater = getBoolean("mobs.camel.ridable-in-water", camelRidableInWater);
 +        camelControllable = getBoolean("mobs.camel.controllable", camelControllable);
-+        camelMaxHealth = getDouble("mobs.camel.attributes.max_health", camelMaxHealth);
 +        camelTakeDamageFromWater = getBoolean("mobs.camel.takes-damage-from-water", camelTakeDamageFromWater);
 +        camelAlwaysDropExp = getBoolean("mobs.camel.always-drop-exp", camelAlwaysDropExp);
 +        // Andromeda end
          camelBreedingTicks = getInt("mobs.camel.breeding-delay-ticks", camelBreedingTicks);
      }
  
-@@ -1599,12 +1625,22 @@ public class PurpurWorldConfig {
+@@ -1611,12 +1635,22 @@ public class PurpurWorldConfig {
      public boolean frogRidable = false;
      public boolean frogRidableInWater = false;
      public boolean frogControllable = true;
@@ -238,7 +236,7 @@ index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..236fc1bedc1ec6eba9a45f2c12a522f9
          frogRidableJumpHeight = (float) getDouble("mobs.frog.ridable-jump-height", frogRidableJumpHeight);
          frogBreedingTicks = getInt("mobs.frog.breeding-delay-ticks", frogBreedingTicks);
      }
-@@ -2638,10 +2674,20 @@ public class PurpurWorldConfig {
+@@ -2650,10 +2684,20 @@ public class PurpurWorldConfig {
      public boolean tadpoleRidable = false;
      public boolean tadpoleRidableInWater = false;
      public boolean tadpoleControllable = true;
@@ -259,7 +257,7 @@ index d3eaf4c2983d16dcfed9f6b376b462d24b11be7f..236fc1bedc1ec6eba9a45f2c12a522f9
      }
  
      public boolean traderLlamaRidable = false;
-@@ -2848,10 +2894,20 @@ public class PurpurWorldConfig {
+@@ -2860,10 +2904,20 @@ public class PurpurWorldConfig {
      public boolean wardenRidable = false;
      public boolean wardenRidableInWater = false;
      public boolean wardenControllable = true;
