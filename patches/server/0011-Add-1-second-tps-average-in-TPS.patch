@@ -5,7 +5,7 @@ Subject: [PATCH] Add 1 second tps average in TPS
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 016d4bee1137cc5c41c2e83e631e5af7deeaa99a..de0eb5a673b873e402cb4290f0c67a8f18660860 100644
+index de07e66dd02b14bb5e685fe1ba1159cb620ffea9..e1d7870acde38ac1f2a565c2fd21f8053b98000d 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -302,7 +302,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -58,10 +58,10 @@ index 016d4bee1137cc5c41c2e83e631e5af7deeaa99a..de0eb5a673b873e402cb4290f0c67a8f
                  }
                  // Spigot end
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a1549d49135a2b5b5391759fcb3a0bf29e3ea5f6..6be5f2aef4bbcf6554bcce63197c0800f4a45fe0 100644
+index 2b37d3e4ac497677438eb84d6fa05b7557b3b3c4..d2ea22e71066078b6472c067bf46c72df508921b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -2822,6 +2822,7 @@ public final class CraftServer implements Server {
+@@ -2828,6 +2828,7 @@ public final class CraftServer implements Server {
      @Override
      public double[] getTPS() {
          return new double[] {
