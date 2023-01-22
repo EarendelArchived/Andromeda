@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
-Date: Sun, 22 Jan 2023 11:52:29 +0000
+Date: Sun, 22 Jan 2023 13:03:31 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -15630,7 +15630,7 @@ index fa0d55946680f1a913493d8a36abe266ace8be52..d662d362d36356a44dd672c25997837a
                  } else if (this.isFuel(itemstack1)) {
                      if (!this.moveItemStackTo(itemstack1, 1, 2, false)) {
 diff --git a/src/main/java/net/minecraft/world/inventory/AnvilMenu.java b/src/main/java/net/minecraft/world/inventory/AnvilMenu.java
-index 506d758efbf16da9467f120321d2359a8832e477..7c52c048fb9b265d57f57f0c69796668235a26fd 100644
+index 506d758efbf16da9467f120321d2359a8832e477..05a8a295fe7970255c07efad8b4ab7e9a358bf83 100644
 --- a/src/main/java/net/minecraft/world/inventory/AnvilMenu.java
 +++ b/src/main/java/net/minecraft/world/inventory/AnvilMenu.java
 @@ -21,6 +21,13 @@ import org.slf4j.Logger;
@@ -15747,7 +15747,7 @@ index 506d758efbf16da9467f120321d2359a8832e477..7c52c048fb9b265d57f57f0c69796668
 +                            //name = name.replaceAll("(?i)&([0-9a-fr])", "\u00a7$1");
 +                        }
 +                        if (player.hasPermission("purpur.anvil.format")) {
-+                            java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("(?i)&([l-or])").matcher(name);
++                            java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("(?i)&([k-or])").matcher(name);
 +                            while (matcher.find()) {
 +                                String match = matcher.group(1);
 +                                name = name.replace("&" + match, "\u00a7" + match.toLowerCase(java.util.Locale.ROOT));
