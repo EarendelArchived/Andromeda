@@ -20417,7 +20417,7 @@ index 4d7a2c4c1001aefe9fcd4be8dbcb414f721bfff9..2c7716a9d65ebda209a144b82c2126b6
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index b32f44beab2c9790ee2da8403e362e8b3ecc6175..ed5ee1f76aad6c27e742cb421a8e94990ebb7c59 100644
+index 7c43de6ad6bd7259c6bcb2a55e312e8abfcf546b..b41a8f57f86b40f4b36c414c876e8d36f4923d1a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -524,10 +524,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -20437,7 +20437,7 @@ index b32f44beab2c9790ee2da8403e362e8b3ecc6175..ed5ee1f76aad6c27e742cb421a8e9499
          for (ServerPlayer player : (List<ServerPlayer>) server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
                  player.connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this.getHandle()));
-@@ -1263,6 +1268,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1276,6 +1281,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          if (entity.isVehicle() && !ignorePassengers) { // Paper - Teleport API
@@ -20448,7 +20448,7 @@ index b32f44beab2c9790ee2da8403e362e8b3ecc6175..ed5ee1f76aad6c27e742cb421a8e9499
              return false;
          }
  
-@@ -2223,6 +2232,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2236,6 +2245,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.getHandle().getAbilities().walkingSpeed * 2f;
      }
  
@@ -20477,7 +20477,7 @@ index b32f44beab2c9790ee2da8403e362e8b3ecc6175..ed5ee1f76aad6c27e742cb421a8e9499
      private void validateSpeed(float value) {
          if (value < 0) {
              if (value < -1f) {
-@@ -2589,6 +2620,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2602,6 +2633,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          this.getHandle().connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.DEMO_EVENT, ClientboundGameEventPacket.DEMO_PARAM_INTRO));
      }
  
@@ -20491,7 +20491,7 @@ index b32f44beab2c9790ee2da8403e362e8b3ecc6175..ed5ee1f76aad6c27e742cb421a8e9499
      @Override
      public boolean isAllowingServerListings() {
          return this.getHandle().allowsListing();
-@@ -3016,4 +3054,97 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3029,4 +3067,97 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.spigot;
      }
      // Spigot end

@@ -5,10 +5,10 @@ Subject: [PATCH] Port PaperMC/Paper#8514
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 525638bbd27f1ac59e59a6c6b2f4bfeaa5cbd7bc..06f380f7eacc6cca469668ba44747cfb1933eb8c 100644
+index 9d466b11011cbc236da5250a8c51e0da4577c0bf..c71efc2266d7023b7a87619166076d3955b94df1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1175,6 +1175,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1188,6 +1188,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          targetLocation.setPitch(pitch);
  
          org.bukkit.util.Vector direction = targetLocation.getDirection();
