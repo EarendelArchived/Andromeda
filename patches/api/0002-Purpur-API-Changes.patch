@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
-Date: Sun, 22 Jan 2023 20:23:05 +0000
+Date: Mon, 23 Jan 2023 08:30:22 +0000
 Subject: [PATCH] Purpur API Changes
 
 Original: PurpurMC
@@ -1262,25 +1262,10 @@ index bc84b892cae5fe7019a3ad481e9da79956efa1fe..48eb5b00c460cccde29d327cef1d63fc
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index c68df5e5cc63b26da8623cf27e257ef07a61897d..1e10c0a5d00711d38b05ce1e80e466172717860f 100644
+index c68df5e5cc63b26da8623cf27e257ef07a61897d..b50a378f6de813a51ea57fced46d1df8eca6609a 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -2454,6 +2454,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
-      */
-     public void showDemoScreen();
- 
-+    /**
-+     * Shows the credits to the player, this screen is normally only seen after
-+     * going into the end portal for the first time.
-+     * <br>
-+     * Servers can modify the text on this screen using a resource pack.
-+     */
-+    public void showCreditScreen();
-+
-     /**
-      * Gets whether the player has the "Allow Server Listings" setting enabled.
-      *
-@@ -2946,4 +2954,139 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2946,4 +2946,139 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      @Override
      Spigot spigot();
      // Spigot end

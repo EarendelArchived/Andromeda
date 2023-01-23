@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
-Date: Sun, 22 Jan 2023 20:23:05 +0000
+Date: Mon, 23 Jan 2023 08:30:22 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -18670,7 +18670,7 @@ index 0a95842c53a9d0286c57bcb42db97e468e30fb7d..b6742a1efcceb0fb950d995101b6be16
 +    // Purpur end
  }
 diff --git a/src/main/java/net/minecraft/world/level/block/TurtleEggBlock.java b/src/main/java/net/minecraft/world/level/block/TurtleEggBlock.java
-index 70d46aafa9c16921e5c5bed3d97b8f402e25038a..22ed1e32fd2ca27a3a43cd1a3e48e39d89b93b5e 100644
+index 70d46aafa9c16921e5c5bed3d97b8f402e25038a..a5bd3f463ee8ab402d518d18a28425441af31686 100644
 --- a/src/main/java/net/minecraft/world/level/block/TurtleEggBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/TurtleEggBlock.java
 @@ -160,7 +160,7 @@ public class TurtleEggBlock extends Block {
@@ -18691,14 +18691,14 @@ index 70d46aafa9c16921e5c5bed3d97b8f402e25038a..22ed1e32fd2ca27a3a43cd1a3e48e39d
 +        if (entity instanceof Turtle || entity instanceof Bat) {
 +            return false;
 +        }
-+        if (!world.purpurConfig.turtleEggsBreakFromExpOrbs && entity instanceof net.minecraft.world.entity.ExperienceOrb) {
-+            return false;
++        if (world.purpurConfig.turtleEggsBreakFromExpOrbs && entity instanceof net.minecraft.world.entity.ExperienceOrb) {
++            return true;
 +        }
-+        if (!world.purpurConfig.turtleEggsBreakFromItems && entity instanceof net.minecraft.world.entity.item.ItemEntity) {
-+            return false;
++        if (world.purpurConfig.turtleEggsBreakFromItems && entity instanceof net.minecraft.world.entity.item.ItemEntity) {
++            return true;
 +        }
-+        if (!world.purpurConfig.turtleEggsBreakFromMinecarts && entity instanceof net.minecraft.world.entity.vehicle.AbstractMinecart) {
-+            return false;
++        if (world.purpurConfig.turtleEggsBreakFromMinecarts && entity instanceof net.minecraft.world.entity.vehicle.AbstractMinecart) {
++            return true;
 +        }
 +        if (!(entity instanceof LivingEntity)) {
 +            return false;
@@ -20406,7 +20406,7 @@ index 4d7a2c4c1001aefe9fcd4be8dbcb414f721bfff9..2c7716a9d65ebda209a144b82c2126b6
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 7c43de6ad6bd7259c6bcb2a55e312e8abfcf546b..b41a8f57f86b40f4b36c414c876e8d36f4923d1a 100644
+index 7c43de6ad6bd7259c6bcb2a55e312e8abfcf546b..5a76c967e2d9c9c1b09e8de33fcde34e25b4646b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -524,10 +524,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -20466,21 +20466,7 @@ index 7c43de6ad6bd7259c6bcb2a55e312e8abfcf546b..b41a8f57f86b40f4b36c414c876e8d36
      private void validateSpeed(float value) {
          if (value < 0) {
              if (value < -1f) {
-@@ -2602,6 +2633,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
-         this.getHandle().connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.DEMO_EVENT, ClientboundGameEventPacket.DEMO_PARAM_INTRO));
-     }
- 
-+    @Override
-+    public void showCreditScreen() {
-+        if (this.getHandle().connection == null) return;
-+
-+        this.getHandle().connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.WIN_GAME, 1F));
-+    }
-+
-     @Override
-     public boolean isAllowingServerListings() {
-         return this.getHandle().allowsListing();
-@@ -3029,4 +3067,97 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3029,4 +3060,97 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.spigot;
      }
      // Spigot end
