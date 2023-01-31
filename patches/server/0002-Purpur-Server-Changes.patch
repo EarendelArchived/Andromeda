@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
-Date: Mon, 23 Jan 2023 08:30:22 +0000
+Date: Tue, 31 Jan 2023 07:16:30 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -16493,7 +16493,7 @@ index 180aec596110309aade13d2080f8824d152b07cb..c4aec1e5135a79837918b692e75a7b55
                  return InteractionResult.PASS;
              }
 diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
-index 8450a22b0fc6e8dc5cad0f61ac52a82b3cd3791e..7222ff43de1b570458f2513fe1a44d97a09d0799 100644
+index 6860096cb8c0deecc9c1d87543d1128fb95fd2d4..39a62d1dd85dbee349b05ac16ef4ee5572ddb1d6 100644
 --- a/src/main/java/net/minecraft/world/item/ItemStack.java
 +++ b/src/main/java/net/minecraft/world/item/ItemStack.java
 @@ -108,6 +108,7 @@ import org.bukkit.event.world.StructureGrowEvent;
@@ -16504,7 +16504,7 @@ index 8450a22b0fc6e8dc5cad0f61ac52a82b3cd3791e..7222ff43de1b570458f2513fe1a44d97
      public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create((instance) -> {
          return instance.group(BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter((itemstack) -> {
              return itemstack.item;
-@@ -412,6 +413,7 @@ public final class ItemStack {
+@@ -413,6 +414,7 @@ public final class ItemStack {
                      world.preventPoiUpdated = true; // CraftBukkit - SPIGOT-5710
                      for (BlockState blockstate : blocks) {
                          blockstate.update(true, false);
@@ -16512,7 +16512,7 @@ index 8450a22b0fc6e8dc5cad0f61ac52a82b3cd3791e..7222ff43de1b570458f2513fe1a44d97
                      }
                      world.preventPoiUpdated = false;
  
-@@ -441,6 +443,7 @@ public final class ItemStack {
+@@ -442,6 +444,7 @@ public final class ItemStack {
                          if (!(block.getBlock() instanceof BaseEntityBlock)) { // Containers get placed automatically
                              block.getBlock().onPlace(block, world, newblockposition, oldBlock, true, itemactioncontext); // Paper - pass itemactioncontext
                          }
@@ -16520,7 +16520,7 @@ index 8450a22b0fc6e8dc5cad0f61ac52a82b3cd3791e..7222ff43de1b570458f2513fe1a44d97
  
                          world.notifyAndUpdatePhysics(newblockposition, null, oldBlock, block, world.getBlockState(newblockposition), updateFlag, 512); // send null chunk as chunk.k() returns false by this point
                      }
-@@ -543,6 +546,16 @@ public final class ItemStack {
+@@ -544,6 +547,16 @@ public final class ItemStack {
          return this.isDamageableItem() && this.getDamageValue() > 0;
      }
  
@@ -16537,7 +16537,7 @@ index 8450a22b0fc6e8dc5cad0f61ac52a82b3cd3791e..7222ff43de1b570458f2513fe1a44d97
      public int getDamageValue() {
          return this.tag == null ? 0 : this.tag.getInt("Damage");
      }
-@@ -562,7 +575,7 @@ public final class ItemStack {
+@@ -563,7 +576,7 @@ public final class ItemStack {
              int j;
  
              if (amount > 0) {
@@ -16546,7 +16546,7 @@ index 8450a22b0fc6e8dc5cad0f61ac52a82b3cd3791e..7222ff43de1b570458f2513fe1a44d97
                  int k = 0;
  
                  for (int l = 0; j > 0 && l < amount; ++l) {
-@@ -617,6 +630,12 @@ public final class ItemStack {
+@@ -618,6 +631,12 @@ public final class ItemStack {
                  if (this.hurt(amount, entity.getRandom(), entity /*instanceof ServerPlayer ? (ServerPlayer) entity : null*/)) { // Paper - pass LivingEntity for EntityItemDamageEvent
                      breakCallback.accept(entity);
                      Item item = this.getItem();
@@ -16559,7 +16559,7 @@ index 8450a22b0fc6e8dc5cad0f61ac52a82b3cd3791e..7222ff43de1b570458f2513fe1a44d97
                      // CraftBukkit start - Check for item breaking
                      if (this.count == 1 && entity instanceof net.minecraft.world.entity.player.Player) {
                          org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerItemBreakEvent((net.minecraft.world.entity.player.Player) entity, this);
-@@ -1140,7 +1159,7 @@ public final class ItemStack {
+@@ -1141,7 +1160,7 @@ public final class ItemStack {
  
          ListTag nbttaglist = this.tag.getList("Enchantments", 10);
  
@@ -16568,7 +16568,7 @@ index 8450a22b0fc6e8dc5cad0f61ac52a82b3cd3791e..7222ff43de1b570458f2513fe1a44d97
          processEnchantOrder(this.tag); // Paper
      }
  
-@@ -1148,6 +1167,12 @@ public final class ItemStack {
+@@ -1149,6 +1168,12 @@ public final class ItemStack {
          return this.tag != null && this.tag.contains("Enchantments", 9) ? !this.tag.getList("Enchantments", 10).isEmpty() : false;
      }
  
@@ -19391,7 +19391,7 @@ index 3f72703d2063a082546305eeb0a1b21629ddb1b2..93f31a99363e73a24571b66cd5bbaf7b
          if (state.getBlock() instanceof LiquidBlockContainer) {
              ((LiquidBlockContainer) state.getBlock()).placeLiquid(world, pos, state, fluidState);
 diff --git a/src/main/java/net/minecraft/world/level/material/LavaFluid.java b/src/main/java/net/minecraft/world/level/material/LavaFluid.java
-index 783e315d92227cbcb5cd207b0a06a12e0778d14b..3a04cb4c646c07abf4338c70c865a4c4cb34b1bc 100644
+index 783e315d92227cbcb5cd207b0a06a12e0778d14b..b05b4d3d97bca159c297f150005b5ab5bf6087e0 100644
 --- a/src/main/java/net/minecraft/world/level/material/LavaFluid.java
 +++ b/src/main/java/net/minecraft/world/level/material/LavaFluid.java
 @@ -180,7 +180,7 @@ public abstract class LavaFluid extends FlowingFluid {
@@ -19417,8 +19417,17 @@ index 783e315d92227cbcb5cd207b0a06a12e0778d14b..3a04cb4c646c07abf4338c70c865a4c4
      @Override
      protected boolean canConvertToSource(Level world) {
          return world.getGameRules().getBoolean(GameRules.RULE_LAVA_SOURCE_CONVERSION);
+@@ -232,7 +239,7 @@ public abstract class LavaFluid extends FlowingFluid {
+ 
+     @Override
+     protected float getExplosionResistance() {
+-        return 100.0F;
++        return Blocks.LAVA.getExplosionResistance(); // Purpur
+     }
+ 
+     @Override
 diff --git a/src/main/java/net/minecraft/world/level/material/WaterFluid.java b/src/main/java/net/minecraft/world/level/material/WaterFluid.java
-index 82e85fbbd45244d02df90fa00c9046e7f51275a2..ec6c63075306f9e5389e83641d2c8a82369ddc6b 100644
+index 82e85fbbd45244d02df90fa00c9046e7f51275a2..0f16deddd8cbb506ef7886f57ae640a42e841703 100644
 --- a/src/main/java/net/minecraft/world/level/material/WaterFluid.java
 +++ b/src/main/java/net/minecraft/world/level/material/WaterFluid.java
 @@ -64,6 +64,13 @@ public abstract class WaterFluid extends FlowingFluid {
@@ -19435,6 +19444,15 @@ index 82e85fbbd45244d02df90fa00c9046e7f51275a2..ec6c63075306f9e5389e83641d2c8a82
      // Paper start
      @Override
      protected void beforeDestroyingBlock(LevelAccessor world, BlockPos pos, BlockState state,  BlockPos source) {
+@@ -109,7 +116,7 @@ public abstract class WaterFluid extends FlowingFluid {
+ 
+     @Override
+     protected float getExplosionResistance() {
+-        return 100.0F;
++        return Blocks.WATER.getExplosionResistance(); // Purpur
+     }
+ 
+     @Override
 diff --git a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java b/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
 index d23481453717f715124156b5d83f6448f720d049..a8af51a25b0f99c3a64d9150fdfcd6b818aa7581 100644
 --- a/src/main/java/net/minecraft/world/level/pathfinder/PathFinder.java
@@ -19991,7 +20009,7 @@ index 7930217aa1275c4ae70f180d483a8714d43027e8..4a8aafd341fdad4b5ae326c4759b3381
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index f8d321e925bf2708e51590542325c1bdc67d5964..804f81c478c09a5b6d0b10a78dc2b7ae0b88cc18 100644
+index 4cb0307935aa63d44aac55c80ee50be074d7913c..b17bc6482d2bd97d2e48d3967dea72605cf13164 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -2237,6 +2237,48 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -20213,7 +20231,7 @@ index 78f53ee557276de85f0431ebcb146445b1f4fb92..d1c16a80c2cc4f0e96f3a7f04e5bc696
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index e779dcc4982ff51e4d450265fd61bc26e8e74d3a..e4afb366ba6f03c1e852e31ca14b58e21abe99d8 100644
+index ed22e6f17f48db71cc283afc8b71d85682cd7d3a..330a9a21f077731d0899fddea4a33049b62d747f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 @@ -258,6 +258,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
@@ -20978,7 +20996,7 @@ index 138407c2d4b0bc55ddb9aac5d2aa3edadda090fb..a6e9e503a496c18e2501b03ec84f4600
          // Paper end - add timings for scoreboard search
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index a3c6b3dd87022e2def1f12da7c44c8d529191d1e..51c96095cf7092125f79a197f797dc7965647574 100644
+index 637564f7b662d8b86772f5ba96c0cb6bc6c5fa43..99ecf59b25e67b9203ed35fefc96879e40875c59 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 @@ -433,7 +433,7 @@ public final class CraftMagicNumbers implements UnsafeValues {

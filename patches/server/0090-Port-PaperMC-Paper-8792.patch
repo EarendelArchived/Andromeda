@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8792
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 3e5abea2f814a0a364cf87ff4ce1b1718ba2ddac..67ae3270e477115984fd92c0e80975013f0c7ddd 100644
+index 97c5a72096ac0fd0b08a397466486014cfea4579..d5c36c8b6cb4d4b07a37adca35b6951d245040a7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -214,6 +214,23 @@ public final class CraftItemStack extends ItemStack {

@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
-Date: Mon, 23 Jan 2023 08:28:31 +0000
+Date: Tue, 31 Jan 2023 07:08:16 +0000
 Subject: [PATCH] Pufferfish Server Changes
 
 Original: Kevin Raneri <kevin.raneri@gmail.com>
@@ -3581,7 +3581,7 @@ index f7ea77dd82d978ad307f99c743efacfb34478b3d..009ab06182359862b8f543030ec4fe4e
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index 17336102d37a5ab05c3b3c93fcf46961d0ffa7e2..a3c6b3dd87022e2def1f12da7c44c8d529191d1e 100644
+index daeaa30cdd64f5cb775304e82f2390684c02a9d3..637564f7b662d8b86772f5ba96c0cb6bc6c5fa43 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 @@ -433,7 +433,7 @@ public final class CraftMagicNumbers implements UnsafeValues {

@@ -18,10 +18,10 @@ index 724bcbadb1e96f251b412b0fa8aa6de5247c3ec6..44ad5dc9f580dd47915e4585c9f74e0a
      @Nullable
      private RemoteChatSession chatSession;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index e4afb366ba6f03c1e852e31ca14b58e21abe99d8..2d9bec9ffc2a4137f20b522e41a9058876c25b90 100644
+index 330a9a21f077731d0899fddea4a33049b62d747f..12854748b12d1e4c4aa9f014829d56f134d6e784 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-@@ -729,8 +729,19 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+@@ -740,8 +740,19 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
      // Paper end
      @Override
      public boolean dropItem(boolean dropAll) {
