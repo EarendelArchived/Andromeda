@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
-Date: Wed, 1 Feb 2023 04:33:43 +0000
+Date: Sun, 5 Feb 2023 10:31:06 +0000
 Subject: [PATCH] Purpur Server Changes
 
 Original: PurpurMC
@@ -2806,7 +2806,7 @@ index 877498729c66de9aa6a27c9148f7494d7895615c..acd7468ee3c86d3456e96e4ec3d7e6a4
              Util.logAndPauseIfInIde("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + pos + ", status: " + this.generatingStatus + (this.currentlyGenerating == null ? "" : ", currently generating: " + (String) this.currentlyGenerating.get()));
              hasSetFarWarned = true;
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a50af1f62661622f4a162c7dbad4e7ff056a64ef..a8e205af936efe0909c94575e3b7f8ca50cead2f 100644
+index a50af1f62661622f4a162c7dbad4e7ff056a64ef..59125a25e4cdbbc378f628b1c842236431a70885 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -259,6 +259,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -2853,7 +2853,7 @@ index a50af1f62661622f4a162c7dbad4e7ff056a64ef..a8e205af936efe0909c94575e3b7f8ca
 +        if (org.purpurmc.purpur.PurpurConfig.useAlternateKeepAlive) {
 +            if (elapsedTime >= 1000L) { // 1 second
 +                if (!processedDisconnect && keepAlives.size() * 1000L >= KEEPALIVE_LIMIT) {
-+                    LOGGER.warn("{} was kicked due to keepalive timeout!", player.getName());
++                    LOGGER.warn("{} was kicked due to keepalive timeout!", this.player.getScoreboardName());
 +                    disconnect(Component.translatable("disconnect.timeout"), org.bukkit.event.player.PlayerKickEvent.Cause.TIMEOUT);
 +                } else {
 +                    keepAliveTime = currentTime; // hijack this field for 1 second intervals
