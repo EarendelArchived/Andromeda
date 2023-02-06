@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@gmail.com>
+Date: Mon, 6 Feb 2023 19:30:23 +0900
+Subject: [PATCH] [Purpur] Do not send useless entity packets
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
+index dd6a43522054a26fce1fa2793df31e15975b5493..929faf8ece2bb7efcb3c8b416d05b4510722259b 100644
+--- a/src/main/java/net/minecraft/server/level/ServerEntity.java
++++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
+@@ -186,6 +186,7 @@ public class ServerEntity {
+                         this.teleportDelay = 0;
+                         packet1 = new ClientboundTeleportEntityPacket(this.entity);
+                     }
++                    if (team.earendel.andromeda.configurations.GlobalConfiguration.get().misc.doNotSendUselessEntityPackets && isUselessEntityPacket(packet1)) packet1 = null; // Andromeda
+                 }
+ 
+                 if ((this.trackDelta || this.entity.hasImpulse || this.entity instanceof LivingEntity && ((LivingEntity) this.entity).isFallFlying()) && this.tickCount > 0) {
+@@ -252,6 +253,20 @@ public class ServerEntity {
+ 
+     }
+ 
++    // Andromeda start
++    private boolean isUselessEntityPacket(Packet<?> packet) {
++        if (packet instanceof ClientboundMoveEntityPacket p) {
++            if (packet instanceof ClientboundMoveEntityPacket.Pos)
++                return p.getXa() == 0 && p.getYa() == 0 && p.getZa() == 0;
++            else if (packet instanceof ClientboundMoveEntityPacket.PosRot)
++                return p.getXa() == 0 && p.getYa() == 0 && p.getZa() == 0 && p.getxRot() == 0 && p.getyRot() == 0;
++            else if (packet instanceof ClientboundMoveEntityPacket.Rot)
++                return p.getxRot() == 0 && p.getyRot() == 0;
++        }
++        return false;
++    }
++    // Andromeda end
++
+     public void removePairing(ServerPlayer player) {
+         this.entity.stopSeenByPlayer(player);
+         ((ServerLevel) this.entity.level).getChunkSource().chunkMap.runOnTrackerMainThread(() -> { // Andromeda - Petal patches (ensure main thread)
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index a3641b97abd2cd07fd3cc7bea639309172a06905..4300f342b3ccd34feb37ef5e916b0e9afbf04cb6 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -106,6 +106,7 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+         public boolean useFasterRandom = true;
+         public boolean useNormalCollisionContextWhichIsAlreadyLazy = false;
++        public boolean doNotSendUselessEntityPackets = true;
+ 
+         public UnsupportedSettings unsupportedSettings;
+         public class UnsupportedSettings extends ConfigurationPart {
