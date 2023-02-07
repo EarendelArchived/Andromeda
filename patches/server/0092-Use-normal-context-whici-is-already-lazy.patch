@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
 Date: Mon, 6 Feb 2023 19:24:10 +0900
-Subject: [PATCH] [Airplane] Use normal context whici is already lazy
+Subject: [PATCH] Use normal context whici is already lazy
 
 
 diff --git a/src/main/java/io/papermc/paper/util/CollisionUtil.java b/src/main/java/io/papermc/paper/util/CollisionUtil.java
