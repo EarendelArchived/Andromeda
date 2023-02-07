@@ -5,10 +5,10 @@ Subject: [PATCH] Mining speed tweaks
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 6e3e74fb9d6f99d6f491d35d6f4bc85746d71ab5..c649a096b42f9676d5b440e415656c8a822e5f85 100644
+index c5c47693742ae770f43fbff80426b497013be2f2..7f55d49decf564bf369265f8509871e92c791c29 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3089,5 +3089,19 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -3114,5 +3114,19 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @param component Name of the server mod to display to the Player
       */
      void setModName(@NotNull Component component);

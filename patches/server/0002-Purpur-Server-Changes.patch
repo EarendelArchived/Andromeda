@@ -14917,7 +14917,7 @@ index 0ae8e9134a3671cdf2a480cd4dd6598653e261ab..7d34bd0d727eeb0afbc1869b076ee207
              if (NaturalSpawner.isSpawnPositionOk(SpawnPlacements.Type.ON_GROUND, world, blockposition2, EntityType.WANDERING_TRADER)) {
                  blockposition1 = blockposition2;
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 61597ebe2f9faff43994c475074b87d11905e582..a667401600fc47efa9efa2964ea4099cddc7167a 100644
+index f6e4194856d4a2710a169b5823e74da1ba2c9130..a23d3aec7cec9114b8f7a2f26d72153a90c5a5a4 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -183,6 +183,8 @@ public abstract class Player extends LivingEntity {
@@ -16493,7 +16493,7 @@ index 180aec596110309aade13d2080f8824d152b07cb..c4aec1e5135a79837918b692e75a7b55
                  return InteractionResult.PASS;
              }
 diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
-index 6860096cb8c0deecc9c1d87543d1128fb95fd2d4..39a62d1dd85dbee349b05ac16ef4ee5572ddb1d6 100644
+index 31eed67d07097c7eb1b06547a9f556bcc709d96c..e2b341ecddb946e9c1e546b9706d86dd030db865 100644
 --- a/src/main/java/net/minecraft/world/item/ItemStack.java
 +++ b/src/main/java/net/minecraft/world/item/ItemStack.java
 @@ -108,6 +108,7 @@ import org.bukkit.event.world.StructureGrowEvent;
@@ -20009,10 +20009,10 @@ index 7930217aa1275c4ae70f180d483a8714d43027e8..4a8aafd341fdad4b5ae326c4759b3381
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 4cb0307935aa63d44aac55c80ee50be074d7913c..b17bc6482d2bd97d2e48d3967dea72605cf13164 100644
+index 54932d92b13b890b07f827c5f09bd137383d4ab5..9b5323edd99848b73ea0e34230e7bec8dc23be8c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -2237,6 +2237,48 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -2253,6 +2253,48 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          return (this.getHandle().dragonFight() == null) ? null : new CraftDragonBattle(this.getHandle().dragonFight());
      }
  
@@ -20231,7 +20231,7 @@ index 78f53ee557276de85f0431ebcb146445b1f4fb92..d1c16a80c2cc4f0e96f3a7f04e5bc696
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index ed22e6f17f48db71cc283afc8b71d85682cd7d3a..330a9a21f077731d0899fddea4a33049b62d747f 100644
+index 11a06cd0a9cee01107941a2294fbcb493a11ab63..33cf1e70b22eca54a245987b12f37efaccf7d1e8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 @@ -258,6 +258,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
@@ -20424,7 +20424,7 @@ index 4d7a2c4c1001aefe9fcd4be8dbcb414f721bfff9..2c7716a9d65ebda209a144b82c2126b6
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 7c43de6ad6bd7259c6bcb2a55e312e8abfcf546b..5a76c967e2d9c9c1b09e8de33fcde34e25b4646b 100644
+index 616d0c3b72c7a5fcc67981c1919a4dece904d017..d6c62a30d5e046ece4c13cb820037840100b78ef 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -524,10 +524,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -20444,7 +20444,7 @@ index 7c43de6ad6bd7259c6bcb2a55e312e8abfcf546b..5a76c967e2d9c9c1b09e8de33fcde34e
          for (ServerPlayer player : (List<ServerPlayer>) server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
                  player.connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this.getHandle()));
-@@ -1276,6 +1281,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1289,6 +1294,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          if (entity.isVehicle() && !ignorePassengers) { // Paper - Teleport API
@@ -20455,7 +20455,7 @@ index 7c43de6ad6bd7259c6bcb2a55e312e8abfcf546b..5a76c967e2d9c9c1b09e8de33fcde34e
              return false;
          }
  
-@@ -2236,6 +2245,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2249,6 +2258,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.getHandle().getAbilities().walkingSpeed * 2f;
      }
  
@@ -20484,7 +20484,7 @@ index 7c43de6ad6bd7259c6bcb2a55e312e8abfcf546b..5a76c967e2d9c9c1b09e8de33fcde34e
      private void validateSpeed(float value) {
          if (value < 0) {
              if (value < -1f) {
-@@ -3029,4 +3060,97 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3042,4 +3073,97 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.spigot;
      }
      // Spigot end
