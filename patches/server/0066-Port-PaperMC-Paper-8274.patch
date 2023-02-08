@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8274
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a655a2c6fc4d910847f634cd66115cf861abf931..861c74e0c71bb0ea25b2262f115cef43da240990 100644
+index a3cd4e9bcfdb1f1703d33aa1174661dc05980d43..d5ef0fa8e8be8d16a6040893d7cc7c0556adbcd0 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -713,7 +713,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic

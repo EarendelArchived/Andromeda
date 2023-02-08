@@ -36,10 +36,10 @@ index a8c878ed70845a417b8d892ff1aea1baceddb43b..32cbc3e5ad030a6ea04ae8034a5510b6
                              }
                          }
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 05ae089b938e7e11d55105a86f46c8d5f0990ad4..ba598c5d9a6875b80ed007234700520f76a52e5d 100644
+index 974579b5333d94fa18e3de179fe5874489e3da21..fd276840e577b76e83d0157d857e81188b115ad9 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -189,6 +189,8 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -187,6 +187,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
          public boolean fixHumanEntityDropNotUpdatingTheClientInventory = true;
  

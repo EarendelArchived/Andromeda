@@ -90,10 +90,10 @@ index df41c210a0c06a2789fe4944fe1b9c2ba9509b61..f0a9e5e8bcf0e433381b4d6288cb9daf
 +    // Andromeda end
  }
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 3c22420fe81ecb95f44105ba62dcfd1f702b5778..3cbbc723fa89c66ca719e947ceeef78afbc3bfda 100644
+index b75cf29f5e92d4e4caadb861533f7ae25465665f..13832df9c94d540c1914953f563e845869271d71 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -193,6 +193,8 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -191,6 +191,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
          public boolean ignoreNbtLimitsWhenLoadedNotLoadedFromABlockPlace = true;
  

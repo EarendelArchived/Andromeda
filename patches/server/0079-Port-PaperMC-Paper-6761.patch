@@ -42,10 +42,10 @@ index 33cf1e70b22eca54a245987b12f37efaccf7d1e8..df40eab286e583644e74472e6aef1e40
  
      @Override
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 4fade9f69296d80c28cfc274e35e8def993ae6d5..05ae089b938e7e11d55105a86f46c8d5f0990ad4 100644
+index 12714c878d0c63c0aae35be1f6e46bbc416d6999..974579b5333d94fa18e3de179fe5874489e3da21 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -187,6 +187,8 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -185,6 +185,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
          public boolean improveEntityTransformEventCancellationHandling = true;
  

@@ -5,7 +5,7 @@ Subject: [PATCH] Fix SPIGOT-7073
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 5e4d1b23a6e6e7dcbed8d40ccf5355cd3bb1e565..cd76d1562cd7a6b82b0b01201d42b73a7b53d1e3 100644
+index 4e2765ab940d9cc28eb8895e275829eb1fd2b929..e324c2f69b2a17092a84eebbbc51375731222e58 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2725,9 +2725,9 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -21,10 +21,10 @@ index 5e4d1b23a6e6e7dcbed8d40ccf5355cd3bb1e565..cd76d1562cd7a6b82b0b01201d42b73a
          if (result == null || this.player.gameMode.getGameModeForPlayer() == GameType.ADVENTURE) { // Paper - call PlayerInteractEvent when left-clicking on a block in adventure mode
              CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_AIR, this.player.getInventory().getSelected(), InteractionHand.MAIN_HAND);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 3cbbc723fa89c66ca719e947ceeef78afbc3bfda..6a7cdd347e1c1527c855dc0791170e6174cf49b5 100644
+index 13832df9c94d540c1914953f563e845869271d71..1bcd30e8d841a97bdb9d1138c7c07fc9201a1947 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -197,4 +197,11 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -195,4 +195,11 @@ public class LevelConfigurations extends ConfigurationPart {
  
      }
  

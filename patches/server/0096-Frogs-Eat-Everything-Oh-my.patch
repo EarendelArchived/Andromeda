@@ -17,7 +17,7 @@ index 71cb2ccc0b473ceccb25f25ee87be846a48c7781..1081fc099be5e5b5a120ba04b9bc0e34
              if (slime.getSize() != 1) {
                  return false;
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index c6161552a2335099dc6f829d3443efdadb253cf8..1919c97cefbbf5871953c44101dec0c5aa3db503 100644
+index b4d339a9c2088de96e888d4880f25d1bb559275f..36e8c40e46863858edc5c5738dfdec72ff6c2e53 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 @@ -126,6 +126,18 @@ public class LevelConfigurations extends ConfigurationPart {

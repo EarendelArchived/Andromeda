@@ -72,10 +72,10 @@ index 9e760a8e8244b15daaf0abdfc5f8a51d5c663e12..6d80ca82c102ca82b8dfa7c33d96aba8
              }
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index ba598c5d9a6875b80ed007234700520f76a52e5d..3c22420fe81ecb95f44105ba62dcfd1f702b5778 100644
+index fd276840e577b76e83d0157d857e81188b115ad9..b75cf29f5e92d4e4caadb861533f7ae25465665f 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -191,6 +191,8 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -189,6 +189,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
          public boolean fireEntityKnockbackEventForOwnerlessTnt = true;
  

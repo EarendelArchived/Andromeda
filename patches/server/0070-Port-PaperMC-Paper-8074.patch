@@ -69,10 +69,10 @@ index 0b7f19db743be9a7a25fab835a084eb25c3ff3eb..442728f37d1ebefff92971d065d2f0e7
          // player.connection.send(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(this.players)); // Paper - use single player info update packet
          this.players.add(player);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index d0cb26fc251a09f3b98b913c755cd4067c5a2a51..80db26cee6004b52e68cae739c109bf263ba57e1 100644
+index d0a49973c529a8de6b90db9bd09766c1b9c29ab0..9e07119e55f2f2402ab4baa02718732e2e3cb936 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -170,6 +170,8 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -168,6 +168,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
          public boolean doNotFireTntPrimeEventForEnderDragon = true;
  

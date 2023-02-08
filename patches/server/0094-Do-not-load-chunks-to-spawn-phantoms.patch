@@ -17,7 +17,7 @@ index 69753f0b67a78c565ff455676860dc05b24bb285..a4252469471742f44fd66caa48da2203
                                          FluidState fluid = world.getFluidState(blockposition1);
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 7a1e03cf5fe6ea5cd828a02fe495d5f3d175c087..bd345bfc037570c074f3517937d4468bbcb2f71c 100644
+index d47f11577f2450564f76e06e0b22f1072189c1b2..91e594a0d114a1c12b86aff9b1b85dd869cf48e8 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 @@ -98,6 +98,11 @@ public class LevelConfigurations extends ConfigurationPart {

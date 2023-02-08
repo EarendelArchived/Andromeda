@@ -36,10 +36,10 @@ index 84b230d979a91dd776e180e5b828b26bdc98ef12..77646b76acde31e12739970ed2ab601b
          }
          // CraftBukkit end
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index c1956563cddda7230059234b2b906a434a5dc1cd..d0cb26fc251a09f3b98b913c755cd4067c5a2a51 100644
+index 76d4b8039dc6df06074380b45d61d3caf6baaac6..d0a49973c529a8de6b90db9bd09766c1b9c29ab0 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -168,6 +168,8 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -166,6 +166,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
          public boolean useSpigotConfigForMangrovePropaguleGrowth = true;
  

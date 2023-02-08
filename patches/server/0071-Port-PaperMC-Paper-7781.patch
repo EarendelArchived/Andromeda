@@ -18,10 +18,10 @@ index 804611147afa95b04059b375cbf81f32d63541eb..294d1f98689bca8f55b96119af54df11
                      if (otherState.is(stemGrownBlock)) {
                          return stemGrownBlock.getAttachedStem().defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, direction);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 80db26cee6004b52e68cae739c109bf263ba57e1..7370a1e7aa1b78068cf3f100417fec06ae2388a3 100644
+index 9e07119e55f2f2402ab4baa02718732e2e3cb936..b9d1b5905637862652c3aeeb0084ae2d792c7f38 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-@@ -172,6 +172,8 @@ public class LevelConfigurations extends ConfigurationPart {
+@@ -170,6 +170,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
          public boolean fireServerListPingEventForSecondaryMotdSend = true;
  
