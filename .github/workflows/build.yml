@@ -64,7 +64,7 @@ jobs:
         run: |
           (cd Andromeda-API/build/docs/javadoc && tar c .) | (cd javadoc && tar xf -)
           cd javadoc
-          git add . && git commit -m "[CI-Skip] Update Javadocs"
+          git add . && git commit -m "Update Javadocs"
           git push
 
       - name: Publish Packages
