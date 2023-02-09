@@ -1191,12 +1191,12 @@ index 58017fce436cdbda255f7172fbdadb726d4b113c..05600fc8bf2a61aca8094029bc4c208a
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index 6555397148b84dba7a87cae505544b65452f1742..ebc42a0ed4b24564a5055fef50468142529aed2f 100644
+index 1da1c293ac8a13d22743c26d35624155bfa73a16..127bf9621cca12327ac06becdd921a5f843b888d 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
-@@ -1126,4 +1126,41 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+@@ -1142,4 +1142,41 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       */
-     void damageItemStack(org.bukkit.inventory.@NotNull EquipmentSlot slot, int amount);
+     void setBodyYaw(float bodyYaw);
      // Paper end
 +
 +    // Purpur start
