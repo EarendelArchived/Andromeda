@@ -5,10 +5,10 @@ Subject: [PATCH] Add server mod name API
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index d6c62a30d5e046ece4c13cb820037840100b78ef..07b0beebdcc0fff0b8403dc1c309d41c4a4260f6 100644
+index 4390514f6c6ee214efdd014c261f480700c1f8b8..cd166f5527e6f1c6941957a2daf4b7ea3a3288a3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3166,4 +3166,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3172,4 +3172,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          this.getHandle().connection.send(packet);
      }
      // Purpur end
