@@ -47,7 +47,7 @@ index de0eb5a673b873e402cb4290f0c67a8f18660860..9e9b253423ccc8a302975a631f27a355
  
                  if (spawn != null) {
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 1d3c9cfdea9b606f47b7783bdf3064adfd796467..0e6b2f1815b1da878a4227c652ea9a45eee3754a 100644
+index cd5bc5e82285fe408fe99d51e31874604e658bc9..b15099269c20c655acf58511e350429267d0d719 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -49,7 +49,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -87,7 +87,7 @@ index dcfe090c269d4cbcc2eb1b6f85392848bb34656c..ef797d47c6bbc1c1e3ff6c15c04e1df4
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 804f81c478c09a5b6d0b10a78dc2b7ae0b88cc18..7b526b74b5c78accb1f772de67a0bf9cae4725d0 100644
+index 9b5323edd99848b73ea0e34230e7bec8dc23be8c..1d0a7a79301c1458830d0f9d03b546fbea883cc8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -226,7 +226,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -126,10 +126,10 @@ index a9673a804d597599c35c83f4f245510c83005328..25060824e248b268a06f6fd275c533ec
      private boolean implementBaseHeight = true;
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 7e8ad027cfccf21dca6001040b6b01afcb94dee5..66c651e8d2cd35c178bcb126ec50a6d8e3a6e503 100644
+index b38010344b27b32f7acff9a95b64a34600f99407..e1b0e2ed92b9ef428019774b073c2301128324bd 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -99,4 +99,11 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -119,4 +119,11 @@ public class GlobalConfiguration extends ConfigurationPart {
  
      }
  

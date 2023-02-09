@@ -17,10 +17,10 @@ index a87f6380b2c387fb0cdd40d5087b5c93492e3c88..d827948a2c6d904c316c1e92de68bcb4
                                      }
                                      VoxelShape voxelshape2 = blockData.getCollisionShape(getter, mutablePos, collisionShape);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 3f0ccbbe7e198a3f81047c085bd3f9fe9f35c780..a3641b97abd2cd07fd3cc7bea639309172a06905 100644
+index f2e88f318eb664ee11e440464bcaa3f4eaec26db..4f0d0daa22938f5d78693c7493c4b96804c335a3 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -105,6 +105,7 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -125,6 +125,7 @@ public class GlobalConfiguration extends ConfigurationPart {
      public class Misc extends ConfigurationPart {
  
          public boolean useFasterRandom = true;

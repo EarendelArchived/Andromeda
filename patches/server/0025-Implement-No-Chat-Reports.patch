@@ -92,7 +92,7 @@ index 148aa2de79ed515532b255404c0dc44ec15c8602..feb340869b744310fdda04276806519b
      }
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 53f79af185c6093f70b4b69fa0d16ecf63e69681..407673616185f3246dbb61902a080812d36d61a5 100644
+index 4fa48bf6e1bf928983464a18d7e4f6686153a733..8f1a59c98b62c3419c6cf46c882e13767fe42202 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2231,10 +2231,36 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -145,7 +145,7 @@ index 2c3d8a474e096509d8cddf4acae10251fdad4d21..f0a1bd3faac7e7fc8570bee9e4310f42
      }
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 6cab5ab5aec02d6810cbce3f94302b1db4e7b721..7e8ad027cfccf21dca6001040b6b01afcb94dee5 100644
+index f13dffd0b056b9bd590dad60462f6db6b3d08bec..b38010344b27b32f7acff9a95b64a34600f99407 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 @@ -2,6 +2,7 @@ package team.earendel.andromeda.configurations;
@@ -156,7 +156,7 @@ index 6cab5ab5aec02d6810cbce3f94302b1db4e7b721..7e8ad027cfccf21dca6001040b6b01af
  import org.spongepowered.configurate.objectmapping.meta.Setting;
  
  @SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
-@@ -80,4 +81,22 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -100,4 +101,22 @@ public class GlobalConfiguration extends ConfigurationPart {
  
      }
  

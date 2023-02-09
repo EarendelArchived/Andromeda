@@ -126,10 +126,10 @@ index 33a30d26da2401535f0a72acb2bbffec1aef151e..c158303fba26fcb685fb90fd86ff5d43
  
              if (worldserver.addFreshEntity(entityminecartabstract) && shrink) stack.shrink(1); // Paper - actually handle here
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index d0e07dc835abb0c5e574a5ab0e92258288e18c1b..17e36956e2b9e2e6fc0fbcadb7f73d73ecdcd6b9 100644
+index 8c3a67f9419d1f42673ce61eb78d34039dfd46c0..09b8e1b0732dd74cc38152b8cc402cc1ad356242 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -138,6 +138,8 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -158,6 +158,8 @@ public class GlobalConfiguration extends ConfigurationPart {
  
          public boolean fixCollisionBetweenAabbAndADot = true;
  

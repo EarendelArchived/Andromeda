@@ -33,10 +33,10 @@ index 97c5a72096ac0fd0b08a397466486014cfea4579..d5c36c8b6cb4d4b07a37adca35b6951d
      }
  
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index e395280c3ff0849585ce0864f29b18cfaa516017..3f0ccbbe7e198a3f81047c085bd3f9fe9f35c780 100644
+index c485573026809004fe5fa07a2b882a19cd2d8e59..f2e88f318eb664ee11e440464bcaa3f4eaec26db 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -147,6 +147,8 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -167,6 +167,8 @@ public class GlobalConfiguration extends ConfigurationPart {
  
          public boolean properlyCloneCustomNbtTagsInsideItemMeta = true;
  

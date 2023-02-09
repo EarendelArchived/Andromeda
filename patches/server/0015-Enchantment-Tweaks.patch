@@ -23,23 +23,25 @@ index d6c354856c71d9629828e2ddbe316306bfaf6ea6..e25aa510aa03bc32ea8da6b0e5308769
      }
  
 diff --git a/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java b/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
-index 2381f72a5e980b8659f6253054996bbcad2844fc..43b8ee4a12da8b8045c5a042ad54d554147c9404 100644
+index 2381f72a5e980b8659f6253054996bbcad2844fc..b293537f9b898713d56c06ec29554203bd8361f5 100644
 --- a/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
 +++ b/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
-@@ -110,6 +110,18 @@ public abstract class Enchantment {
+@@ -110,6 +110,20 @@ public abstract class Enchantment {
      }
  
      public boolean canEnchant(ItemStack stack) {
 +        // Andromeda start
 +        if (this instanceof FireAspectEnchantment) {
 +            if (stack.getItem() instanceof net.minecraft.world.item.TridentItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.trident.acceptFireAspect;
-+            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.axe.acceptFireAspect;
++            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.tool.axe.acceptFireAspect;
++            else if (stack.getItem() instanceof net.minecraft.world.item.PickaxeItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.tool.pickaxe.fireAspectAffectsMining;
++            else if (stack.getItem() instanceof net.minecraft.world.item.ShovelItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.tool.shovel.fireAspectAffectsMining;
 +        } else if (this instanceof KnockbackEnchantment) {
 +            if (stack.getItem() instanceof net.minecraft.world.item.TridentItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.trident.acceptKnockback;
-+            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.axe.acceptKnockback;
++            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.tool.axe.acceptKnockback;
 +        } else if (this instanceof LootBonusEnchantment) {
 +            if (stack.getItem() instanceof net.minecraft.world.item.TridentItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.trident.acceptLooting;
-+            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.axe.acceptLooting;
++            else if (stack.getItem() instanceof net.minecraft.world.item.AxeItem) return team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.tool.axe.acceptLooting;
 +        }
 +        // Andromeda end
          return this.category.canEnchant(stack.getItem());
@@ -57,11 +59,46 @@ index a38194accb2d0ba204ab2f81b4be6031842faf9c..963ac085c994db466f1d05ecf295d0b6
                  return this.type == ProtectionEnchantment.Type.FALL || protectionEnchantment.type == ProtectionEnchantment.Type.FALL;
              }
          } else {
+diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
+index 0c348b366623e350393f035d760adc6ee4142687..3c25066bdb2a4de49f5633a84ddc48025ac22476 100644
+--- a/src/main/java/net/minecraft/world/level/block/Block.java
++++ b/src/main/java/net/minecraft/world/level/block/Block.java
+@@ -309,8 +309,29 @@ public class Block extends BlockBehaviour implements ItemLike {
+ 
+     public static List<ItemStack> getDrops(BlockState state, ServerLevel world, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack stack) {
+         LootContext.Builder loottableinfo_builder = (new LootContext.Builder(world)).withRandom(world.random).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos)).withParameter(LootContextParams.TOOL, stack).withOptionalParameter(LootContextParams.THIS_ENTITY, entity).withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity);
++        // Andromeda start - Enchantment Tweaks
++        List<ItemStack> drops = state.getDrops(loottableinfo_builder);
+ 
+-        return state.getDrops(loottableinfo_builder);
++        if (entity instanceof Player
++                && ((stack.getItem() instanceof net.minecraft.world.item.AxeItem && team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.tool.axe.fireAspectAffectsMining)
++                || (stack.getItem() instanceof net.minecraft.world.item.PickaxeItem && team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.tool.pickaxe.fireAspectAffectsMining)
++                || (stack.getItem() instanceof net.minecraft.world.item.ShovelItem && team.earendel.andromeda.configurations.GlobalConfiguration.get().enchantments.tool.shovel.fireAspectAffectsMining))) {
++            net.minecraft.world.item.crafting.RecipeManager.CachedCheck<net.minecraft.world.Container, net.minecraft.world.item.crafting.SmeltingRecipe> match = net.minecraft.world.item.crafting.RecipeManager.createCheck(net.minecraft.world.item.crafting.RecipeType.SMELTING);
++            for (int i = 0; i < drops.size(); i++) {
++                ItemStack current = drops.get(i);
++
++                java.util.Optional<net.minecraft.world.item.crafting.SmeltingRecipe> recipe = match.getRecipeFor(new net.minecraft.world.SimpleContainer(current), world);
++                if (recipe.isEmpty()) continue;
++
++                ItemStack result = recipe.get().getResultItem();
++                result.setCount(current.getCount());
++
++                drops.set(i, result);
++            }
++        }
++
++        return drops;
++        // Andromed aend
+     }
+ 
+     public static void dropResources(BlockState state, LootContext.Builder lootContext) {
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index b57595522723763bdb63ec277e812ab2ed02e475..77d1199ccb5e31a8600cc23b80eab3876c6d2257 100644
+index b57595522723763bdb63ec277e812ab2ed02e475..f6ffc21fbd9011010d865d20164bf143f6cdca7d 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -41,4 +41,31 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -41,4 +41,51 @@ public class GlobalConfiguration extends ConfigurationPart {
  
      }
  
@@ -81,12 +118,32 @@ index b57595522723763bdb63ec277e812ab2ed02e475..77d1199ccb5e31a8600cc23b80eab387
 +
 +        }
 +
-+        public Axe axe;
-+        public class Axe extends ConfigurationPart {
++        public Tool tool;
++        public class Tool extends ConfigurationPart {
 +
-+            public boolean acceptFireAspect = false;
-+            public boolean acceptKnockback = false;
-+            public boolean acceptLooting = false;
++            public Axe axe;
++            public class Axe extends ConfigurationPart {
++
++                public boolean acceptFireAspect = false;
++                public boolean fireAspectAffectsMining = false;
++                public boolean acceptKnockback = false;
++                public boolean acceptLooting = false;
++
++            }
++
++            public Pickaxe pickaxe;
++            public class Pickaxe extends ConfigurationPart {
++
++                public boolean fireAspectAffectsMining = false;
++
++            }
++
++            public Shovel shovel;
++            public class Shovel extends ConfigurationPart {
++
++                public boolean fireAspectAffectsMining = false;
++
++            }
 +
 +        }
 +

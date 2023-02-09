@@ -17,10 +17,10 @@ index d85cd2019904c6cc419d708ea4eba8188dcf64f7..a0b0544594643c72643cbbc3c41f7587
          this.managedBlock(() -> {
              return !this.canSleepForTickNoOversleep(); // Paper - move oversleep into full server tick
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index d488d370f8afa8076b0363b91b84c4e9a69b0a1e..02816f11db66cdd6d5cbbce5e65fe8cc213d8897 100644
+index 4c63c5a110ff315030ab9df8f224cd21008a5337..7f657878cb2e8a6007dd7471ec6eb669b05d5a7e 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -105,6 +105,18 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -125,6 +125,18 @@ public class GlobalConfiguration extends ConfigurationPart {
  
          public boolean useFasterRandom = true;
  

@@ -24,10 +24,10 @@ index aa2331c6df4e79d4bb0add071a0b11d2a3a08b88..1e3c1f781de1e52493a5e391791710af
      }
  }
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index 77d1199ccb5e31a8600cc23b80eab3876c6d2257..6cab5ab5aec02d6810cbce3f94302b1db4e7b721 100644
+index f6ffc21fbd9011010d865d20164bf143f6cdca7d..f13dffd0b056b9bd590dad60462f6db6b3d08bec 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -68,4 +68,16 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -88,4 +88,16 @@ public class GlobalConfiguration extends ConfigurationPart {
  
      }
  

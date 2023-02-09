@@ -50,10 +50,10 @@ index 1b271896213f40b007a87ebbfe44e5c774db6994..4ef583c54988b9ea699e10de3c1bed1d
              this.writeByte(value & 127 | 128);
              value >>>= 7;
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index d15b78ff9cb67686e14fc43414b4d23d14124d09..d0ec62c978c673670c5417fd4a9797a3f30d4381 100644
+index 1231d8f4ac9c73679e46f19c5a6bcbb479fbfbb2..89aa59ed398a4e5fac1218580dd7fb35a5c0c31e 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -142,6 +142,8 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -162,6 +162,8 @@ public class GlobalConfiguration extends ConfigurationPart {
  
          public boolean fixCommandFunctionPermChecking = true;
  

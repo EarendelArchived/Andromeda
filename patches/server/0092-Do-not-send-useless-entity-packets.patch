@@ -38,10 +38,10 @@ index dd6a43522054a26fce1fa2793df31e15975b5493..929faf8ece2bb7efcb3c8b416d05b451
          this.entity.stopSeenByPlayer(player);
          ((ServerLevel) this.entity.level).getChunkSource().chunkMap.runOnTrackerMainThread(() -> { // Andromeda - Petal patches (ensure main thread)
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-index a3641b97abd2cd07fd3cc7bea639309172a06905..4300f342b3ccd34feb37ef5e916b0e9afbf04cb6 100644
+index 4f0d0daa22938f5d78693c7493c4b96804c335a3..9f0dcd0fc57f8361a9b6ae101072a5e8cdff10a8 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
-@@ -106,6 +106,7 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -126,6 +126,7 @@ public class GlobalConfiguration extends ConfigurationPart {
  
          public boolean useFasterRandom = true;
          public boolean useNormalCollisionContextWhichIsAlreadyLazy = false;
