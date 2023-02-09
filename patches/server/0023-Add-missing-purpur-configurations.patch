@@ -160,10 +160,10 @@ index 17df2b09542f67cdd1d83f795d9b2aad9ccd4e05..faee4b5fd9906511a00cee171c5efc2a
      public Packet<ClientGamePacketListener> getAddEntityPacket() {
          return new ClientboundAddEntityPacket(this, this.hasPose(Pose.EMERGING) ? 1 : 0);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 4cd080a0db99a5c36394bcf54526b96fe22a206a..eef84d906ac065a5b3d47e66b9f47d58148b6c02 100644
+index c0c4742027217d5ae27843989ad18be93608496a..caf8e28133980b5b615470f5e9d2d3add6c2891d 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -1074,11 +1074,21 @@ public class PurpurWorldConfig {
+@@ -1086,11 +1086,21 @@ public class PurpurWorldConfig {
      public boolean allayRidable = false;
      public boolean allayRidableInWater = false;
      public boolean allayControllable = true;
@@ -185,7 +185,7 @@ index 4cd080a0db99a5c36394bcf54526b96fe22a206a..eef84d906ac065a5b3d47e66b9f47d58
          allayRespectNBT.clear();
          getList("mobs.allay.respect-nbt", new ArrayList<>()).forEach(key -> allayRespectNBT.add(key.toString()));
      }
-@@ -1179,6 +1189,13 @@ public class PurpurWorldConfig {
+@@ -1191,6 +1201,13 @@ public class PurpurWorldConfig {
          blazeAlwaysDropExp = getBoolean("mobs.blaze.always-drop-exp", blazeAlwaysDropExp);
      }
  
@@ -199,7 +199,7 @@ index 4cd080a0db99a5c36394bcf54526b96fe22a206a..eef84d906ac065a5b3d47e66b9f47d58
      public int camelBreedingTicks = 6000;
      public double camelMaxHealthMin = 32.0D;
      public double camelMaxHealthMax = 32.0D;
-@@ -1193,6 +1210,13 @@ public class PurpurWorldConfig {
+@@ -1205,6 +1222,13 @@ public class PurpurWorldConfig {
          camelJumpStrengthMax = getDouble("mobs.camel.attributes.jump_strength.max", camelJumpStrengthMax);
          camelMovementSpeedMin = getDouble("mobs.camel.attributes.movement_speed.min", camelMovementSpeedMin);
          camelMovementSpeedMax = getDouble("mobs.camel.attributes.movement_speed.max", camelMovementSpeedMax);
@@ -213,7 +213,7 @@ index 4cd080a0db99a5c36394bcf54526b96fe22a206a..eef84d906ac065a5b3d47e66b9f47d58
          camelBreedingTicks = getInt("mobs.camel.breeding-delay-ticks", camelBreedingTicks);
      }
  
-@@ -1611,12 +1635,22 @@ public class PurpurWorldConfig {
+@@ -1623,12 +1647,22 @@ public class PurpurWorldConfig {
      public boolean frogRidable = false;
      public boolean frogRidableInWater = false;
      public boolean frogControllable = true;
@@ -236,7 +236,7 @@ index 4cd080a0db99a5c36394bcf54526b96fe22a206a..eef84d906ac065a5b3d47e66b9f47d58
          frogRidableJumpHeight = (float) getDouble("mobs.frog.ridable-jump-height", frogRidableJumpHeight);
          frogBreedingTicks = getInt("mobs.frog.breeding-delay-ticks", frogBreedingTicks);
      }
-@@ -2650,10 +2684,20 @@ public class PurpurWorldConfig {
+@@ -2662,10 +2696,20 @@ public class PurpurWorldConfig {
      public boolean tadpoleRidable = false;
      public boolean tadpoleRidableInWater = false;
      public boolean tadpoleControllable = true;
@@ -257,7 +257,7 @@ index 4cd080a0db99a5c36394bcf54526b96fe22a206a..eef84d906ac065a5b3d47e66b9f47d58
      }
  
      public boolean traderLlamaRidable = false;
-@@ -2860,10 +2904,20 @@ public class PurpurWorldConfig {
+@@ -2872,10 +2916,20 @@ public class PurpurWorldConfig {
      public boolean wardenRidable = false;
      public boolean wardenRidableInWater = false;
      public boolean wardenControllable = true;
