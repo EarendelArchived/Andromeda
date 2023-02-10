@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@gmail.com>
+Date: Fri, 10 Feb 2023 19:29:04 +0900
+Subject: [PATCH] Port PaperMC/Paper#8839
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+index 77646b76acde31e12739970ed2ab601b3c833ea1..984a6c1ea3365eb07f5eb4c40c56eab15157a1db 100644
+--- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
++++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
+@@ -708,6 +708,7 @@ public class EnderDragon extends Mob implements Enemy {
+ 
+     @Override
+     public void kill() {
++        if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityDeathEvent(this, drops).isCancelled()) return; // Andromeda
+         this.remove(Entity.RemovalReason.KILLED);
+         this.gameEvent(GameEvent.ENTITY_DIE);
+         if (this.dragonFight != null) {
