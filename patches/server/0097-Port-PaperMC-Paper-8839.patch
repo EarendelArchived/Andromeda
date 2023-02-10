@@ -5,14 +5,27 @@ Subject: [PATCH] Port PaperMC/Paper#8839
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-index 77646b76acde31e12739970ed2ab601b3c833ea1..984a6c1ea3365eb07f5eb4c40c56eab15157a1db 100644
+index 77646b76acde31e12739970ed2ab601b3c833ea1..d65c46f711c4b8c8f6112d0c0475ca60da8a2927 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 @@ -708,6 +708,7 @@ public class EnderDragon extends Mob implements Enemy {
  
      @Override
      public void kill() {
-+        if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityDeathEvent(this, drops).isCancelled()) return; // Andromeda
++        if (this.level.andromedaLevelConfiguration().paperPullRequestsPort.callEntityDeathEventForEnderDragonKill && org.bukkit.craftbukkit.event.CraftEventFactory.callEntityDeathEvent(this, drops).isCancelled()) return; // Andromeda
          this.remove(Entity.RemovalReason.KILLED);
          this.gameEvent(GameEvent.ENTITY_DIE);
          if (this.dragonFight != null) {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 90eb591fadca7cdf2be6093b2a2702dfa28cc0d7..920ce40584dec432df53cfcf74801b5d27ac0b92 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -254,6 +254,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean onlyCaptureActualTreeGrowth = true;
+ 
++        public boolean callEntityDeathEventForEnderDragonKill = true;
++
+     }
+ 
+     public SpigotBugFix spigotBugFix;
