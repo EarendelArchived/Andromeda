@@ -26,18 +26,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 0008 - Allow any characters in username
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index fdcfed33902f1bcbc78556512b9f01d95f412f1b..148aa2de79ed515532b255404c0dc44ec15c8602 100644
+index 585402650c2fd87464f777169f4d134dcb8a2610..5cfe875ef6835ad0142bdbb33bb25fae236de26c 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -315,6 +315,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
-         // CraftBukkit end
- 
+@@ -320,6 +320,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         String proxyFlavor = (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.velocity.enabled) ? "Velocity" : "BungeeCord";
+         String proxyLink = (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.velocity.enabled) ? "https://docs.papermc.io/velocity/security" : "http://www.spigotmc.org/wiki/firewall-guide/";
+         // Paper end
 +        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().consoleLogs.offlineWarnings) // Andromeda - Rubia Patches
          if (!this.usesAuthentication()) {
              DedicatedServer.LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
              DedicatedServer.LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
-@@ -327,7 +328,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -334,7 +335,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
                  DedicatedServer.LOGGER.warn("You will not be offered any support as long as the server allows offline-mode players to join."); // Purpur
              }
              // Spigot end
@@ -47,7 +47,7 @@ index fdcfed33902f1bcbc78556512b9f01d95f412f1b..148aa2de79ed515532b255404c0dc44e
  
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index f7f085a2dc5dc8d09bc665a371afac04b0e118fc..1d3c9cfdea9b606f47b7783bdf3064adfd796467 100644
+index cd718c7a9f95d003014ea28642b375297872e5f9..cd5bc5e82285fe408fe99d51e31874604e658bc9 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -239,6 +239,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,

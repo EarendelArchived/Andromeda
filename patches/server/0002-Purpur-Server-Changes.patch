@@ -1486,7 +1486,7 @@ index 06e3a868e922f1b7a586d0ca28f64a67ae463b68..32beb045f990d4da6112da4fea295333
                          itemstack.setCount(1);
                          entityitem = entityplayer.drop(itemstack, false, false, false); // SPIGOT-2942: Add boolean to call event
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 673fb3955291407be37dc78be4eec9bf2018128b..46858fb57f122033a68aeb4ad3943132a677fb46 100644
+index ad4fdbdcf09f30d10e61ccf47f8fb9ce6bd92e73..a850cab20be16b816754df2e4747cca128079f63 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -218,9 +218,19 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -1540,33 +1540,26 @@ index 673fb3955291407be37dc78be4eec9bf2018128b..46858fb57f122033a68aeb4ad3943132
  
          // CraftBukkit start
          // this.setPlayerList(new DedicatedPlayerList(this, this.registries(), this.playerDataStorage)); // Spigot - moved up
-@@ -280,11 +314,12 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-             DedicatedServer.LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
-             DedicatedServer.LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
-             // Spigot start
--            if (org.spigotmc.SpigotConfig.bungee) {
--                DedicatedServer.LOGGER.warn("Whilst this makes it possible to use BungeeCord, unless access to your server is properly restricted, it also opens up the ability for hackers to connect with any username they choose.");
-+            if (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode()) { // Purpur
-+                DedicatedServer.LOGGER.warn("Whilst this makes it possible to use BungeeCord or Velocity, unless access to your server is properly restricted, it also opens up the ability for hackers to connect with any username they choose."); // Purpur
-                 DedicatedServer.LOGGER.warn("Please see http://www.spigotmc.org/wiki/firewall-guide/ for further information.");
+@@ -292,6 +326,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+             // Paper end
              } else {
                  DedicatedServer.LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
 +                DedicatedServer.LOGGER.warn("You will not be offered any support as long as the server allows offline-mode players to join."); // Purpur
              }
              // Spigot end
              DedicatedServer.LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
-@@ -335,6 +370,10 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -342,6 +377,10 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
              }
  
              if (gg.pufferfish.pufferfish.PufferfishConfig.enableAsyncMobSpawning) mobSpawnExecutor.start(); // Pufferfish
 +
 +            org.purpurmc.purpur.task.BossBarTask.startAll(); // Purpur
 +            org.purpurmc.purpur.task.BeehiveTask.instance().register(); // Purpur
-+
++            
              return true;
          }
      }
-@@ -481,7 +520,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -488,7 +527,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
      }
  
      public void handleConsoleInputs() {
@@ -1575,7 +1568,7 @@ index 673fb3955291407be37dc78be4eec9bf2018128b..46858fb57f122033a68aeb4ad3943132
          // Paper start - use proper queue
          ConsoleInput servercommand;
          while ((servercommand = this.serverCommandQueue.poll()) != null) {
-@@ -498,7 +537,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -505,7 +544,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
              // CraftBukkit end
          }
  
