@@ -28,3 +28,10 @@ If you do not know about Mojmap or Bundler, download `andromeda-paperclip-*-reob
 
 ### 🔧 For Developers
 [More information can be found here.](https://github.com/TeamEarendel/Andromeda/wiki/For-Developers)
+
+### ⚖️ License
+[![License](https://img.shields.io/github/license/TeamEarendel/Andromeda?style=flat-square)](LICENSE.md)
+
+All patches are licensed under the MIT license, unless otherwise noted in the patch headers.
+
+[Click here to view licenses for other projects used in Andromeda.](https://github.com/TeamEarendel/Andromeda/wiki/Implemented-Bukkits-&-Mods)
