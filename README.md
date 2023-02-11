@@ -7,10 +7,10 @@
 
 A Server Platform for Minecraft: Java Edition based on [Paper](https://github.com/PaperMC/Paper)
 
-### ⚠️ Warning
+## ⚠️ Warning
 Andromeda is VERY UNSTABLE and can cause unexpected problems, so DO NOT USE it in production server.
 
-### ⚙️ Features
+## ⚙️ Features
 - **Based on [Paper](https://github.com/PaperMC/Paper)** - Most plugins of Bukkit, Craft Bukkit, Spigot, and Paper are available
 - **Including all patches from [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) and [Purpur](https://github.com/PurpurMC/Purpur)** - Provides multiple optimizations and customizations
 - **Implemented [No Chat Reports](https://modrinth.com/mod/no-chat-reports)** - Ability to disable Chat Report System added in 1.19
@@ -19,17 +19,17 @@ Andromeda is VERY UNSTABLE and can cause unexpected problems, so DO NOT USE it i
 - **[Automated Upstream Update](https://github.com/TeamEarendel/Updater)** - Automate updates to provide faster updates
 - And more is coming soon...
 
-### ⬇️ Downloads
+## ⬇️ Downloads
 [![Build](https://img.shields.io/github/actions/workflow/status/TeamEarendel/Andromeda/build.yml?branch=ver/1.19.3&logo=github&style=flat-square)](https://github.com/TeamEarendel/Andromeda/actions/workflows/build.yml?query=branch:ver/1.19.3)
 
 You can download the file from the [Releases](https://github.com/TeamEarendel/Andromeda/releases) tab, or you can [click here](https://github.com/TeamEarendel/Andromeda/releases/download/latest-1.19.3/andromeda-paperclip-1.19.3-R0.1-SNAPSHOT-reobf.jar) to download it.
 
 If you do not know about Mojmap or Bundler, download `andromeda-paperclip-*-reobf.jar`.
 
-### 🔧 For Developers
+## 🔧 For Developers
 [More information can be found here.](https://github.com/TeamEarendel/Andromeda/wiki/For-Developers)
 
-### ⚖️ License
+## ⚖️ License
 [![License](https://img.shields.io/github/license/TeamEarendel/Andromeda?style=flat-square)](LICENSE.md)
 
 All patches are licensed under the MIT license, unless otherwise noted in the patch headers.
