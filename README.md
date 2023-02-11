@@ -18,6 +18,10 @@ Andromeda is VERY UNSTABLE and can cause unexpected problems, so DO NOT USE it i
 - **Ported patches from other Bukkits** - [More information can be found here.](https://github.com/TeamEarendel/Andromeda/wiki/Implemented-Bukkits-&-Mods#ported-bukkits)
 - **[Automated Upstream Update](https://github.com/TeamEarendel/Updater)** - Automate updates to provide faster updates
 - And more is coming soon...
+- [More information can be found here.](https://github.com/TeamEarendel/Andromeda/wiki/Added-Features)
+
+## 🎛️ Configuration
+[More information can be found here.](https://github.com/TeamEarendel/Andromeda/wiki/Configurations)
 
 ## ⬇️ Downloads
 [![Build](https://img.shields.io/github/actions/workflow/status/TeamEarendel/Andromeda/build.yml?branch=ver/1.19.3&logo=github&style=flat-square)](https://github.com/TeamEarendel/Andromeda/actions/workflows/build.yml?query=branch:ver/1.19.3)
