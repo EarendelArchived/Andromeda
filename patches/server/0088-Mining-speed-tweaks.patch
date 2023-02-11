@@ -36,10 +36,10 @@ index f23fdf5ff760eac45f0c35acf1c766e0323d7135..4db190ba8ac05786d4923afb84032ec1
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index e5dd91425159d28be40a155d5acb091955d7cf75..073564b3959d42817647c975491f3eab5e8be50e 100644
+index a33f2e7dd2f520a0f1c5bb6cb7de8c20f7d987fa..c619284677ae087721f0f4536d58f4ea861cc001 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3179,5 +3179,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3189,5 +3189,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public void setModName(net.kyori.adventure.text.Component component) {
          this.getHandle().connection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(io.papermc.paper.adventure.PaperAdventure.asJsonString(component, java.util.Locale.ROOT))));
      }

@@ -5,10 +5,10 @@ Subject: [PATCH] Add server mod name API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 46dd9980b4ef09153c1ad9cbf447e7089ecfa6ac..c5c47693742ae770f43fbff80426b497013be2f2 100644
+index d5ad02c1fa2b840289d316400952aaebb8c5dad1..cfce3d279d5f6961e7284753d7e1b8f7bac0b33e 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3106,4 +3106,13 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -3135,4 +3135,13 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       */
      void sendDeathScreen(@NotNull Component message, @Nullable Entity killer);
      // Purpur end
