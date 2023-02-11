@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@gmail.com>
+Date: Sat, 11 Feb 2023 20:40:44 +0900
+Subject: [PATCH] Fix MC-237017
+
+
+diff --git a/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java b/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
+index 6b84633bf6956406d2e2c5dd32fa358f41ccc890..1cb7eb826fee49f81786bcd390859b011a42d2c6 100644
+--- a/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
++++ b/src/main/java/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
+@@ -72,6 +72,7 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
+     }
+ 
+     private static Aquifer.FluidPicker createFluidPicker(NoiseGeneratorSettings settings) {
++        if (team.earendel.andromeda.configurations.GlobalConfiguration.get().bugFixes.fixMc237017) return (x, y, z) -> new Aquifer.FluidStatus(settings.seaLevel(), settings.defaultFluid()); // Andromeda
+         Aquifer.FluidStatus aquifer_b = new Aquifer.FluidStatus(-54, Blocks.LAVA.defaultBlockState());
+         int i = settings.seaLevel();
+         Aquifer.FluidStatus aquifer_b1 = new Aquifer.FluidStatus(i, settings.defaultFluid());
+diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+index cb3bd4d1578332b02c816ad76a76f8d2720b4941..7ea1683eb6836f9ca812ae52582d64e0d404ae01 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
++++ b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
+@@ -175,4 +175,11 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+     }
+ 
++    public BugFixes bugFixes;
++    public class BugFixes extends ConfigurationPart {
++
++        public boolean fixMc237017 = true;
++
++    }
++
+ }
