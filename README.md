@@ -26,6 +26,14 @@ You can download the file from the [Releases](https://github.com/TeamEarendel/An
 
 If you do not know about Mojmap or Bundler, download `andromeda-paperclip-*-reobf.jar`.
 
+## 🧪 Use more experimental features
+[![Build](https://img.shields.io/github/actions/workflow/status/TeamEarendel/AndromedaPlus/build.yml?branch=ver/1.19.3&logo=github&style=flat-square)](https://github.com/TeamEarendel/AndromedaPlus/actions/workflows/build.yml?query=branch:matter/1.19.3)
+[![Upstream](https://img.shields.io/github/actions/workflow/status/TeamEarendel/Updater/andromedaplus.yml?label=upstream&logo=github&style=flat-square)](https://github.com/TeamEarendel/Updater/actions/workflows/andromedaplus.yml)
+
+You can use Andromeda Plus for more experimental features.
+
+[Click here for more information.](https://github.com/TeamEarendel/AndromedaPlus)
+
 ## 🔧 For Developers
 [More information can be found here.](https://github.com/TeamEarendel/Andromeda/wiki/For-Developers)
 
