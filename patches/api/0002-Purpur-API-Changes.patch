@@ -415,10 +415,10 @@ index f6eb30f53dad684f156102cf7147b2f00c82c71e..f1239a2618b08fa92e0e20692d1c3d20
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/Material.java b/src/main/java/org/bukkit/Material.java
-index e5b94299793ba7cb9071a3f3a35ddbe08b0b9906..0a3013843f7e1d3fcedfaca6a7b288642ebcb407 100644
+index ee471fbd7c2138cd330b2c64da4e77b3414ec913..4df3de56641b0ce028f25ee8d3ed496c707302a7 100644
 --- a/src/main/java/org/bukkit/Material.java
 +++ b/src/main/java/org/bukkit/Material.java
-@@ -10688,4 +10688,39 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
+@@ -10714,4 +10714,39 @@ public enum Material implements Keyed, net.kyori.adventure.translation.Translata
          return Bukkit.getUnsafe().getCreativeCategory(this);
      }
  
@@ -1262,10 +1262,10 @@ index bc84b892cae5fe7019a3ad481e9da79956efa1fe..48eb5b00c460cccde29d327cef1d63fc
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index b0bd8194d263f6986e80b7d9848297a2bf27a112..46dd9980b4ef09153c1ad9cbf447e7089ecfa6ac 100644
+index d7d94b954262da0cbe11850cbc3ebd45e32c8c76..d5ad02c1fa2b840289d316400952aaebb8c5dad1 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -2971,4 +2971,139 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -3000,4 +3000,139 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      @Override
      Spigot spigot();
      // Spigot end

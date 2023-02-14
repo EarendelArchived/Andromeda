@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sun, 8 Jan 2023 11:49:49 +0900
+Subject: [PATCH] Port PaperMC/Paper#8473
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index aa95d67d72e1fc479273db5d3b63f33ea35b28a1..3c9bf395e6148b596a02f430b1d3bd28e6280b07 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1001,7 +1001,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+         if (this.getHandle().connection == null) return;
+ 
+-        int stage = (int) (9 * progress); // There are 0 - 9 damage states
++        int stage = this.getHandle().level.andromedaLevelConfiguration().paperPullRequestsPort.fixSendBlockDamageZeroProgress ? (int) (progress * 10) - 1 : (int) progress * 9; // There are 0 - 9 damage states // Andromeda - Port PaperMC/Paper#8473
+         ClientboundBlockDestructionPacket packet = new ClientboundBlockDestructionPacket(destroyerIdentity, new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), stage);  // Paper - customBlockDamage identity
+         this.getHandle().connection.send(packet);
+     }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index c053ef304dd8c658812ea97e63a80eda18a3d3c6..1a8f480277a02f513956d4904287b7e8ce028c78 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -156,6 +156,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean moveBlockFartherAwayForPlayerSetRotation = true;
+ 
++        public boolean fixSendBlockDamageZeroProgress = true;
++
+     }
+ 
+ }

@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 7 Jan 2023 23:36:29 +0900
+Subject: [PATCH] Port PaperMC/Paper#8532
+
+
+diff --git a/src/main/java/net/minecraft/world/effect/MobEffect.java b/src/main/java/net/minecraft/world/effect/MobEffect.java
+index 434f229c9e67c4ca459ab612345a1754d8be9780..ebf9370f218ddd66434213c8eeff5d6453398437 100644
+--- a/src/main/java/net/minecraft/world/effect/MobEffect.java
++++ b/src/main/java/net/minecraft/world/effect/MobEffect.java
+@@ -65,7 +65,11 @@ public class MobEffect {
+             }
+         } else if (this == MobEffects.POISON) {
+             if (entity.getHealth() > entity.level.purpurConfig.entityMinimalHealthPoison) { // Purpur
+-                entity.hurt(CraftEventFactory.POISON, entity.level.purpurConfig.entityPoisonDegenerationAmount);  // CraftBukkit - DamageSource.MAGIC -> CraftEventFactory.POISON // Purpur
++                // Andromeda start - Port PaperMC/Paper#8532
++                entity.customDamageSource = CraftEventFactory.POISON;
++                entity.hurt(DamageSource.MAGIC, entity.level.purpurConfig.entityPoisonDegenerationAmount);  // CraftBukkit - DamageSource.MAGIC -> CraftEventFactory.POISON // Purpur
++                entity.customDamageSource = null;
++                // Andromeda end
+             }
+         } else if (this == MobEffects.WITHER) {
+             entity.hurt(DamageSource.WITHER, entity.level.purpurConfig.entityWitherDegenerationAmount); // Purpur
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 5f58832e843f550cb54028851c5b8fe35f1aeda6..a484dfb88da2e1e92e97f667986000c2a35d02ba 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -397,6 +397,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+     @javax.annotation.Nullable
+     private UUID originWorld;
+     public boolean freezeLocked = false; // Paper - Freeze Tick Lock API
++    @Nullable public DamageSource customDamageSource; // Andromeda - Port PaperMC/Paper#8532
+     public boolean collidingWithWorldBorder; // Paper
+     public @Nullable Boolean immuneToFire = null; // Purpur - Fire immune API
+     private boolean boundingBoxChanged = false; // Andromeda - Port VMP
+diff --git a/src/main/java/net/minecraft/world/entity/animal/SnowGolem.java b/src/main/java/net/minecraft/world/entity/animal/SnowGolem.java
+index 00d86c57fabbb464a156dfaceadccd978f0d149c..a1f068d641c9237c84bfec4c4f64fb40569c0e46 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/SnowGolem.java
++++ b/src/main/java/net/minecraft/world/entity/animal/SnowGolem.java
+@@ -147,7 +147,11 @@ public class SnowGolem extends AbstractGolem implements Shearable, RangedAttackM
+             Biome biomebase = (Biome) this.level.getBiome(blockposition).value();
+ 
+             if (biomebase.shouldSnowGolemBurn(blockposition)) {
+-                this.hurt(CraftEventFactory.MELTING, 1.0F); // CraftBukkit - DamageSource.BURN -> CraftEventFactory.MELTING
++                // Andromeda start - Port PaperMC/Paper#8532
++                this.customDamageSource = CraftEventFactory.MELTING;
++                this.hurt(DamageSource.ON_FIRE, 1.0F); // CraftBukkit - DamageSource.BURN -> CraftEventFactory.MELTING
++                this.customDamageSource = null;
++                // Andromeda end
+             }
+ 
+             if (!this.level.purpurConfig.snowGolemBypassMobGriefing && !this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) { // Purpur
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index 7f52fbc30d1c9e3e416109cda427145d1221ce30..4141bb6a9a2493f3ed1d905a1e8461f602ea0fee 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -1046,6 +1046,7 @@ public class CraftEventFactory {
+         } else if (CraftEventFactory.blockDamage != null) {
+             DamageCause cause = null;
+             Block damager = CraftEventFactory.blockDamage;
++            if (entity.customDamageSource != null) source = entity.customDamageSource; // Andromeda - Port PaperMC/Paper#8532
+             if (source == DamageSource.CACTUS || source == DamageSource.SWEET_BERRY_BUSH || source == DamageSource.STALAGMITE || "fallingStalactite".equals(source.msgId) || "anvil".equals(source.msgId)) {
+                 cause = DamageCause.CONTACT;
+             } else if (source == DamageSource.HOT_FLOOR) {

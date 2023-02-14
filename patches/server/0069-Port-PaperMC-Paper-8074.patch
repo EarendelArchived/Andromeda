@@ -1,0 +1,83 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 13 Jan 2023 15:07:45 +0900
+Subject: [PATCH] Port PaperMC/Paper#8074
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/network/StandardPaperServerListPingEventImpl.java b/src/main/java/com/destroystokyo/paper/network/StandardPaperServerListPingEventImpl.java
+index 4c2351b03b58511b80017b58ee9b20ab5193adc9..f4ca8bbc75dd9f60846e41140badabbbde7609a8 100644
+--- a/src/main/java/com/destroystokyo/paper/network/StandardPaperServerListPingEventImpl.java
++++ b/src/main/java/com/destroystokyo/paper/network/StandardPaperServerListPingEventImpl.java
+@@ -74,15 +74,25 @@ public final class StandardPaperServerListPingEventImpl extends PaperServerListP
+ 
+     @SuppressWarnings("deprecation")
+     public static void processRequest(MinecraftServer server, Connection networkManager) {
+-        StandardPaperServerListPingEventImpl event = new StandardPaperServerListPingEventImpl(server, networkManager, server.getStatus());
+-        server.server.getPluginManager().callEvent(event);
++        // Andromeda start - Port PaperMC/Paper#8074
++        ServerStatus ping = getEventResponse(server, networkManager);
+ 
+-        // Close connection immediately if event is cancelled
+-        if (event.isCancelled()) {
++        if (ping == null) {
+             networkManager.disconnect(null);
+             return;
+         }
+ 
++        networkManager.send(new ClientboundStatusResponsePacket(ping));
++    }
++
++    public static ServerStatus getEventResponse(MinecraftServer server, Connection networkManager) {
++        // Andromeda end
++        StandardPaperServerListPingEventImpl event = new StandardPaperServerListPingEventImpl(server, networkManager, server.getStatus());
++        server.server.getPluginManager().callEvent(event);
++
++        // Close connection immediately if event is cancelled
++        if (event.isCancelled()) return null; // Andromeda - Port PaperMC/Paper#8074
++
+         // Setup response
+         ServerStatus ping = new ServerStatus();
+ 
+@@ -103,8 +113,7 @@ public final class StandardPaperServerListPingEventImpl extends PaperServerListP
+             ping.setFavicon(event.getServerIcon().getData());
+         }
+ 
+-        // Send response
+-        networkManager.send(new ClientboundStatusResponsePacket(ping));
++        return ping; // Andromeda - Port PaperMC/Paper#8074
+     }
+ 
+ }
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index 0b7f19db743be9a7a25fab835a084eb25c3ff3eb..442728f37d1ebefff92971d065d2f0e78d0a9f0c 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -296,6 +296,15 @@ public abstract class PlayerList {
+         Component joinMessage = ichatmutablecomponent; // Paper - Adventure
+ 
+         playerconnection.teleport(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot());
++        // Andromeda start - Port PaperMC/Paper#8074
++        if (player.level.andromedaLevelConfiguration().paperPullRequestsPort.fireServerListPingEventForSecondaryMotdSend)
++            io.papermc.paper.util.MCUtil.scheduleAsyncTask(() -> {
++                if (player.hasDisconnected()) return;
++                net.minecraft.network.protocol.status.ServerStatus status = com.destroystokyo.paper.network.StandardPaperServerListPingEventImpl.getEventResponse(this.server, connection);
++                if (status != null) player.sendServerStatus(status);
++            });
++        else
++        // Andromeda end
+         player.sendServerStatus(this.server.getStatus());
+         // player.connection.send(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(this.players)); // Paper - use single player info update packet
+         this.players.add(player);
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 2d458b5f307c440d1cec5cbc6dfed07bc9b45c40..c0a250e9cca8468f9830da42881c843c3b6e10e8 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -166,6 +166,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean doNotFireTntPrimeEventForEnderDragon = true;
+ 
++        public boolean fireServerListPingEventForSecondaryMotdSend = true;
++
+     }
+ 
+ }

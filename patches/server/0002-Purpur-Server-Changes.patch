@@ -2391,7 +2391,7 @@ index 53198ebfa30273c5ddc1bb4324f5174ff99f688d..b396a329e753f42b3878736b6b14bafd
                  }
                  // Paper end
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 7d6d3c8556033d289fdadc489e73fba478fce41a..d62bf95fb067c2e2a4fc9b2757c636bd4ee75bea 100644
+index 9160725f031c9698a00229c3dfa19d39b4a826c1..8664b5cfc739fc6b57643210cac3d03b279a59a1 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -268,6 +268,11 @@ public class ServerPlayer extends Player {
@@ -14910,7 +14910,7 @@ index 0ae8e9134a3671cdf2a480cd4dd6598653e261ab..7d34bd0d727eeb0afbc1869b076ee207
              if (NaturalSpawner.isSpawnPositionOk(SpawnPlacements.Type.ON_GROUND, world, blockposition2, EntityType.WANDERING_TRADER)) {
                  blockposition1 = blockposition2;
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index f6e4194856d4a2710a169b5823e74da1ba2c9130..a23d3aec7cec9114b8f7a2f26d72153a90c5a5a4 100644
+index 1116116e4ba6c5ecec400cd371b70b9e14efd92b..0c632cd0cb932a4cfaf2288c9d109325d5287537 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -183,6 +183,8 @@ public abstract class Player extends LivingEntity {
@@ -15132,7 +15132,7 @@ index 574ebb3a2fcd0e4e426a8a7ee88d722ed3b9c3f5..842b921799111789b37a34b76644c921
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-index 9788e477ff1446ad2ea3669922cc7dfc09900ce8..3f8e10c33e0f8739602f8327da3a8f66318c5c94 100644
+index c56bc341ebb1592af9285d5e044951e7ae2ae0b2..ed6a097aa1319e492ff56974fd259c227995523e 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
 @@ -72,6 +72,7 @@ public abstract class AbstractArrow extends Projectile {
@@ -15211,7 +15211,7 @@ index 4132c1113f5437a776e5e3c1cb306904775aed88..1a945a32c3d3705a318ebca72a365931
      public void tick() {
          super.tick();
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
-index 5ccd7dc0a093277d3ea09c0fe8be03c0073ee1a8..d01d3b752f89df479ff985dd34043191fd5d59a4 100644
+index a000834c4ea8645a2fcd697e6396f797c42c8fa3..7e620e7ea23943a8639a437d7937da2784b59f60 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
 @@ -303,6 +303,6 @@ public abstract class Projectile extends Entity {
@@ -15592,7 +15592,7 @@ index b16d9e2eaa589f19c563ee70b1a56d67dbcdecb0..71beab673f04cd051c46ea37f8c84731
      public static final FoodProperties BAKED_POTATO = (new FoodProperties.Builder()).nutrition(5).saturationMod(0.6F).build();
      public static final FoodProperties BEEF = (new FoodProperties.Builder()).nutrition(3).saturationMod(0.3F).meat().build();
 diff --git a/src/main/java/net/minecraft/world/inventory/AbstractContainerMenu.java b/src/main/java/net/minecraft/world/inventory/AbstractContainerMenu.java
-index 95ba37458e8154dbce6a8590508840d694fcbed1..8b198d31578c4618f730d572844292ae3bdda2c7 100644
+index 143977055717c2fe27df76231da304e2863b8f1f..cbec8dbc06dfc05150c345246bfd63c8001071d0 100644
 --- a/src/main/java/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/src/main/java/net/minecraft/world/inventory/AbstractContainerMenu.java
 @@ -76,6 +76,7 @@ public abstract class AbstractContainerMenu {
@@ -20535,7 +20535,7 @@ index 4d7a2c4c1001aefe9fcd4be8dbcb414f721bfff9..2c7716a9d65ebda209a144b82c2126b6
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 603cc41df6bcf726d996427e47876299d05d44db..4390514f6c6ee214efdd014c261f480700c1f8b8 100644
+index 03430916a8107c1b0f04d84e1dce494e2da06e7a..b2e4eac89fb2dc223c2b2ae8e36fe430f3f689c5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -524,10 +524,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -20555,7 +20555,7 @@ index 603cc41df6bcf726d996427e47876299d05d44db..4390514f6c6ee214efdd014c261f4807
          for (ServerPlayer player : (List<ServerPlayer>) server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
                  player.connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this.getHandle()));
-@@ -1289,6 +1294,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1299,6 +1304,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          if (entity.isVehicle() && !ignorePassengers) { // Paper - Teleport API
@@ -20566,7 +20566,7 @@ index 603cc41df6bcf726d996427e47876299d05d44db..4390514f6c6ee214efdd014c261f4807
              return false;
          }
  
-@@ -2255,6 +2264,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2265,6 +2274,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.getHandle().getAbilities().walkingSpeed * 2f;
      }
  
@@ -20595,7 +20595,7 @@ index 603cc41df6bcf726d996427e47876299d05d44db..4390514f6c6ee214efdd014c261f4807
      private void validateSpeed(float value) {
          if (value < 0) {
              if (value < -1f) {
-@@ -3048,4 +3079,97 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3058,4 +3089,97 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.spigot;
      }
      // Spigot end

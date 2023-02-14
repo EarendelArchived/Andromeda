@@ -1,0 +1,101 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Thu, 12 Jan 2023 15:52:06 +0900
+Subject: [PATCH] Port PaperMC/Paper#8518
+
+
+diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
+index 4cb6f7f54731feb43e2990b27b5c5060a351a8c3..fd822628af1c633a31116384572b1815255bc9c8 100644
+--- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
++++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
+@@ -1123,6 +1123,15 @@ public interface DispenseItemBehavior {
+                 this.setSuccess(true);
+                 if (iblockdata.is(Blocks.RESPAWN_ANCHOR)) {
+                     if ((Integer) iblockdata.getValue(RespawnAnchorBlock.CHARGE) != 4) {
++                        // Andromeda start - Port PaperMC/Paper#8518
++                        if (worldserver.andromedaLevelConfiguration().paperPullRequestsPort.callMissingBlockDispenseEvent) {
++                            ItemStack result = org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockDispenseEvent(pointer, blockposition, stack, this);
++                            if (result != null) {
++                                this.setSuccess(false);
++                                return result;
++                            }
++                        }
++                        // Andromeda end
+                         RespawnAnchorBlock.charge(worldserver, blockposition, iblockdata);
+                         stack.shrink(1);
+                     } else {
+@@ -1145,6 +1154,15 @@ public interface DispenseItemBehavior {
+                 Optional<BlockState> optional = HoneycombItem.getWaxed(iblockdata);
+ 
+                 if (optional.isPresent()) {
++                    // Andromeda start - Port PaperMC/Paper#8518
++                    if (worldserver.andromedaLevelConfiguration().paperPullRequestsPort.callMissingBlockDispenseEvent) {
++                        ItemStack result = org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockDispenseEvent(pointer, blockposition, stack, this);
++                        if (result != null) {
++                            this.setSuccess(false);
++                            return result;
++                        }
++                    }
++                    // Andromeda end
+                     worldserver.setBlockAndUpdate(blockposition, (BlockState) optional.get());
+                     worldserver.levelEvent(3003, blockposition, 0);
+                     stack.shrink(1);
+@@ -1170,6 +1188,14 @@ public interface DispenseItemBehavior {
+                     if (!worldserver.getBlockState(blockposition1).is(BlockTags.CONVERTABLE_TO_MUD)) {
+                         return this.defaultDispenseItemBehavior.dispense(pointer, stack);
+                     } else {
++                        // Andromeda start - Port PaperMC/Paper#8518
++                        if (worldserver.andromedaLevelConfiguration().paperPullRequestsPort.callMissingBlockDispenseEvent) {
++                            ItemStack result = org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockDispenseEvent(pointer, blockposition1, stack, this);
++                            if (result != null) {
++                                return result;
++                            }
++                        }
++                        // Andromeda end
+                         if (!worldserver.isClientSide) {
+                             for (int k = 0; k < 5; ++k) {
+                                 worldserver.sendParticles(ParticleTypes.SPLASH, (double) blockposition.getX() + worldserver.random.nextDouble(), (double) (blockposition.getY() + 1), (double) blockposition.getZ() + worldserver.random.nextDouble(), 1, 0.0D, 0.0D, 0.0D, 1.0D);
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index 4141bb6a9a2493f3ed1d905a1e8461f602ea0fee..1fdb2af7cf1c799dd052b072dce3fdb6ce27de85 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -1957,4 +1957,26 @@ public class CraftEventFactory {
+         return event.callEvent();
+     }
+     // Paper end
++
++    // Andromeda start - Port PaperMC/Paper#8518
++    public static ItemStack handleBlockDispenseEvent(net.minecraft.core.BlockSource pointer, BlockPos to, ItemStack itemStack, net.minecraft.core.dispenser.DispenseItemBehavior instance) {
++        org.bukkit.block.Block bukkitBlock = pointer.getLevel().getWorld().getBlockAt(pointer.getPos().getX(), pointer.getPos().getY(), pointer.getPos().getZ());
++        CraftItemStack craftItemStack = CraftItemStack.asCraftMirror(itemStack.copyWithCount(1));
++        org.bukkit.event.block.BlockDispenseEvent event = new org.bukkit.event.block.BlockDispenseEvent(bukkitBlock, craftItemStack.clone(), new org.bukkit.util.Vector(to.getX(), to.getY(), to.getZ()));
++
++        if (!net.minecraft.world.level.block.DispenserBlock.eventFired && !event.callEvent())
++            return itemStack;
++
++        if (!event.getItem().equals(craftItemStack)) {
++            ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
++            net.minecraft.core.dispenser.DispenseItemBehavior idispensebehavior = net.minecraft.world.level.block.DispenserBlock.DISPENSER_REGISTRY.get(eventStack.getItem());
++            if (idispensebehavior != net.minecraft.core.dispenser.DispenseItemBehavior.NOOP && idispensebehavior != instance) {
++                idispensebehavior.dispense(pointer, eventStack);
++                return itemStack;
++            }
++        }
++
++        return null;
++    }
++    // Andromeda end
+ }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index cc8492a764a52b6e0216f77045cbd1ebf0230d3f..39869e0b0112087398bf16ad1628bfd8516392c0 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -160,6 +160,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean checkCommandBlockPermissionInCanUseGameMasterBlocks = true;
+ 
++        public boolean callMissingBlockDispenseEvent = true;
++
+     }
+ 
+ }

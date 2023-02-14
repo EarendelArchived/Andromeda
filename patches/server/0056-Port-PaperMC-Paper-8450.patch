@@ -1,0 +1,93 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sun, 8 Jan 2023 11:53:37 +0900
+Subject: [PATCH] Port PaperMC/Paper#8450
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
+index 744c936c3aa9bd7bcf43ac3d78a08ece9cde87c3..4c0d7fecf4006f394c9033f0eb79b997cd0771f4 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
+@@ -401,7 +401,7 @@ public class ServerPlayerGameMode {
+             BlockEntity tileentity = this.level.getBlockEntity(pos);
+             Block block = iblockdata.getBlock();
+ 
+-            if (block instanceof GameMasterBlock && !this.player.canUseGameMasterBlocks() && !(block instanceof net.minecraft.world.level.block.CommandBlock && (this.player.isCreative() && this.player.getBukkitEntity().hasPermission("minecraft.commandblock")))) { // Paper - command block permission
++            if (block instanceof GameMasterBlock && !this.player.canUseGameMasterBlocks() && (this.player.level.andromedaLevelConfiguration().paperPullRequestsPort.checkCommandBlockPermissionInCanUseGameMasterBlocks || (!(block instanceof net.minecraft.world.level.block.CommandBlock && (this.player.isCreative() && this.player.getBukkitEntity().hasPermission("minecraft.commandblock")))))) { // Paper - command block permission // Andromeda - Port PaperMC/Paper#8450
+                 this.level.sendBlockUpdated(pos, iblockdata, iblockdata, 3);
+                 return false;
+             } else if (this.player.blockActionRestricted(this.level, pos, this.gameModeForPlayer)) {
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index ff58c49dd8186a889d471a59a59061eecbc7f24d..7926747ca0f5e4dc17bccb807f1a2dcff8594100 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -974,7 +974,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel());
+         if (!this.server.isCommandBlockEnabled()) {
+             this.player.sendSystemMessage(Component.translatable("advMode.notEnabled"));
+-        } else if (!this.player.canUseGameMasterBlocks() && (!this.player.isCreative() || !this.player.getBukkitEntity().hasPermission("minecraft.commandblock"))) { // Paper - command block permission
++        } else if (!this.player.canUseGameMasterBlocks() && (this.player.level.andromedaLevelConfiguration().paperPullRequestsPort.checkCommandBlockPermissionInCanUseGameMasterBlocks || (!this.player.isCreative() || !this.player.getBukkitEntity().hasPermission("minecraft.commandblock")))) { // Paper - command block permission // Andromeda - Port PaperMC/Paper#8450
+             this.player.sendSystemMessage(Component.translatable("advMode.notAllowed"));
+         } else {
+             BaseCommandBlock commandblocklistenerabstract = null;
+@@ -1041,7 +1041,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel());
+         if (!this.server.isCommandBlockEnabled()) {
+             this.player.sendSystemMessage(Component.translatable("advMode.notEnabled"));
+-        } else if (!this.player.canUseGameMasterBlocks() && (!this.player.isCreative() || !this.player.getBukkitEntity().hasPermission("minecraft.commandblock"))) { // Paper - command block permission
++        } else if (!this.player.canUseGameMasterBlocks() || (this.player.level.andromedaLevelConfiguration().paperPullRequestsPort.checkCommandBlockPermissionInCanUseGameMasterBlocks || (!this.player.isCreative() || !this.player.getBukkitEntity().hasPermission("minecraft.commandblock")))) { // Paper - command block permission // Andromeda - Port PaperMC/Paper#8450
+             this.player.sendSystemMessage(Component.translatable("advMode.notAllowed"));
+         } else {
+             BaseCommandBlock commandblocklistenerabstract = packet.getCommandBlock(this.player.level);
+diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
+index 0c632cd0cb932a4cfaf2288c9d109325d5287537..960a370921742c62664adcfb433f3c1a162f035c 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Player.java
++++ b/src/main/java/net/minecraft/world/entity/player/Player.java
+@@ -2298,7 +2298,7 @@ public abstract class Player extends LivingEntity {
+     }
+ 
+     public boolean canUseGameMasterBlocks() {
+-        return this.abilities.instabuild && this.getPermissionLevel() >= 2;
++        return this.abilities.instabuild && (this.getPermissionLevel() >= 2 || (this.level.andromedaLevelConfiguration().paperPullRequestsPort.checkCommandBlockPermissionInCanUseGameMasterBlocks && this.getBukkitEntity().hasPermission("minecraft.commandblock"))); // Andromeda - Port PaperMC/Paper#8450
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/level/BaseCommandBlock.java b/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
+index 888936385196a178ab8b730fd5e4fff4a5466428..6f0005d094300f93299f49f226a2e48084b8e0ea 100644
+--- a/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
++++ b/src/main/java/net/minecraft/world/level/BaseCommandBlock.java
+@@ -199,7 +199,7 @@ public abstract class BaseCommandBlock implements CommandSource {
+     }
+ 
+     public InteractionResult usedBy(Player player) {
+-        if (!player.canUseGameMasterBlocks() && (!player.isCreative() || !player.getBukkitEntity().hasPermission("minecraft.commandblock"))) { // Paper - command block permission
++        if (!player.canUseGameMasterBlocks() && (player.level.andromedaLevelConfiguration().paperPullRequestsPort.checkCommandBlockPermissionInCanUseGameMasterBlocks || (!player.isCreative() || !player.getBukkitEntity().hasPermission("minecraft.commandblock")))) { // Paper - command block permission // Andromeda - Port PaperMC/Paper#8450
+             return InteractionResult.PASS;
+         } else {
+             if (player.getCommandSenderWorld().isClientSide) {
+diff --git a/src/main/java/net/minecraft/world/level/block/CommandBlock.java b/src/main/java/net/minecraft/world/level/block/CommandBlock.java
+index 2e7c03b00bc941b86df6a7f1b2b188c9f0aede22..e1221933ed0059ff9a21dc9c77bee0072b7593de 100644
+--- a/src/main/java/net/minecraft/world/level/block/CommandBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/CommandBlock.java
+@@ -130,7 +130,7 @@ public class CommandBlock extends BaseEntityBlock implements GameMasterBlock {
+     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+         BlockEntity tileentity = world.getBlockEntity(pos);
+ 
+-        if (tileentity instanceof CommandBlockEntity && (player.canUseGameMasterBlocks() || (player.isCreative() && player.getBukkitEntity().hasPermission("minecraft.commandblock")))) { // Paper - command block permission
++        if (tileentity instanceof CommandBlockEntity && (player.canUseGameMasterBlocks() || (world.andromedaLevelConfiguration().paperPullRequestsPort.checkCommandBlockPermissionInCanUseGameMasterBlocks || (player.isCreative() && player.getBukkitEntity().hasPermission("minecraft.commandblock"))))) { // Paper - command block permission // Andromeda - Port PaperMC/Paper#8450
+             player.openCommandBlock((CommandBlockEntity) tileentity);
+             return InteractionResult.sidedSuccess(world.isClientSide);
+         } else {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 1a8f480277a02f513956d4904287b7e8ce028c78..cc8492a764a52b6e0216f77045cbd1ebf0230d3f 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -158,6 +158,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean fixSendBlockDamageZeroProgress = true;
+ 
++        public boolean checkCommandBlockPermissionInCanUseGameMasterBlocks = true;
++
+     }
+ 
+ }

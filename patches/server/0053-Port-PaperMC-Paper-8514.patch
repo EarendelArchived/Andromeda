@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sun, 8 Jan 2023 11:41:16 +0900
+Subject: [PATCH] Port PaperMC/Paper#8514
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 99c99925cdf77b50b9d7098ba7d316e92a93cbab..aa95d67d72e1fc479273db5d3b63f33ea35b28a1 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1211,6 +1211,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         targetLocation.setPitch(pitch);
+ 
+         org.bukkit.util.Vector direction = targetLocation.getDirection();
++        if (this.getHandle().getLevel().andromedaLevelConfiguration().paperPullRequestsPort.moveBlockFartherAwayForPlayerSetRotation) direction.multiply(9999999); // Andromeda - Port PaperMC/Paper#8514
+         targetLocation.add(direction);
+         this.lookAt(targetLocation, io.papermc.paper.entity.LookAnchor.EYES);
+         // Paper end
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 49dcc3468d8e3308e74d2f6df9364045476a91f5..c053ef304dd8c658812ea97e63a80eda18a3d3c6 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -154,6 +154,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean removeDuplicateAnimatePacketForRecords = true;
+ 
++        public boolean moveBlockFartherAwayForPlayerSetRotation = true;
++
+     }
+ 
+ }

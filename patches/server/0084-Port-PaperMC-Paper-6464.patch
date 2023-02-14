@@ -1,0 +1,104 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Sat, 14 Jan 2023 02:05:20 +0900
+Subject: [PATCH] Port PaperMC/Paper#6464
+
+
+diff --git a/src/main/java/net/minecraft/world/level/block/grower/AbstractMegaTreeGrower.java b/src/main/java/net/minecraft/world/level/block/grower/AbstractMegaTreeGrower.java
+index 3decfca75ae1ace3da8ff47815a47d84c2a86105..34dd9fb5f7d0817001b7ff6198ca61918301f996 100644
+--- a/src/main/java/net/minecraft/world/level/block/grower/AbstractMegaTreeGrower.java
++++ b/src/main/java/net/minecraft/world/level/block/grower/AbstractMegaTreeGrower.java
+@@ -49,17 +49,22 @@ public abstract class AbstractMegaTreeGrower extends AbstractTreeGrower {
+                 ConfiguredFeature<?, ?> worldgenfeatureconfigured = (ConfiguredFeature) holder.value();
+                 BlockState iblockdata1 = Blocks.AIR.defaultBlockState();
+ 
++                CaptureState captureState = new CaptureState(world); // Andromeda - Port PaperMC/Paper#6464
++                captureState.recordAndSetToFalse(); // Andromeda - Port PaperMC/Paper#6464
+                 world.setBlock(pos.offset(x, 0, z), iblockdata1, 4);
+                 world.setBlock(pos.offset(x + 1, 0, z), iblockdata1, 4);
+                 world.setBlock(pos.offset(x, 0, z + 1), iblockdata1, 4);
+                 world.setBlock(pos.offset(x + 1, 0, z + 1), iblockdata1, 4);
++                captureState.restore(); // Andromeda - Port PaperMC/Paper#6464
+                 if (worldgenfeatureconfigured.place(world, chunkGenerator, random, pos.offset(x, 0, z))) {
+                     return true;
+                 } else {
++                    captureState.recordAndSetToFalse(); // Andromeda - Port PaperMC/Paper#6464
+                     world.setBlock(pos.offset(x, 0, z), state, 4);
+                     world.setBlock(pos.offset(x + 1, 0, z), state, 4);
+                     world.setBlock(pos.offset(x, 0, z + 1), state, 4);
+                     world.setBlock(pos.offset(x + 1, 0, z + 1), state, 4);
++                    captureState.restore(); // Andromeda - Port PaperMC/Paper#6464
+                     return false;
+                 }
+             }
+diff --git a/src/main/java/net/minecraft/world/level/block/grower/AbstractTreeGrower.java b/src/main/java/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
+index df41c210a0c06a2789fe4944fe1b9c2ba9509b61..f0a9e5e8bcf0e433381b4d6288cb9dafbec8eb61 100644
+--- a/src/main/java/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
++++ b/src/main/java/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
+@@ -41,7 +41,10 @@ public abstract class AbstractTreeGrower {
+                 ConfiguredFeature<?, ?> worldgenfeatureconfigured = (ConfiguredFeature) holder.value();
+                 BlockState iblockdata1 = world.getFluidState(pos).createLegacyBlock();
+ 
++                CaptureState captureState = new CaptureState(world); // Andromeda - Port PaperMC/Paper#6464
++                captureState.recordAndSetToFalse(); // Andromeda - Port PaperMC/Paper#6464
+                 world.setBlock(pos, iblockdata1, 4);
++                captureState.restore(); // Andromeda - Port PaperMC/Paper#6464
+                 if (worldgenfeatureconfigured.place(world, chunkGenerator, random, pos)) {
+                     if (world.getBlockState(pos) == iblockdata1) {
+                         world.sendBlockUpdated(pos, state, iblockdata1, 2);
+@@ -49,7 +52,9 @@ public abstract class AbstractTreeGrower {
+ 
+                     return true;
+                 } else {
++                    captureState.recordAndSetToFalse(); // Andromeda - Port PaperMC/Paper#6464
+                     world.setBlock(pos, state, 4);
++                    captureState.restore(); // Andromeda - Port PaperMC/Paper#6464
+                     return false;
+                 }
+             }
+@@ -120,4 +125,32 @@ public abstract class AbstractTreeGrower {
+         }
+     }
+     // CraftBukkit end
++
++    // Andromeda start - Port PaperMC/Paper#6464
++    static class CaptureState {
++        private final ServerLevel level;
++        private boolean previousCaptureTreeGeneration;
++        private boolean previousCaptureBlockStates;
++
++        CaptureState(ServerLevel level) {
++            this.level = level;
++        }
++
++        void recordAndSetToFalse() {
++            if (level.andromedaLevelConfiguration().paperPullRequestsPort.onlyCaptureActualTreeGrowth) {
++                previousCaptureTreeGeneration = level.captureTreeGeneration;
++                previousCaptureBlockStates = level.captureBlockStates;
++                level.captureTreeGeneration = false;
++                level.captureBlockStates = false;
++            }
++        }
++
++        void restore() {
++            if (level.andromedaLevelConfiguration().paperPullRequestsPort.onlyCaptureActualTreeGrowth) {
++                level.captureTreeGeneration = previousCaptureTreeGeneration;
++                level.captureBlockStates = previousCaptureBlockStates;
++            }
++        }
++    }
++    // Andromeda end
+ }
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 40a744e41dc3ec0523b63c98ee00df5d47e412a5..203d1b4030db7b86d492903dd3d68a187da00f83 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -189,6 +189,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean ignoreNbtLimitsWhenLoadedNotLoadedFromABlockPlace = true;
+ 
++        public boolean onlyCaptureActualTreeGrowth = true;
++
+     }
+ 
+ }

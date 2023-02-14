@@ -167,7 +167,7 @@ index 9fde9ccb5d069ddce8dd837ef1bc68b93ce66434..dadcd45668beddc3e22fcf4353f6f13a
 +    // Andromeda end
  }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index cea4447aad2d64db56a76e4ba180dc7326d2e13b..de07e66dd02b14bb5e685fe1ba1159cb620ffea9 100644
+index 3325e688c6bf1bfc14569cbf9e6b1981d46cb42d..016d4bee1137cc5c41c2e83e631e5af7deeaa99a 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -305,6 +305,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -233,7 +233,7 @@ index ef6ff78af2ae747e939895b82ee9d11c75012dcd..9a69831c7645a00fe3b3276a82b67112
      }
  }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 46858fb57f122033a68aeb4ad3943132a677fb46..fdcfed33902f1bcbc78556512b9f01d95f412f1b 100644
+index a850cab20be16b816754df2e4747cca128079f63..585402650c2fd87464f777169f4d134dcb8a2610 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -208,6 +208,10 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -269,7 +269,7 @@ index b396a329e753f42b3878736b6b14bafda02d3744..8ac8651273f1e4683512c7beab4a2029
          this.convertable = convertable_conversionsession;
          this.uuid = WorldUUID.getUUID(convertable_conversionsession.levelDirectory.path().toFile());
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index a9289072b048095330ea32d7c965e8dda61a36fc..6557d61fc7090b56d454a06836f5303225d712eb 100644
+index 2e5f1a231213340bc0084ba8d3478dce9bde3606..b9562013b8d732d2b12dcb76776b197c35603138 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -171,7 +171,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
@@ -299,7 +299,7 @@ index a9289072b048095330ea32d7c965e8dda61a36fc..6557d61fc7090b56d454a06836f53032
          this.playerBreedingCooldowns = this.getNewBreedingCooldownCache(); // Purpur
          this.generator = gen;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 4a8aafd341fdad4b5ae326c4759b3381f5061fb5..9aeab19508e0a868b0ac58a032228bb9666da41f 100644
+index c67bbd54d3579f3cdb74211af2b6f2a1b5dc0c78..a39608b999c1436086f41f980810cf48ec123818 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1031,6 +1031,7 @@ public final class CraftServer implements Server {
@@ -1004,10 +1004,10 @@ index 0000000000000000000000000000000000000000..d73cf6f400ff05a842837c716f2d2c10
 +
 +}
 diff --git a/src/test/java/org/bukkit/support/AbstractTestingBase.java b/src/test/java/org/bukkit/support/AbstractTestingBase.java
-index 084c48ffabac2cd753609add745203e8a55bc09e..04338e9f855e99394b4782bf10e2b6a20678375d 100644
+index f1be92753106abedc3617257517bbb66d02923b1..4507ae5a1a786d321cf5d54e992c42427e4b7b60 100644
 --- a/src/test/java/org/bukkit/support/AbstractTestingBase.java
 +++ b/src/test/java/org/bukkit/support/AbstractTestingBase.java
-@@ -68,6 +68,7 @@ public abstract class AbstractTestingBase {
+@@ -73,6 +73,7 @@ public abstract class AbstractTestingBase {
          DummyServer.setup();
          DummyEnchantments.setup();
          io.papermc.paper.configuration.GlobalConfigTestingBase.setupGlobalConfigForTest(); // Paper

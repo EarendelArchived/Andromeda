@@ -1,0 +1,60 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@gmail.com>
+Date: Mon, 6 Feb 2023 19:46:39 +0900
+Subject: [PATCH] AFK Distance
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index fb989e76dc6359604ec9b2510a08e65e2b3a2bc2..a7044efb1ec9a3eeafc042ef61d1fcc0f937d9e4 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -2084,6 +2084,14 @@ public class ServerPlayer extends Player {
+     public void resetLastActionTime() {
+         this.lastActionTime = Util.getMillis();
+         this.setAfk(false); // Purpur
++        // Andromeda start
++        if (this.level.andromedaLevelConfiguration().world.gameMechanics.idleDistance.enabled) {
++            try {
++                this.getBukkitEntity().setViewDistance(this.getBukkitEntity().getWorld().getViewDistance());
++                this.getBukkitEntity().setSimulationDistance(this.getBukkitEntity().getWorld().getSimulationDistance());
++            } catch (IllegalStateException ignored) {}
++        }
++        // Andromeda end
+     }
+ 
+     // Purpur Start
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 3265b21d600daac687d3a9382915fa2de135e4d0..3b989dd49c871c2978be00c0a3dadfa0886a8257 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -461,6 +461,12 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+             // Purpur start
+             this.player.setAfk(true);
+             if (!this.player.level.purpurConfig.idleTimeoutKick || kickPermissionCache.getUnchecked(this.player.getBukkitEntity())) {
++                if (this.player.level.andromedaLevelConfiguration().world.gameMechanics.idleDistance.enabled) {
++                    try {
++                        this.getCraftPlayer().setViewDistance(this.player.level.andromedaLevelConfiguration().world.gameMechanics.idleDistance.viewDistance);
++                        this.getCraftPlayer().setSimulationDistance(this.player.level.andromedaLevelConfiguration().world.gameMechanics.idleDistance.simulationDistance);
++                    } catch (IllegalStateException ignored) {}
++                }
+                 return;
+             }
+             // Purpur end
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 1a63ea3f202314af76b9f57194018c2129bc95e9..eef4132226efa128bb410af84fb16f0eddc44b3d 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -130,6 +130,13 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+             public boolean unlockSnowLayerLimit = false;
+ 
++            public IdleDistance idleDistance;
++            public class IdleDistance extends ConfigurationPart {
++                public boolean enabled = false;
++                public int viewDistance = 7;
++                public int simulationDistance = 4;
++            }
++
+         }
+ 
+     }

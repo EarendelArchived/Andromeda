@@ -1,0 +1,48 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@outlook.com>
+Date: Fri, 13 Jan 2023 20:19:08 +0900
+Subject: [PATCH] Port PaperMC/Paper#6465
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+index aed1d9ccffe471b6c2a1d52d2d3d097f6431318b..e37f83c82647cbae93728023a46162f011ad5a9c 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
++++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+@@ -966,10 +966,13 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+             Witch entitywitch = (Witch) EntityType.WITCH.create(world);
+ 
+             if (entitywitch != null) {
++                boolean flag = world.andromedaLevelConfiguration().paperPullRequestsPort.improveEntityTransformEventCancellationHandling; // Andromeda - Port PaperMC/Paper#6465
+                 // Paper start
+                 if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityZapEvent(this, lightning, entitywitch).isCancelled()) {
++                    if (flag) super.thunderHit(world, lightning); // Andromeda - Port PaperMC/Paper#6465
+                     return;
+                 }
++                if (!flag) // Andromeda - Port PaperMC/Paper#6465
+                 if (org.spigotmc.SpigotConfig.logVillagerDeaths) Villager.LOGGER.info("Villager {} was struck by lightning {}.", this, lightning); // Move down
+                 // Paper end
+ 
+@@ -984,8 +987,10 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+                 entitywitch.setPersistenceRequired();
+                 // CraftBukkit start
+                 if (CraftEventFactory.callEntityTransformEvent(this, entitywitch, EntityTransformEvent.TransformReason.LIGHTNING).isCancelled()) {
++                    if (flag) super.thunderHit(world, lightning); // Andromeda - Port PaperMC/Paper#6465
+                     return;
+                 }
++                if (flag && org.spigotmc.SpigotConfig.logVillagerDeaths) Villager.LOGGER.info("Villager {} was struck by lightning {}.", this, lightning); // Andromeda - Port PaperMC/Paper#6465
+                 world.addFreshEntityWithPassengers(entitywitch, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.LIGHTNING);
+                 // CraftBukkit end
+                 this.releaseAllPois();
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index e35ae47612a2ba6a9c6ca96d056015d3aa08bf1c..7c063486677c6b951bc88153ed49ae67531e2149 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -181,6 +181,8 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+         public boolean fixSettingInvalidDirectionStatePropInUpgradeData = true;
+ 
++        public boolean improveEntityTransformEventCancellationHandling = true;
++
+     }
+ 
+ }

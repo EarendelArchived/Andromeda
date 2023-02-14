@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AlphaKR93 <alphakr93@gmail.com>
+Date: Thu, 9 Feb 2023 23:26:31 +0900
+Subject: [PATCH] Implement Persistent Pearls
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/ThrownEnderpearl.java b/src/main/java/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
+index 26991a8259e99c73ac79368642b1812264216c47..525ae800fdb0b4dae46de670e0b74d8edf666f72 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
+@@ -103,6 +103,13 @@ public class ThrownEnderpearl extends ThrowableItemProjectile {
+ 
+     @Override
+     public void tick() {
++        // Andromeda start
++        if (this.level.andromedaLevelConfiguration().entity.projectile.enderPearl.doNotDespawnEvenThrowerDead) {
++            super.tick();
++            return;
++        }
++        // Andromeda end
++
+         Entity entity = this.getOwner();
+ 
+         if (entity instanceof Player && !entity.isAlive()) {
+diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+index 5acbba52235f2ae9ab190087633642f42e5800f6..bb94686e41ea4b2893c40b69eb95c45e86d7ba5c 100644
+--- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
++++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
+@@ -87,6 +87,13 @@ public class LevelConfigurations extends ConfigurationPart {
+ 
+             }
+ 
++            public EnderPearl enderPearl;
++            public class EnderPearl extends ConfigurationPart {
++
++                public boolean doNotDespawnEvenThrowerDead = false;
++
++            }
++
+         }
+ 
+         public Monster monster;
