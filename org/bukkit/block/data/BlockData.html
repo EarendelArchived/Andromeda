@@ -118,10 +118,20 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
  similar instance where unspecified states (if any) may be optionally
  omitted.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../../Material.html" title="enum class in org.bukkit">Material</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getMaterial()" class="member-name-link">getMaterial</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getLightEmission()" class="member-name-link">getLightEmission</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Get the amount of light emitted by this state when in the world.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../../Material.html" title="enum class in org.bukkit">Material</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getMaterial()" class="member-name-link">getMaterial</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Get the Material represented by this block data.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../PistonMoveReaction.html" title="enum class in org.bukkit.block">PistonMoveReaction</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPistonMoveReaction()" class="member-name-link">getPistonMoveReaction</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns the reaction of the block when moved by a piston</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../../SoundGroup.html" title="interface in org.bukkit">SoundGroup</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSoundGroup()" class="member-name-link">getSoundGroup</a>()</code></div>
@@ -137,36 +147,47 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
  of <a href="../BlockSupport.html" title="enum class in org.bukkit.block"><code>BlockSupport</code></a> for neighbouring block states.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isPreferredTool(org.bukkit.inventory.ItemStack)" class="member-name-link">isPreferredTool</a><wbr>(<a href="../../inventory/ItemStack.html" title="class in org.bukkit.inventory">ItemStack</a>&nbsp;tool)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isOccluding()" class="member-name-link">isOccluding</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Returns if the given item is a preferred choice to break this block.</div>
+<div class="block">Check whether or not this state will occlude other blocks.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isRandomlyTicked()" class="member-name-link">isRandomlyTicked</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isPreferredTool(org.bukkit.inventory.ItemStack)" class="member-name-link">isPreferredTool</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../../inventory/ItemStack.html" title="class in org.bukkit.inventory">ItemStack</a>&nbsp;tool)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Gets if this block is ticked randomly in the world.</div>
+<div class="block">Returns if the given item is a preferred choice to break this Block.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isSupported(org.bukkit.block.Block)" class="member-name-link">isSupported</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Block.html" title="interface in org.bukkit.block">Block</a>&nbsp;block)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isRandomlyTicked()" class="member-name-link">isRandomlyTicked</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Gets if this block is ticked randomly in the world.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isSupported(org.bukkit.block.Block)" class="member-name-link">isSupported</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Block.html" title="interface in org.bukkit.block">Block</a>&nbsp;block)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Checks if this state would be properly supported if it were placed at
  the given <a href="../Block.html" title="interface in org.bukkit.block"><code>Block</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isSupported(org.bukkit.Location)" class="member-name-link">isSupported</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../../Location.html" title="class in org.bukkit">Location</a>&nbsp;location)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isSupported(org.bukkit.Location)" class="member-name-link">isSupported</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../../Location.html" title="class in org.bukkit">Location</a>&nbsp;location)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Checks if this state would be properly supported if it were placed at
  the block at the given <a href="../../Location.html" title="class in org.bukkit"><code>Location</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#matches(org.bukkit.block.data.BlockData)" class="member-name-link">matches</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/Nullable.html" title="class or interface in org.jetbrains.annotations" class="external-link">@Nullable</a> <a href="BlockData.html" title="interface in org.bukkit.block.data">BlockData</a>&nbsp;data)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#matches(org.bukkit.block.data.BlockData)" class="member-name-link">matches</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/Nullable.html" title="class or interface in org.jetbrains.annotations" class="external-link">@Nullable</a> <a href="BlockData.html" title="interface in org.bukkit.block.data">BlockData</a>&nbsp;data)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Checks if the specified BlockData matches this block data.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="BlockData.html" title="interface in org.bukkit.block.data">BlockData</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#merge(org.bukkit.block.data.BlockData)" class="member-name-link">merge</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="BlockData.html" title="interface in org.bukkit.block.data">BlockData</a>&nbsp;data)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="BlockData.html" title="interface in org.bukkit.block.data">BlockData</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#merge(org.bukkit.block.data.BlockData)" class="member-name-link">merge</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="BlockData.html" title="interface in org.bukkit.block.data">BlockData</a>&nbsp;data)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Merges all explicitly set states from the given data with this BlockData.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#requiresCorrectToolForDrops()" class="member-name-link">requiresCorrectToolForDrops</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Check whether or not this state requires a specific item to be used to drop
+ items when broken.</div>
 </div>
 </div>
 </div>
@@ -311,6 +332,75 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 </section>
 </li>
 <li>
+<section class="detail" id="getLightEmission()">
+<h3>getLightEmission</h3>
+<div class="member-signature"><span class="return-type">int</span>&nbsp;<span class="element-name">getLightEmission</span>()</div>
+<div class="block">Get the amount of light emitted by this state when in the world.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the light emission</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isOccluding()">
+<h3>isOccluding</h3>
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isOccluding</span>()</div>
+<div class="block">Check whether or not this state will occlude other blocks.
+ <p>
+ Block state occlusion affects visual features of other blocks (e.g. leaves and
+ wet sponges will not spawn dripping water particles if an occluding state is
+ below it), or whether light will pass through it.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if occluding, false otherwise</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="requiresCorrectToolForDrops()">
+<h3>requiresCorrectToolForDrops</h3>
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">requiresCorrectToolForDrops</span>()</div>
+<div class="block">Check whether or not this state requires a specific item to be used to drop
+ items when broken. For example, diamond ore requires an iron pickaxe and will
+ not drop diamonds when broken with a wooden or stone pickaxe.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if a more specific item is required for drops, false if any item
+ (or an empty hand) will drop items</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isPreferredTool(org.bukkit.inventory.ItemStack)">
+<h3>isPreferredTool</h3>
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isPreferredTool</span><wbr><span class="parameters">(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a>
+ <a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../../inventory/ItemStack.html" title="class in org.bukkit.inventory">ItemStack</a>&nbsp;tool)</span></div>
+<div class="block">Returns if the given item is a preferred choice to break this Block.
+
+ In some cases this determines if a block will drop anything or extra
+ loot.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>tool</code> - The tool or item used for breaking this block</dd>
+<dt>Returns:</dt>
+<dd>true if the tool is preferred for breaking this block.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getPistonMoveReaction()">
+<h3>getPistonMoveReaction</h3>
+<div class="member-signature"><span class="annotations"><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a>
+</span><span class="return-type"><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../PistonMoveReaction.html" title="enum class in org.bukkit.block">PistonMoveReaction</a></span>&nbsp;<span class="element-name">getPistonMoveReaction</span>()</div>
+<div class="block">Returns the reaction of the block when moved by a piston</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>reaction</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="isSupported(org.bukkit.block.Block)">
 <h3>isSupported</h3>
 <div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isSupported</span><wbr><span class="parameters">(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a>
@@ -380,23 +470,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>is ticked randomly</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="isPreferredTool(org.bukkit.inventory.ItemStack)">
-<h3>isPreferredTool</h3>
-<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isPreferredTool</span><wbr><span class="parameters">(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a>
- <a href="../../inventory/ItemStack.html" title="class in org.bukkit.inventory">ItemStack</a>&nbsp;tool)</span></div>
-<div class="block">Returns if the given item is a preferred choice to break this block.
-
- In some cases this determines if a block will drop anything or extra
- loot.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>tool</code> - The tool or item used for breaking this block</dd>
-<dt>Returns:</dt>
-<dd>true if the tool is preferred for breaking this block</dd>
 </dl>
 </section>
 </li>

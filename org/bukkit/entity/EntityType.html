@@ -80,12 +80,12 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Serializable.html" title="class or interface in java.io" class="external-link">Serializable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Comparable.html" title="class or interface in java.lang" class="external-link">Comparable</a>&lt;<a href="EntityType.html" title="enum class in org.bukkit.entity">EntityType</a>&gt;</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/constant/Constable.html" title="class or interface in java.lang.constant" class="external-link">Constable</a></code>, <code>net.kyori.adventure.key.Keyed</code>, <code><a href="https://jd.adventure.kyori.net/api/4.12.0/net/kyori/adventure/translation/Translatable.html" title="class or interface in net.kyori.adventure.translation" class="external-link">Translatable</a></code>, <code><a href="../Keyed.html" title="interface in org.bukkit">Keyed</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Serializable.html" title="class or interface in java.io" class="external-link">Serializable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Comparable.html" title="class or interface in java.lang" class="external-link">Comparable</a>&lt;<a href="EntityType.html" title="enum class in org.bukkit.entity">EntityType</a>&gt;</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/constant/Constable.html" title="class or interface in java.lang.constant" class="external-link">Constable</a></code>, <code>net.kyori.adventure.key.Keyed</code>, <code><a href="https://jd.adventure.kyori.net/api/4.12.0/net/kyori/adventure/translation/Translatable.html" title="class or interface in net.kyori.adventure.translation" class="external-link">Translatable</a></code>, <code><a href="../Keyed.html" title="interface in org.bukkit">Keyed</a></code>, <code><a href="../Translatable.html" title="interface in org.bukkit">Translatable</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public enum </span><span class="element-name type-name-label">EntityType</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;<a href="EntityType.html" title="enum class in org.bukkit.entity">EntityType</a>&gt;
-implements <a href="../Keyed.html" title="interface in org.bukkit">Keyed</a>, <a href="https://jd.adventure.kyori.net/api/4.12.0/net/kyori/adventure/translation/Translatable.html" title="class or interface in net.kyori.adventure.translation" class="external-link">Translatable</a></span></div>
+implements <a href="../Keyed.html" title="interface in org.bukkit">Keyed</a>, <a href="../Translatable.html" title="interface in org.bukkit">Translatable</a>, <a href="https://jd.adventure.kyori.net/api/4.12.0/net/kyori/adventure/translation/Translatable.html" title="class or interface in net.kyori.adventure.translation" class="external-link">Translatable</a></span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -446,12 +446,10 @@ implements <a href="../Keyed.html" title="interface in org.bukkit">Keyed</a>, <a
 <div class="deprecation-comment">Magic value</div>
 </div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/Nullable.html" title="class or interface in org.jetbrains.annotations" class="external-link">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#getTranslationKey()" class="member-name-link">getTranslationKey</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
-<div class="block"><span class="deprecated-label">Deprecated.</span>
-<div class="deprecation-comment">use <a href="#translationKey()"><code>translationKey()</code></a></div>
-</div>
+<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>short</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#getTypeId()" class="member-name-link">getTypeId</a>()</code></div>
@@ -1591,16 +1589,15 @@ not permitted.)</div>
 <li>
 <section class="detail" id="getTranslationKey()">
 <h3>getTranslationKey</h3>
-<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
-<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/Nullable.html" title="class or interface in org.jetbrains.annotations" class="external-link">@Nullable</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/Nullable.html" title="class or interface in org.jetbrains.annotations" class="external-link">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getTranslationKey</span>()</div>
-<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
-<div class="deprecation-comment">use <a href="#translationKey()"><code>translationKey()</code></a></div>
-</div>
-<div class="block">Return the translation key for the EntityType, so the client can translate it into the active
- locale when using a TranslatableComponent.<br>
- This is <code>null</code>, when the EntityType isn't known to NMS (custom entities)</div>
+<div class="member-signature"><span class="annotations"><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a>
+<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html#forRemoval()" title="class or interface in java.lang" class="external-link">forRemoval</a>=true)
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getTranslationKey</span>()</div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../Translatable.html#getTranslationKey()">Translatable</a></code></span></div>
+<div class="block">Get the translation key, suitable for use in a translation component.</div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../Translatable.html#getTranslationKey()">getTranslationKey</a></code>&nbsp;in interface&nbsp;<code><a href="../Translatable.html" title="interface in org.bukkit">Translatable</a></code></dd>
 <dt>Returns:</dt>
 <dd>the translation key</dd>
 </dl>
