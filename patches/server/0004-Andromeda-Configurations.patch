@@ -233,7 +233,7 @@ index ef6ff78af2ae747e939895b82ee9d11c75012dcd..9a69831c7645a00fe3b3276a82b67112
      }
  }
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index a850cab20be16b816754df2e4747cca128079f63..585402650c2fd87464f777169f4d134dcb8a2610 100644
+index fd1b0564d2d2b45128e6f2556fb93ee56bd683b5..9f6ecefb0b47d1f6967e9e38eed149ddc0cd7158 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -208,6 +208,10 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -299,7 +299,7 @@ index 2e5f1a231213340bc0084ba8d3478dce9bde3606..b9562013b8d732d2b12dcb76776b197c
          this.playerBreedingCooldowns = this.getNewBreedingCooldownCache(); // Purpur
          this.generator = gen;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index c67bbd54d3579f3cdb74211af2b6f2a1b5dc0c78..a39608b999c1436086f41f980810cf48ec123818 100644
+index 5465084c781887dce67f736eb570f462c62ba1ad..42d02ffeba43a7d07f23450187292827a5460172 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1031,6 +1031,7 @@ public final class CraftServer implements Server {
@@ -1004,11 +1004,11 @@ index 0000000000000000000000000000000000000000..d73cf6f400ff05a842837c716f2d2c10
 +
 +}
 diff --git a/src/test/java/org/bukkit/support/AbstractTestingBase.java b/src/test/java/org/bukkit/support/AbstractTestingBase.java
-index f1be92753106abedc3617257517bbb66d02923b1..4507ae5a1a786d321cf5d54e992c42427e4b7b60 100644
+index 5b4c93bb313019ad44eb8283865be45c69d99984..7c184f218d8db2e9a49606fa4adc9181de8afaa0 100644
 --- a/src/test/java/org/bukkit/support/AbstractTestingBase.java
 +++ b/src/test/java/org/bukkit/support/AbstractTestingBase.java
-@@ -73,6 +73,7 @@ public abstract class AbstractTestingBase {
-         DummyServer.setup();
+@@ -72,6 +72,7 @@ public abstract class AbstractTestingBase {
+ 
          DummyEnchantments.setup();
          io.papermc.paper.configuration.GlobalConfigTestingBase.setupGlobalConfigForTest(); // Paper
 +        team.earendel.andromeda.configurations.GlobalConfigurationTestingBase.setupGlobalConfigurationForTest(); // Andromeda

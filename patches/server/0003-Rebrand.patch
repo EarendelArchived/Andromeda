@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 020927dfe9624453311d1d171a10f44344ec8710..8bcd87d672467629ef092c790cc448b6eb9f4ad9 100644
+index f25c0557cf984b97e0ab361f579eccbf46f82170..89a7041b9abcd0c49c10693af01a6c8a1ae28e87 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -7,7 +7,7 @@ plugins {
@@ -17,7 +17,7 @@ index 020927dfe9624453311d1d171a10f44344ec8710..8bcd87d672467629ef092c790cc448b6
      // Pufferfish start
      implementation("io.papermc.paper:paper-mojangapi:1.19.3-R0.1-SNAPSHOT") {
          exclude("io.papermc.paper", "paper-api")
-@@ -83,7 +83,7 @@ tasks.jar {
+@@ -84,7 +84,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
@@ -246,10 +246,10 @@ index bd502ca721de0cab438d995efa00ad0554c0d2fe..b009b06dd6390def2ef58a6a9c2e3d02
  
      private static final int DEFAULT_SIZE_THRESHOLD = 1024 * 8;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 4a8aafd341fdad4b5ae326c4759b3381f5061fb5..c67bbd54d3579f3cdb74211af2b6f2a1b5dc0c78 100644
+index c32e32005968b46d1f7d5162ab15c61e36f398f5..5465084c781887dce67f736eb570f462c62ba1ad 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -262,7 +262,7 @@ import javax.annotation.Nullable; // Paper
+@@ -261,7 +261,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
@@ -259,7 +259,7 @@ index 4a8aafd341fdad4b5ae326c4759b3381f5061fb5..c67bbd54d3579f3cdb74211af2b6f2a1
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index ce333ed345420d11102776cab36462adff5f2b8c..318ed87752204ec91e37ab3d350c45e096de5e2b 100644
+index 78ac748859e21a61140e9bff67e4527a8d35b4b6..abeed9f5d3b37dab6ab5df8a150a47b7545fa69f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -883,7 +883,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {

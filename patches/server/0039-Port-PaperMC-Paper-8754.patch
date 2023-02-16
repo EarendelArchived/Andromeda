@@ -5,10 +5,10 @@ Subject: [PATCH] Port PaperMC/Paper#8754
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
-index 830326496e2f961682daadc7a7859247042b4cdd..b69084a220cf5aa7999f71dfe3900dd8941d392d 100644
+index 01d8f1c985223eec83beb4a84a710d1bf8d70849..e39f90f080970db0a35c244e2faa167742953df0 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
-@@ -85,11 +85,19 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
+@@ -87,11 +87,19 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
                          result = blockCookEvent.getResult();
                          itemstack1 = CraftItemStack.asNMSCopy(result);
                          // CraftBukkit end

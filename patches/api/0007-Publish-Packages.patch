@@ -5,10 +5,10 @@ Subject: [PATCH] Publish Packages
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index a85f1db096555a6077dd77cbd7572442d3adc848..73cf94c26512ac622948e8ec5422beed3ac30bae 100644
+index 6fffe76d76c35fee80686aeff516ad6090807f93..066082881a66af7b202e44d09e2d575842cb7a1d 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -153,3 +153,23 @@ tasks.check {
+@@ -154,3 +154,23 @@ tasks.check {
      dependsOn(scanJar)
  }
  // Paper end

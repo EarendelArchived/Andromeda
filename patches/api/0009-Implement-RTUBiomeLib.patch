@@ -44,10 +44,10 @@ index 39fa4c65e0f61450901662ff5c08d54a5d9841b2..0d10121d0f9cd90e94a82031fc76fffc
      /**
       * Gets the computed {@link Biome} at the given coordinates.
 diff --git a/src/main/java/org/bukkit/block/Block.java b/src/main/java/org/bukkit/block/Block.java
-index aba40431c5a1ae43106a678445483e0653e130d1..bf9948e336f410f1b0af546b6a4b2d91958a903c 100644
+index 390a2a2611df35a9ea6f1eb996b47e2aa4597ff0..6ee4bfe9f52b254966971bf4e98c9f070a802696 100644
 --- a/src/main/java/org/bukkit/block/Block.java
 +++ b/src/main/java/org/bukkit/block/Block.java
-@@ -375,6 +375,17 @@ public interface Block extends Metadatable, net.kyori.adventure.translation.Tran
+@@ -376,6 +376,17 @@ public interface Block extends Metadatable, Translatable, net.kyori.adventure.tr
      @NotNull
      Biome getBiome();
  
@@ -66,10 +66,10 @@ index aba40431c5a1ae43106a678445483e0653e130d1..bf9948e336f410f1b0af546b6a4b2d91
      /**
       * Gets the computed biome at the location of this Block.
 diff --git a/src/main/java/org/bukkit/generator/BiomeProvider.java b/src/main/java/org/bukkit/generator/BiomeProvider.java
-index 9f6d75af207d2546ac82081582f4342d9b8310e5..956cb369822b4b0a6d8b4cb60c02ffcf9a6f9073 100644
+index 65fd14b7b3fe617d65713cfa42cc61b6fad6d878..267f061ec574ded23c7303bd34826ea6b2ea3f60 100644
 --- a/src/main/java/org/bukkit/generator/BiomeProvider.java
 +++ b/src/main/java/org/bukkit/generator/BiomeProvider.java
-@@ -49,4 +49,14 @@ public abstract class BiomeProvider {
+@@ -79,4 +79,14 @@ public abstract class BiomeProvider {
       */
      @NotNull
      public abstract List<Biome> getBiomes(@NotNull WorldInfo worldInfo);

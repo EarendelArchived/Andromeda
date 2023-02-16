@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 0008 - Allow any characters in username
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 585402650c2fd87464f777169f4d134dcb8a2610..5cfe875ef6835ad0142bdbb33bb25fae236de26c 100644
+index 9f6ecefb0b47d1f6967e9e38eed149ddc0cd7158..ed6d3068a5cec8fa0e1c4d09a5915c40c51c79d9 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -320,6 +320,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -37,8 +37,8 @@ index 585402650c2fd87464f777169f4d134dcb8a2610..5cfe875ef6835ad0142bdbb33bb25fae
          if (!this.usesAuthentication()) {
              DedicatedServer.LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
              DedicatedServer.LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
-@@ -334,7 +335,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-                 DedicatedServer.LOGGER.warn("You will not be offered any support as long as the server allows offline-mode players to join."); // Purpur
+@@ -333,7 +334,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+                 DedicatedServer.LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
              }
              // Spigot end
 -            DedicatedServer.LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");

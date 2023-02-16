@@ -33,7 +33,7 @@ SOFTWARE.
 0023 - Fast item merging raytracing
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 3876361e8127d99fe75f88e2e8e5945a75949f7a..5166a17fa827076044a8f67f8ae80acb43a4c388 100644
+index 12c87c05a728dad5c5e181daffd4c67f749d306e..062f35db56d2f401181b9ee85c4b40dc2a153f35 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -179,16 +179,6 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -53,7 +53,7 @@ index 3876361e8127d99fe75f88e2e8e5945a75949f7a..5166a17fa827076044a8f67f8ae80acb
          DedicatedServer.LOGGER.info("Loading properties");
          DedicatedServerProperties dedicatedserverproperties = this.settings.getProperties();
  
-@@ -338,6 +328,17 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -337,6 +327,17 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
              DedicatedServer.LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the \"server.properties\" file or set \"offline-warning\" to \"false\" in the \"andromeda.yml\" file."); // Andromeda - Rubia Patches
          }
  
