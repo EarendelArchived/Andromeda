@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
-Date: Fri, 17 Feb 2023 11:40:26 +0000
+Date: Sat, 4 Mar 2023 19:19:54 +0900
 Subject: [PATCH] Pufferfish Server Changes
 
 Original: Kevin Raneri <kevin.raneri@gmail.com>
@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 6a1853f3d988820f357c11371e32d50682e60401..d9ace6cd8e9cbf088e6664469fb94df0c964998f 100644
+index 4cc7d15f43b2547a723ea231bcf98bc13bdb85bf..af8a561e4d59d98ebb6d7a8fbcb072e361b10058 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -7,8 +7,12 @@ plugins {
@@ -619,10 +619,10 @@ index 0000000000000000000000000000000000000000..020368da69b9a492155f6de6297f7473
 +}
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..48582f98fde23f3f1544a7303da21b6d7d4c874e
+index 0000000000000000000000000000000000000000..6e441a1a28ba72a8b1cc09fe5fca71b3c70627d4
 --- /dev/null
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-@@ -0,0 +1,283 @@
+@@ -0,0 +1,285 @@
 +package gg.pufferfish.pufferfish;
 +
 +import gg.pufferfish.pufferfish.simd.SIMDDetection;
@@ -712,7 +712,9 @@ index 0000000000000000000000000000000000000000..48582f98fde23f3f1544a7303da21b6d
 +		try {
 +			SIMDDetection.isEnabled = SIMDDetection.canEnable(PufferfishLogger.LOGGER);
 +			SIMDDetection.versionLimited = SIMDDetection.getJavaVersion() != 17 && SIMDDetection.getJavaVersion() != 18 && SIMDDetection.getJavaVersion() != 19;
-+		} catch (NoClassDefFoundError | Exception ignored) { ignored.printStackTrace(); }
++		} catch (NoClassDefFoundError | Exception ignored) {
++			ignored.printStackTrace();
++		}
 +		
 +		if (SIMDDetection.isEnabled) {
 +			PufferfishLogger.LOGGER.info("SIMD operations detected as functional. Will replace some operations with faster versions.");
@@ -1490,10 +1492,10 @@ index 8d442c5a498ecf288a0cc0c54889c6e2fda849ce..01bdf134fc21220ab7ecca51f2dcd51c
          }
      }
 diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
-index d1a59c2af0557a816c094983ec60097fb4de060c..9cbc6e0350c982e7b7a58a32ab34ff2446c4fd1b 100644
+index 6efb8b10f17c70b05128039376d254e6beda3841..57e8c6673c7cfe447a75f15506e8000062d813fe 100644
 --- a/src/main/java/io/papermc/paper/util/MCUtil.java
 +++ b/src/main/java/io/papermc/paper/util/MCUtil.java
-@@ -209,7 +209,7 @@ public final class MCUtil {
+@@ -210,7 +210,7 @@ public final class MCUtil {
      }
  
      public static long getCoordinateKey(final Entity entity) {
@@ -1503,7 +1505,7 @@ index d1a59c2af0557a816c094983ec60097fb4de060c..9cbc6e0350c982e7b7a58a32ab34ff24
  
      public static long getCoordinateKey(final ChunkPos pair) {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 710ca7d3a5659953f64bc6dccdd93b43300961cc..68d16efaf9c2d997afabadcf1ee24c5de685b5b3 100644
+index 753a917d34a1e1c1521a8916bc8e44a6acd90a46..33a5e900c2cab99c311fa5f5b71a609cf8f802cb 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -309,6 +309,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -1524,7 +1526,7 @@ index 710ca7d3a5659953f64bc6dccdd93b43300961cc..68d16efaf9c2d997afabadcf1ee24c5d
      }
  
      public SystemReport fillSystemReport(SystemReport details) {
-@@ -2239,6 +2241,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2238,6 +2240,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      public ProfilerFiller getProfiler() {
@@ -2838,7 +2840,7 @@ index 663c1d8c1611af915a1bae733920dd75ad73feb1..c15e4d95baacd30f9614dc5526dc8fc1
          final String id;
          private final GameRules.Category category;
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 3cbf801b2e5420c0e870f73788deb550e49ad54d..edd2c236ca7c37e1a3aec0048b8974f4cd62f2cc 100644
+index db971ca4136c7f922d630f38aa5c78cb04adbdfa..eb0a31c885ea64da00abcd5e67083392138b1ca0 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -270,6 +270,17 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
@@ -2965,7 +2967,7 @@ index 3cbf801b2e5420c0e870f73788deb550e49ad54d..edd2c236ca7c37e1a3aec0048b8974f4
      public boolean isInWorldBounds(BlockPos pos) {
          return pos.isInsideBuildHeightAndWorldBoundsHorizontal(this); // Paper - use better/optimized check
      }
-@@ -917,13 +1020,13 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -919,13 +1022,13 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          try {
              tickConsumer.accept(entity);
              MinecraftServer.getServer().executeMidTickTasks(); // Paper - execute chunk tasks mid tick
@@ -2981,7 +2983,7 @@ index 3cbf801b2e5420c0e870f73788deb550e49ad54d..edd2c236ca7c37e1a3aec0048b8974f4
              // Paper end
          }
      }
-@@ -1450,6 +1553,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1452,6 +1555,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      }
  
      public ProfilerFiller getProfiler() {
@@ -3138,10 +3140,10 @@ index a71414397bd45ee7bcacfeef0041d80dfa25f114..d66806565770cb03a21794f99e5c4b0f
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index ccad692aba2ed77259f6814d88f01b91ed9d229b..698a0ac71cf9fb409d609a81cc2958121260a46d 100644
+index d76603c4172aa10889949c6c2acff05fee02a13d..034a0665f56fca37a48972671cebc6ec249db120 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -43,7 +43,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -45,7 +45,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      public static final int MOVE_ITEM_SPEED = 8;
      public static final int HOPPER_CONTAINER_SIZE = 5;
@@ -3152,7 +3154,7 @@ index ccad692aba2ed77259f6814d88f01b91ed9d229b..698a0ac71cf9fb409d609a81cc295812
      private int cooldownTime;
      private long tickedGameTime;
  
-@@ -79,14 +82,37 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -81,14 +84,37 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      public HopperBlockEntity(BlockPos pos, BlockState state) {
          super(BlockEntityType.HOPPER, pos, state);
@@ -3192,7 +3194,7 @@ index ccad692aba2ed77259f6814d88f01b91ed9d229b..698a0ac71cf9fb409d609a81cc295812
          if (!this.tryLoadLootTable(nbt)) {
              ContainerHelper.loadAllItems(nbt, this.items);
          }
-@@ -158,7 +184,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -160,7 +186,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
                      flag = HopperBlockEntity.ejectItems(world, pos, state, (Container) blockEntity, blockEntity); // CraftBukkit
                  }
  
@@ -3201,16 +3203,16 @@ index ccad692aba2ed77259f6814d88f01b91ed9d229b..698a0ac71cf9fb409d609a81cc295812
                      flag |= booleansupplier.getAsBoolean();
                  }
  
-@@ -197,7 +223,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -199,7 +225,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
          skipPushModeEventFire = skipHopperEvents;
          boolean foundItem = false;
          for (int i = 0; i < hopper.getContainerSize(); ++i) {
--            ItemStack item = hopper.getItem(i);
-+            ItemStack item = hopper.getItem(i); // Pufferfish
+-            final ItemStack item = hopper.getItem(i);
++            final ItemStack item = hopper.getItem(i); // Pufferfish
              if (!item.isEmpty()) {
                  foundItem = true;
                  ItemStack origItemStack = item;
-@@ -400,12 +426,18 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -408,12 +434,18 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      }
  
      private static boolean isFullContainer(Container inventory, Direction direction) {
@@ -3231,7 +3233,7 @@ index ccad692aba2ed77259f6814d88f01b91ed9d229b..698a0ac71cf9fb409d609a81cc295812
      }
      private static boolean allMatch(Container iinventory, Direction enumdirection, java.util.function.BiPredicate<ItemStack, Integer> test) {
          if (iinventory instanceof WorldlyContainer) {
-@@ -582,7 +614,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -592,7 +624,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
          if (HopperBlockEntity.canPlaceItemInContainer(to, stack, slot, side)) {
              boolean flag = false;
@@ -3240,7 +3242,7 @@ index ccad692aba2ed77259f6814d88f01b91ed9d229b..698a0ac71cf9fb409d609a81cc295812
  
              if (itemstack1.isEmpty()) {
                  // Spigot start - SPIGOT-6693, InventorySubcontainer#setItem
-@@ -730,7 +762,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -745,7 +777,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      @Override
      protected void setItems(NonNullList<ItemStack> list) {
@@ -3544,7 +3546,7 @@ index ebe65474a4a05ff1637d7f37ebcfe690af59def5..42142c512b12e5b269c19f1e821c50e7
  
      @Nullable
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f1a3d8dae2a61b875e423aebfdfcad2f77d498ff..5077c545e74711d5268d3cfa31926af1e995ea05 100644
+index bbb8335dae0a3e2761e6bbb8dc723bcf28cd82ba..7ddf52de4b095f63c75b696008fcdde6345fc3c8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -261,7 +261,7 @@ import javax.annotation.Nullable; // Paper
@@ -3556,7 +3558,7 @@ index f1a3d8dae2a61b875e423aebfdfcad2f77d498ff..5077c545e74711d5268d3cfa31926af1
      private final String serverVersion;
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
-@@ -1067,6 +1067,11 @@ public final class CraftServer implements Server {
+@@ -1048,6 +1048,11 @@ public final class CraftServer implements Server {
                  plugin.getDescription().getName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));
@@ -3581,10 +3583,10 @@ index f7ea77dd82d978ad307f99c743efacfb34478b3d..009ab06182359862b8f543030ec4fe4e
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index 287e8c4c57ea1737460fdaf114e7eed627a25b2d..b9e4305f515faa14c2afc0ccaf23d205e9c9f858 100644
+index 1244c1ca5e0907298b1ca6de538db82b2209ec4d..6aa2121e286dd6d43201a38722ea0cdd205baaa7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-@@ -462,7 +462,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
+@@ -468,7 +468,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
  
      @Override
      public com.destroystokyo.paper.util.VersionFetcher getVersionFetcher() {

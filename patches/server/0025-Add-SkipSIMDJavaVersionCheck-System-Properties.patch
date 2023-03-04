@@ -5,22 +5,22 @@ Subject: [PATCH] Add SkipSIMDJavaVersionCheck System Properties
 
 
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-index ec95c80659e8045ad0135b186f10d28234139293..e2d6ae8baa43fe0c4b59d386b5b66ab16a1910ee 100644
+index f62a13fb62a1da48f7f0f8a0db7ddba23f6bce4f..5b904c239d2bf8607444f517c55c7eec83bb8fff 100644
 --- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-@@ -87,13 +87,14 @@ public class PufferfishConfig {
- 		// Attempt to detect vectorization
+@@ -88,6 +88,7 @@ public class PufferfishConfig {
  		try {
  			SIMDDetection.isEnabled = SIMDDetection.canEnable(PufferfishLogger.LOGGER);
--			SIMDDetection.versionLimited = SIMDDetection.getJavaVersion() != 17 && SIMDDetection.getJavaVersion() != 18 && SIMDDetection.getJavaVersion() != 19;
-+			SIMDDetection.versionLimited = Boolean.getBoolean("Andromeda.SkipSIMDJavaVersionCheck") || SIMDDetection.getJavaVersion() != 17 && SIMDDetection.getJavaVersion() != 18 && SIMDDetection.getJavaVersion() != 19; // Andromeda
- 		} catch (NoClassDefFoundError | Exception ignored) { ignored.printStackTrace(); }
- 		
- 		if (SIMDDetection.isEnabled) {
+ 			SIMDDetection.versionLimited = SIMDDetection.getJavaVersion() != 17 && SIMDDetection.getJavaVersion() != 18 && SIMDDetection.getJavaVersion() != 19;
++			SIMDDetection.versionLimited = SIMDDetection.versionLimited || Boolean.getBoolean("Andromeda.SkipSIMDJavaVersionCheck"); // Andromeda
+ 		} catch (NoClassDefFoundError | Exception ignored) {
+ 			ignored.printStackTrace();
+ 		}
+@@ -96,6 +97,7 @@ public class PufferfishConfig {
  			PufferfishLogger.LOGGER.info("SIMD operations detected as functional. Will replace some operations with faster versions.");
  		} else if (SIMDDetection.versionLimited) {
  			PufferfishLogger.LOGGER.warning("Will not enable SIMD! These optimizations are only safely supported on Java 17, Java 18, and Java 19.");
-+			PufferfishLogger.LOGGER.info("If you really want to enable them, add \"-DAndromeda.SkipSIMDJavaVersionCheck=true\" to your startup flags, IN FRONT OF the \"-jar\"."); // Andromeda
++			PufferfishLogger.LOGGER.info("If you really want to enable them, add \"-DAndromeda.SkipSIMDJavaVersionCheck=true\" to your startup flags, BEFORE the \"-jar\"."); // Andromeda
  		} else {
  			PufferfishLogger.LOGGER.warning("SIMD operations are available for your server, but are not configured!");
  			PufferfishLogger.LOGGER.warning("To enable additional optimizations, add \"--add-modules=jdk.incubator.vector\" to your startup flags, BEFORE the \"-jar\".");

@@ -66,10 +66,10 @@ index 75be5cdfeb30732975bbc38dc7aab52a0cdead9c..758f83b14ecdbcd4f0b20aa62ef21354
 +
  }
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
-index 3bea5dd67ad0393160ccede4ac99a3c7baa1803b..9012350665f05c232341492392f59466d10e1ca7 100644
+index 6d31f3a2..6a956464 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
-@@ -112,7 +112,7 @@ public abstract class JavaPlugin extends PluginBase {
+@@ -119,7 +119,7 @@ public abstract class JavaPlugin extends PluginBase {
       * @return File containing this plugin
       */
      @NotNull

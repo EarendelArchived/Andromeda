@@ -6,7 +6,7 @@ Subject: [PATCH] Add configuration to disable moved to quickly check for
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a8e205af936efe0909c94575e3b7f8ca50cead2f..53f79af185c6093f70b4b69fa0d16ecf63e69681 100644
+index 04652735fad2d2ef5bd4d08d85ac2df10be7e75d..8fa866e80ad362944d6e27c1d569a6e39c57dc48 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1531,7 +1531,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic

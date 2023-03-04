@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#7171
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index a8c878ed70845a417b8d892ff1aea1baceddb43b..32cbc3e5ad030a6ea04ae8034a5510b6cc633359 100644
+index 9895274b7a2c359907c94ac88631055cff809dd2..fd2b1969649e0698599fcfb72ab6e1e8ea8aeb9a 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -287,11 +287,26 @@ public class Explosion {

@@ -18,17 +18,17 @@ index 309fe1162db195c7c3c94d785d6aa2700e42b08a..a7aec3c9c810b34cd20d883deaa5ffbf
      }
  
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index f0a1bd3faac7e7fc8570bee9e4310f420277eaad..0b7f19db743be9a7a25fab835a084eb25c3ff3eb 100644
+index c457f114c1ec2e402df65a17a838e165f6b1a31d..c9f69c0bf3ab4ba38f9a226e5cf18956012f0ea7 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -1417,7 +1417,7 @@ public abstract class PlayerList {
+@@ -1419,7 +1419,7 @@ public abstract class PlayerList {
      }
      public void broadcastChatMessage(PlayerChatMessage message, Predicate<ServerPlayer> shouldSendFiltered, @Nullable ServerPlayer sender, ChatType.Bound params, @Nullable Function<net.kyori.adventure.audience.Audience, Component> unsignedFunction) {
          // Paper end
 -        boolean flag = this.verifyChatTrusted(message);
 +        boolean flag = this.verifyChatTrusted(message) || !team.earendel.andromeda.configurations.GlobalConfiguration.get().consoleLogs.notSecureChatMarker; // Andromeda
  
-         this.server.logChatMessage((unsignedFunction == null ? Component.literal(message.signedContent()) : unsignedFunction.apply(this.server.console)), params, flag ? null : "Not Secure"); // Paper
+         this.server.logChatMessage((unsignedFunction == null ? message.decoratedContent() : unsignedFunction.apply(this.server.console)), params, flag ? null : "Not Secure"); // Paper
          OutgoingChatMessage outgoingchatmessage = OutgoingChatMessage.create(message);
 diff --git a/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java b/src/main/java/team/earendel/andromeda/configurations/GlobalConfiguration.java
 index 89aa59ed398a4e5fac1218580dd7fb35a5c0c31e..9830e2ba3ad8e7cad3b489438066c14a5c617541 100644

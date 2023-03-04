@@ -5,7 +5,7 @@ Subject: [PATCH] Add permission to bypass reducedDebugInfo gamerule
 
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index c34c5368e336ba4b181a95932a9b40cb4f50ae1d..2c3d8a474e096509d8cddf4acae10251fdad4d21 100644
+index 82093c413722e280b9fcb46fb0ba03ca629e54fa..a62ece0f6f3822f3f649a0e4b99c4be5f089e832 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -267,7 +267,7 @@ public abstract class PlayerList {
@@ -17,7 +17,7 @@ index c34c5368e336ba4b181a95932a9b40cb4f50ae1d..2c3d8a474e096509d8cddf4acae10251
  
          // Spigot - view distance
          playerconnection.send(new ClientboundLoginPacket(player.getId(), worlddata.isHardcore(), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), this.server.levelKeys(), this.synchronizedRegistries, worldserver1.dimensionTypeId(), worldserver1.dimension(), BiomeManager.obfuscateSeed(worldserver1.getSeed()), this.getMaxPlayers(), worldserver1.getChunkSource().chunkMap.playerChunkManager.getTargetSendDistance(), worldserver1.getChunkSource().chunkMap.playerChunkManager.getTargetTickViewDistance(), flag1, !flag, worldserver1.isDebug(), worldserver1.isFlat(), player.getLastDeathLocation())); // Paper - replace old player chunk management
-@@ -1284,7 +1284,7 @@ public abstract class PlayerList {
+@@ -1286,7 +1286,7 @@ public abstract class PlayerList {
          player.getEntityData().refresh(player); // CraftBukkkit - SPIGOT-7218: sync metadata
          player.connection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
          // CraftBukkit start - from GameRules

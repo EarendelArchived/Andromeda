@@ -61,10 +61,10 @@ index 70f1916185b79bbb9f033f4ef8119d7b17a13ef8..cdb8d28f13d3e484092a5ddbf532ea99
  
              return false;
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 698a0ac71cf9fb409d609a81cc2958121260a46d..b0acfaf51fa16cf74d8a39c0c26863178c773add 100644
+index 034a0665f56fca37a48972671cebc6ec249db120..8f53ad0b82adc307319812897db2482521e6e603 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -362,7 +362,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -368,7 +368,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
          if (hopper instanceof HopperBlockEntity blockEntity) {
              blockEntity.setCooldown(blockEntity.getLevel().spigotConfig.hopperTransfer);
          } else if (hopper instanceof MinecartHopper blockEntity) {

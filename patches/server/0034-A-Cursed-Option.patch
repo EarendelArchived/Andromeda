@@ -5,7 +5,7 @@ Subject: [PATCH] A Cursed Option
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index d85cd2019904c6cc419d708ea4eba8188dcf64f7..a0b0544594643c72643cbbc3c41f75873c25275e 100644
+index 4c3ea78660ef1510bef15b0f80aec603cd67c2a7..597896b7e234d73e3b6aeb4f7866ee10c57ac705 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1334,6 +1334,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

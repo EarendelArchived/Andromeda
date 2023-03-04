@@ -773,7 +773,7 @@ index 0f9a3a6c05fee59c29764f0c0d7a6cb8a2a861b1..dd6a43522054a26fce1fa2793df31e15
  
              set.clear();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 094afd5636590608c8ec31c9fec97614dfef60db..1397b5a0f9a95682a6b09db10a53bbbda29d7f86 100644
+index b2e4b5c463ceb19356da18e7fc52d20801b674cd..3c54f59b254f72c1b338be9650f7d3c48619bdfa 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -1026,20 +1026,20 @@ public abstract class LivingEntity extends Entity {
@@ -803,7 +803,7 @@ index 094afd5636590608c8ec31c9fec97614dfef60db..1397b5a0f9a95682a6b09db10a53bbbd
              }
              // Purpur end
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index 7bd4e95fcaf3855a4fe412b5898a97d7992caad3..478746a653956a7cf4c87b317831e34fe4cc888f 100644
+index 43cc8e8f07adecef21c70954918b8945a7c3ef62..dd7982eb1f76514c2548bd617a7e4045be99b40b 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
 @@ -903,9 +903,10 @@ public abstract class Mob extends LivingEntity {

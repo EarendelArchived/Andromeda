@@ -47,7 +47,7 @@ index 66e2137f9379e885294f2b9f67f7e35296792770..b24fc9f490567b7cc875d02648da2b69
          }
          // CraftBukkit end
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java
-index efc1bdcaf141a2c2152173439d707f50feaaf91a..d818db1bb4bfe9eebaa61d65429589b88215e831 100644
+index e438e7e018f643d82ddf5efbf72779876c516d1a..e7550befe76ff089727d436fed4a958695c6d135 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java
 @@ -43,6 +43,7 @@ public abstract class BlockEntity {

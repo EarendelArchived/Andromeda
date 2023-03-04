@@ -43,7 +43,7 @@ index 09be3f188f9710fa71c5db67023e654739721f21..87fe6da114b49f3d4fa4fe6fa7daae78
      @Override
      public Biome getComputedBiome(int x, int y, int z) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index d06d2733e52a67a693f4fbea267fad61bc39d1bd..e5f7d5233bef68ad120a53756e1a1e6677fbe595 100644
+index 1d0a7a79301c1458830d0f9d03b546fbea883cc8..c06d9c3740aa3401c3d097252f9f0a77e9c9dd0d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -212,6 +212,10 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -72,7 +72,7 @@ index d06d2733e52a67a693f4fbea267fad61bc39d1bd..e5f7d5233bef68ad120a53756e1a1e66
      }
      // Paper end
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index 350cbf64c17938021002d5fd67176c44b398231e..66aa41894dff05eef7aea6f520acec33702a01ca 100644
+index 962c950ca9c7e047a3aec215d4faa73676049d36..ba67072a590cf101b9d0940287eb90d09541eea5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 @@ -343,6 +343,13 @@ public class CraftBlock implements Block {

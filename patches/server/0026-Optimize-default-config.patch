@@ -9,10 +9,10 @@ Original: YouHaveTrouble/minecraft-optimization
 Copyright (C) 2023 YouHaveTrouble
 
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-index e2d6ae8baa43fe0c4b59d386b5b66ab16a1910ee..d1ad2c4808176efedfb1d23bf299cc3637c963af 100644
+index 5b904c239d2bf8607444f517c55c7eec83bb8fff..d21096ed504319ea13c38049fa527c66f1227800 100644
 --- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-@@ -211,7 +211,7 @@ public class PufferfishConfig {
+@@ -214,7 +214,7 @@ public class PufferfishConfig {
      public static int maxProjectileLoadsPerProjectile;
      private static void projectileLoading() {
          maxProjectileLoadsPerTick = getInt("projectile.max-loads-per-tick", 10, "Controls how many chunks are allowed", "to be sync loaded by projectiles in a tick.");
@@ -21,7 +21,7 @@ index e2d6ae8baa43fe0c4b59d386b5b66ab16a1910ee..d1ad2c4808176efedfb1d23bf299cc36
  
          setComment("projectile", "Optimizes projectile settings");
      }
-@@ -224,7 +224,7 @@ public class PufferfishConfig {
+@@ -227,7 +227,7 @@ public class PufferfishConfig {
      public static int activationDistanceMod;
  
      private static void dynamicActivationOfBrains() throws IOException {
@@ -30,7 +30,7 @@ index e2d6ae8baa43fe0c4b59d386b5b66ab16a1910ee..d1ad2c4808176efedfb1d23bf299cc36
          startDistance = getInt("dab.start-distance", "activation-range.start-distance", 12,
                  "This value determines how far away an entity has to be",
                  "from the player to start being effected by DEAR.");
-@@ -232,7 +232,7 @@ public class PufferfishConfig {
+@@ -235,7 +235,7 @@ public class PufferfishConfig {
          maximumActivationPrio = getInt("dab.max-tick-freq", "activation-range.max-tick-freq", 20,
                  "This value defines how often in ticks, the furthest entity",
                  "will get their pathfinders and behaviors ticked. 20 = 1s");
@@ -39,7 +39,7 @@ index e2d6ae8baa43fe0c4b59d386b5b66ab16a1910ee..d1ad2c4808176efedfb1d23bf299cc36
                  "This value defines how much distance modifies an entity's",
                  "tick frequency. freq = (distanceToPlayer^2) / (2^value)",
                  "If you want further away entities to tick less often, use 7.",
-@@ -268,16 +268,16 @@ public class PufferfishConfig {
+@@ -271,16 +271,16 @@ public class PufferfishConfig {
      
      public static boolean throttleInactiveGoalSelectorTick;
  	private static void inactiveGoalSelectorThrottle() {
@@ -273,7 +273,7 @@ index c88f9ade3db7118bb0b7e4c3c841ac1dee0ed4a0..93785c8b47bddea5bad01d9c600be771
          useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
      }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 236fc1bedc1ec6eba9a45f2c12a522f92e74564e..6a3f87ef6d9a553ab8b652a07d0d97089de19526 100644
+index caf8e28133980b5b615470f5e9d2d3add6c2891d..ae8e226b543bc3348048f352a875fa1894218f3c 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -422,7 +422,7 @@ public class PurpurWorldConfig {

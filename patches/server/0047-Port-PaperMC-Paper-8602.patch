@@ -5,7 +5,7 @@ Subject: [PATCH] Port PaperMC/Paper#8602
 
 
 diff --git a/src/main/java/net/minecraft/commands/CommandSourceStack.java b/src/main/java/net/minecraft/commands/CommandSourceStack.java
-index 613b3fb0a90ef19161f0df09a014c3811e5b8c9e..9deffdc96469d213120fb08723644cf067639223 100644
+index 941f3a0d50329658a9380500ef039d7f10a284e2..6c351872c241ea5305eda6fc584863b768ff25ed 100644
 --- a/src/main/java/net/minecraft/commands/CommandSourceStack.java
 +++ b/src/main/java/net/minecraft/commands/CommandSourceStack.java
 @@ -207,8 +207,18 @@ public class CommandSourceStack implements SharedSuggestionProvider, com.destroy

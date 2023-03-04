@@ -18,7 +18,7 @@ index 23dcdc71a8a6fd5472cdc1c22331b56c6bb3ded9..c345e65682e950bb03b1946680fd79e3
              double d1 = (double) (center.y - maxRange);
              double d2 = (double) (center.x + maxRange);
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index d62bf95fb067c2e2a4fc9b2757c636bd4ee75bea..5968c3b2c9e4871691ba9a090ea14122023fe48c 100644
+index 8664b5cfc739fc6b57643210cac3d03b279a59a1..d05c63cbaa130e658816a79a5ca24f52872abe39 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -396,7 +396,7 @@ public class ServerPlayer extends Player {
@@ -53,7 +53,7 @@ index 1ef089dbf83de35d875c00efdf468c397be56978..4083c519c14b733d6df186ecc668e89a
          }
  
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java b/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
-index 7f3a7a769afec8449547c26453112064b9bcb04a..807ec3254cff70b189416823775131bd8906f951 100644
+index 15fb5ee374b19366ebb23181896fb943e95819f0..abbd180c9333cfbf6000e152f0117ad0fef98b2c 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
 @@ -80,7 +80,7 @@ public class FishingHook extends Projectile {
@@ -101,7 +101,7 @@ index 02f5dd214cdb59685cb4129bf143904d4cb83011..022d820a7692c380a4a3e63ea6462003
          this.costs = new int[3];
          this.enchantClue = new int[]{-1, -1, -1};
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 3c9e0cee78deeae6b47a186f1bfc47f3956ec9c7..919f7b66e2b3932ee93857a7982240d4fb7de86a 100644
+index cd63170e56b402fbf8bbd904270979fa51330e26..9895274b7a2c359907c94ac88631055cff809dd2 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -81,7 +81,7 @@ public class Explosion {
@@ -114,7 +114,7 @@ index 3c9e0cee78deeae6b47a186f1bfc47f3956ec9c7..919f7b66e2b3932ee93857a7982240d4
          this.hitPlayers = Maps.newHashMap();
          this.level = world;
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index b9562013b8d732d2b12dcb76776b197c35603138..e904a4c5dfe326319f6472ac3acccad80f03e6d4 100644
+index ddaa2fb130627ece67dcfde716539c57f65cdd3b..eb40a65fdb225036db1b81e3d3988e062b961c0d 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -123,7 +123,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {

@@ -329,7 +329,7 @@ index 24c677e80af652952263253409c050641e72e3b5..36fcddb2001f988f59cf00ce3209b469
      }
      // Paper end
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a0b0544594643c72643cbbc3c41f75873c25275e..90b031b4046f125d6e3fe2215686ff788d33965c 100644
+index 597896b7e234d73e3b6aeb4f7866ee10c57ac705..9548f916501797854938a898a03ed44d5d48df3f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1402,8 +1402,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -433,7 +433,7 @@ index b15099269c20c655acf58511e350429267d0d719..ffc125e1e9b0da8aec17b9ba882bf694
          final String s;
  
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 4c103ed1e9e0dc14946f07f862e87aac9c75b59c..73aa6c7f14ea4417b131d9e8a627bc7617ad0f0f 100644
+index 7d87036c8c04487555a31cb5f625f2e6cf7097e7..c071f1e822d79f4b49c8f9ddf347037dd3a7792a 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -690,7 +690,7 @@ public abstract class PlayerList {

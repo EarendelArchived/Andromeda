@@ -5,7 +5,7 @@ Subject: [PATCH] Port PurpurMC/Purpur#1146
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 1397b5a0f9a95682a6b09db10a53bbbda29d7f86..b270321d17b51beb314b8858d28d97b802f990b5 100644
+index 3c54f59b254f72c1b338be9650f7d3c48619bdfa..0e72d6364a56f5d41322542bdcffad42f21dd4da 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -4460,6 +4460,20 @@ public abstract class LivingEntity extends Entity {

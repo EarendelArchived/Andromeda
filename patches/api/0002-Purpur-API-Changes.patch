@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: AlphaKR93 <alphakr93@gmail.com>
-Date: Fri, 17 Feb 2023 11:49:52 +0000
+Date: Sat, 4 Mar 2023 19:21:31 +0900
 Subject: [PATCH] Purpur API Changes
 
 Original: PurpurMC
@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 4e78a535b528a87ad0ec9c361541c79854929c6e..0d27a44ad43dce122e207aa7d0c83db594bb16a4 100644
+index d351ae66db72208a78ee6c522201693f19f68ef5..754c700cbdf0e775d0c12ebe468d9f2bdcc22cc2 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -104,6 +104,8 @@ tasks.jar {
@@ -799,7 +799,7 @@ index aa04d7df70d99402c91e920fd693d7d4fb655786..a38863ebd363f54994753937a10e0410
       * Represents various map environment types that a world may be
       */
 diff --git a/src/main/java/org/bukkit/command/SimpleCommandMap.java b/src/main/java/org/bukkit/command/SimpleCommandMap.java
-index b8623575b1c1b565560c2dd6438190716845a652..aad6edb02f690b875db28e8db9bcd4e36b90d766 100644
+index ac9a28922f8a556944a4c3649d74c32c622f0cb0..5349f16136d9348c374a7dfe5b89a71dfcb0e66d 100644
 --- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
 +++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
 @@ -143,6 +143,19 @@ public class SimpleCommandMap implements CommandMap {
@@ -836,114 +836,6 @@ index b8623575b1c1b565560c2dd6438190716845a652..aad6edb02f690b875db28e8db9bcd4e3
          } catch (CommandException ex) {
              server.getPluginManager().callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerCommandException(ex, target, sender, args))); // Paper
              //target.timings.stopTiming(); // Spigot // Paper
-diff --git a/src/main/java/org/bukkit/command/defaults/PluginsCommand.java b/src/main/java/org/bukkit/command/defaults/PluginsCommand.java
-index 1aa58c59e1e8738bbdc77752885ff3b18b29de42..0b4937dc6d003caf0f43a01a5a0801d5804082bf 100644
---- a/src/main/java/org/bukkit/command/defaults/PluginsCommand.java
-+++ b/src/main/java/org/bukkit/command/defaults/PluginsCommand.java
-@@ -11,6 +11,14 @@ import org.bukkit.ChatColor;
- import org.bukkit.command.CommandSender;
- import org.bukkit.plugin.Plugin;
- import org.jetbrains.annotations.NotNull;
-+// Spigot start
-+import net.kyori.adventure.text.Component;
-+import net.kyori.adventure.text.TextComponent;
-+import net.kyori.adventure.text.format.NamedTextColor;
-+import net.kyori.adventure.text.event.ClickEvent;
-+import org.bukkit.entity.Player;
-+import org.bukkit.plugin.PluginDescriptionFile;
-+// Spigot end
- 
- public class PluginsCommand extends BukkitCommand {
-     public PluginsCommand(@NotNull String name) {
-@@ -25,7 +33,13 @@ public class PluginsCommand extends BukkitCommand {
-     public boolean execute(@NotNull CommandSender sender, @NotNull String currentAlias, @NotNull String[] args) {
-         if (!testPermission(sender)) return true;
- 
--        sender.sendMessage("Plugins " + getPluginList());
-+        // Spigot start
-+        if (sender instanceof Player && sender.hasPermission("bukkit.command.version")) {
-+            sender.sendMessage(getPluginListSpigot());
-+        } else {
-+            sender.sendMessage("Plugins " + getPluginList());
-+        }
-+        // Spigot end
-         return true;
-     }
- 
-@@ -71,4 +85,73 @@ public class PluginsCommand extends BukkitCommand {
-         // Paper end
-     }
- 
-+    // Spigot start
-+    @NotNull
-+    private TextComponent getPluginListSpigot() {
-+        Plugin[] plugins = Arrays.stream(Bukkit.getPluginManager().getPlugins()).sorted(java.util.Comparator.comparing(plugin -> plugin.getName().toLowerCase())).toArray(Plugin[]::new); // Purpur
-+        TextComponent.Builder builder = Component.text();
-+        builder.append(Component.text("Plugins (" + plugins.length + "): "));
-+
-+        int index = 0;
-+        for (Plugin plugin : plugins) {
-+            if (index++ > 0) {
-+                builder.append(Component.text(", ", NamedTextColor.WHITE));
-+            }
-+
-+            // Event components
-+            PluginDescriptionFile description = plugin.getDescription();
-+            TextComponent.Builder hover = Component.text();
-+            hover.append(Component.text("Version: ", NamedTextColor.WHITE)).append(Component.text(description.getVersion(), NamedTextColor.GREEN));
-+
-+            if (description.getDescription() != null) {
-+                hover.append(Component.newline())
-+                    .append(Component.text("Description: ", NamedTextColor.WHITE))
-+                    .append(Component.text(description.getDescription(), NamedTextColor.GREEN));
-+            }
-+
-+            if (description.getWebsite() != null) {
-+                hover.append(Component.newline())
-+                    .append(Component.text("Website: ", NamedTextColor.WHITE))
-+                    .append(Component.text(description.getWebsite(), NamedTextColor.GREEN));
-+            }
-+
-+            if (!description.getAuthors().isEmpty()) {
-+                hover.append(Component.newline());
-+                if (description.getAuthors().size() == 1) {
-+                    hover.append(Component.text("Author: "));
-+                } else {
-+                    hover.append(Component.text("Authors: "));
-+                }
-+
-+                hover.append(getAuthors(description));
-+            }
-+
-+            // Plugin list entry
-+            builder.append(Component.text(plugin.getDescription().getName(), plugin.isEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED)
-+                .hoverEvent(hover.build()).clickEvent(ClickEvent.suggestCommand("/version " + description.getName())));
-+
-+            if (plugin.getDescription().getProvides().size() > 0) {
-+                builder.append(Component.text(" (", NamedTextColor.WHITE)).append(Component.text(String.join(", ", plugin.getDescription().getProvides()))).append(Component.text(")"));
-+            }
-+        }
-+
-+        return builder.build();
-+    }
-+
-+    @NotNull
-+    private TextComponent getAuthors(@NotNull final PluginDescriptionFile description) {
-+        TextComponent.Builder builder = Component.text();
-+        List<String> authors = description.getAuthors();
-+
-+        for (int i = 0; i < authors.size(); i++) {
-+            if (i > 0) {
-+                builder.append(Component.text(i < authors.size() - 1 ? ", " : " and ", NamedTextColor.WHITE));
-+            }
-+
-+            builder.append(Component.text(authors.get(i), NamedTextColor.GREEN));
-+        }
-+
-+        return builder.build();
-+    }
-+    // Spigot end
- }
 diff --git a/src/main/java/org/bukkit/command/defaults/VersionCommand.java b/src/main/java/org/bukkit/command/defaults/VersionCommand.java
 index e40f017f87d6b6b4770501b106c76dc69ec69abb..eac5830986cd0638950bbb1e6f10a30e246e09a7 100644
 --- a/src/main/java/org/bukkit/command/defaults/VersionCommand.java
@@ -1192,10 +1084,10 @@ index 58017fce436cdbda255f7172fbdadb726d4b113c..05600fc8bf2a61aca8094029bc4c208a
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index 1da1c293ac8a13d22743c26d35624155bfa73a16..127bf9621cca12327ac06becdd921a5f843b888d 100644
+index d045f41d929c6101060caf3a9fb48c8ffc036f16..44246068b51e47342d767f15af6881f29461589c 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
-@@ -1142,4 +1142,41 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+@@ -1146,4 +1146,41 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       */
      void setBodyYaw(float bodyYaw);
      // Paper end
@@ -2267,29 +2159,12 @@ index cd3296fea01648592d2af89b3d80135acb6d0958..45797a6fbae1d8edc4211cb30def24ad
              String lname = name.toLowerCase(java.util.Locale.ENGLISH);
  
              permissions.put(lname, new PermissionAttachmentInfo(parent, lname, attachment, value));
-diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index c077e7c883613fcb6e559b4e4776e794caa3b363..75be5cdfeb30732975bbc38dc7aab52a0cdead9c 100644
---- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-+++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-@@ -167,6 +167,12 @@ public final class SimplePluginManager implements PluginManager {
-                 server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "'", ex); // Paper
-                 continue;
-             }
-+            // Purpur start
-+            if (!Boolean.getBoolean("Purpur.IReallyDontWantSpark") && plugins.containsKey(description.getName()) && description.getName().equalsIgnoreCase("spark")) {
-+                server.getLogger().log(Level.INFO, "Purpur: Using user-provided spark plugin instead of our own.");
-+                continue;
-+            }
-+            // Purpur end
- 
-             File replacedFile = plugins.put(description.getName(), file);
-             if (replacedFile != null) {
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index bf93183aa76af005d5daf8cf533f908d535166e8..d7ac5d5bb6180f97706be9c5ef25956f244bc376 100644
+index 90fdaee8b07df0acf8863103b47a1c68e38a3e4f..6319f6c1428d0e272681984c1b15ec05a3272423 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-@@ -58,6 +58,7 @@ public final class JavaPluginLoader implements PluginLoader {
-     private final Map<String, Integer> classLoadLockCount = new java.util.HashMap<String, Integer>(); // Paper
+@@ -55,6 +55,7 @@ public final class JavaPluginLoader implements PluginLoader {
+     private final Pattern[] fileFilters = new Pattern[]{Pattern.compile("\\.jar$")};
      private final List<PluginClassLoader> loaders = new CopyOnWriteArrayList<PluginClassLoader>();
      private final LibraryLoader libraryLoader;
 +    public static boolean SuppressLibraryLoaderLogger = false; // Purpur
@@ -2297,10 +2172,10 @@ index bf93183aa76af005d5daf8cf533f908d535166e8..d7ac5d5bb6180f97706be9c5ef25956f
      /**
       * This class was not meant to be constructed explicitly
 diff --git a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
-index 6d634b0ea813ccb19f1562a7d0e5a59cea4eab21..06a7f27aa7c3963f63fe158438a83fdf67a20c51 100644
+index f9e67e20133d349e43d126dbb48b34d4d9aceb4c..f8efacb9447d72e66a1fd59db18425fe0629e266 100644
 --- a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
-@@ -62,6 +62,7 @@ class LibraryLoader
+@@ -65,6 +65,7 @@ public class LibraryLoader
              @Override
              public void transferStarted(@NotNull TransferEvent event) throws TransferCancelledException
              {
@@ -2308,7 +2183,7 @@ index 6d634b0ea813ccb19f1562a7d0e5a59cea4eab21..06a7f27aa7c3963f63fe158438a83fdf
                  logger.log( Level.INFO, "Downloading {0}", event.getResource().getRepositoryUrl() + event.getResource().getResourceName() );
              }
          } );
-@@ -77,6 +78,7 @@ class LibraryLoader
+@@ -80,6 +81,7 @@ public class LibraryLoader
          {
              return null;
          }
@@ -2316,7 +2191,7 @@ index 6d634b0ea813ccb19f1562a7d0e5a59cea4eab21..06a7f27aa7c3963f63fe158438a83fdf
          logger.log( Level.INFO, "[{0}] Loading {1} libraries... please wait", new Object[]
          {
              desc.getName(), desc.getLibraries().size()
-@@ -115,6 +117,7 @@ class LibraryLoader
+@@ -118,6 +120,7 @@ public class LibraryLoader
              }
  
              jarFiles.add( url );
@@ -2997,6 +2872,64 @@ index 0000000000000000000000000000000000000000..519809eab5d926dc7b0a7bad5d446d0d
 +        return handlers;
 +    }
 +}
+diff --git a/src/main/java/org/purpurmc/purpur/event/PreBlockExplodeEvent.java b/src/main/java/org/purpurmc/purpur/event/PreBlockExplodeEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b7db0db7f3afbccdb07390d1bcada109e9e6b30b
+--- /dev/null
++++ b/src/main/java/org/purpurmc/purpur/event/PreBlockExplodeEvent.java
+@@ -0,0 +1,52 @@
++package org.purpurmc.purpur.event;
++
++import org.bukkit.block.Block;
++import org.bukkit.event.Cancellable;
++import org.bukkit.event.HandlerList;
++import org.bukkit.event.block.BlockExplodeEvent;
++import org.jetbrains.annotations.NotNull;
++import java.util.Collections;
++
++/**
++ * Called before a block's explosion is processed
++ */
++public class PreBlockExplodeEvent extends BlockExplodeEvent implements Cancellable {
++    private static final HandlerList handlers = new HandlerList();
++    private boolean cancelled;
++    private final float yield;
++
++    public PreBlockExplodeEvent(@NotNull final Block what, final float yield) {
++        super(what, Collections.emptyList(), yield);
++        this.yield = yield;
++        this.cancelled = false;
++    }
++
++    /**
++     * Returns the percentage of blocks to drop from this explosion
++     *
++     * @return The yield.
++     */
++    public float getYield() {
++        return yield;
++    }
++
++    @Override
++    public boolean isCancelled() {
++        return this.cancelled;
++    }
++
++    @Override
++    public void setCancelled(boolean cancel) {
++        this.cancelled = cancel;
++    }
++
++    @Override
++    public @NotNull HandlerList getHandlers() {
++        return handlers;
++    }
++
++    @NotNull
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++}
 diff --git a/src/main/java/org/purpurmc/purpur/event/entity/BeeFoundFlowerEvent.java b/src/main/java/org/purpurmc/purpur/event/entity/BeeFoundFlowerEvent.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..833f46d1941f377765132fc528c45567ee0290d2
@@ -3530,6 +3463,76 @@ index 0000000000000000000000000000000000000000..82f8a0ea22f07954d516935fc9f73f6a
 +
 +    @NotNull
 +    public HandlerList getHandlers() {
++        return handlers;
++    }
++
++    @NotNull
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++}
+diff --git a/src/main/java/org/purpurmc/purpur/event/entity/PreEntityExplodeEvent.java b/src/main/java/org/purpurmc/purpur/event/entity/PreEntityExplodeEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..2d4f68228861492baaea0bcc604dfef623b337ba
+--- /dev/null
++++ b/src/main/java/org/purpurmc/purpur/event/entity/PreEntityExplodeEvent.java
+@@ -0,0 +1,64 @@
++package org.purpurmc.purpur.event.entity;
++
++import org.bukkit.Location;
++import org.bukkit.event.Cancellable;
++import org.bukkit.event.HandlerList;
++import org.bukkit.event.entity.EntityExplodeEvent;
++import org.jetbrains.annotations.NotNull;
++import java.util.Collections;
++
++/**
++ * Called before an entity's explosion is processed
++ */
++public class PreEntityExplodeEvent extends EntityExplodeEvent implements Cancellable {
++    private static final HandlerList handlers = new HandlerList();
++    private boolean cancelled;
++    private final float yield;
++    private final Location location;
++
++    public PreEntityExplodeEvent(@NotNull org.bukkit.entity.Entity what, @NotNull final Location location, final float yield) {
++        super(what, location, Collections.emptyList(), yield);
++        this.cancelled = false;
++        this.yield = yield;
++        this.location = location;
++    }
++
++    /**
++     * Returns the percentage of blocks to drop from this explosion
++     *
++     * @return The yield.
++     */
++    public float getYield() {
++        return yield;
++    }
++
++    /**
++     * Returns the location where the explosion happened.
++     *
++     * @return The location of the explosion
++     */
++    @NotNull
++    public Location getLocation() {
++        return location;
++    }
++
++    @Override
++    public boolean isCancelled() {
++        return this.cancelled;
++    }
++
++    @Override
++    public void setCancelled(boolean cancel) {
++        this.cancelled = cancel;
++    }
++
++    @Override
++    public @NotNull HandlerList getHandlers() {
 +        return handlers;
 +    }
 +
@@ -4073,7 +4076,7 @@ index 123647bb10fc89508437d7a0bd3fd31d58ee7c82..ce209668dd7f11b284bd7f5688191a0b
  
  }
 diff --git a/src/test/java/org/bukkit/AnnotationTest.java b/src/test/java/org/bukkit/AnnotationTest.java
-index 4bca64b2a44ae032730575ecba39f9737a5a1ec7..7769e19a5a86b5c76094058d31269fc6cc9f0ac3 100644
+index 2cb81e6d253d70388da15c9d07b630277d486c70..fa7229ae5e00e36b0dc8b4cf15d3c99892cc3291 100644
 --- a/src/test/java/org/bukkit/AnnotationTest.java
 +++ b/src/test/java/org/bukkit/AnnotationTest.java
 @@ -47,6 +47,10 @@ public class AnnotationTest {

@@ -18,7 +18,7 @@ index bc4fcbc0805841efec81fca56f9afd663797fb6e..0696a90c87a25779830ba93271591b6e
              @ConfigSerializable
              public record DespawnRange(@Required int soft, @Required int hard) {
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index e904a4c5dfe326319f6472ac3acccad80f03e6d4..7eac2897643f6af4032e3a4d15a7d7e62ce5aa44 100644
+index eb40a65fdb225036db1b81e3d3988e062b961c0d..4fa6614f424a29a5262871a47b016ceb1d0d7a87 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -318,6 +318,14 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
