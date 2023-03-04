@@ -5,7 +5,7 @@ Subject: [PATCH] Mining speed tweaks
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 960a370921742c62664adcfb433f3c1a162f035c..fee05b0265f8691b6579e7b9521bee202cc78ce8 100644
+index 960a370921742c62664adcfb433f3c1a162f035c..b4fd0684e11843dbcf23415af610062acb686966 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -185,6 +185,7 @@ public abstract class Player extends LivingEntity {
@@ -21,7 +21,7 @@ index 960a370921742c62664adcfb433f3c1a162f035c..fee05b0265f8691b6579e7b9521bee20
          }
  
 -        if (this.isEyeInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(this)) {
-+        if (this.isEyeInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(this)  && !this.getLevel().andromedaLevelConfiguration().entity.player.mining.disableSpeedReductionWhenSwiming.enabled && (!this.getLevel().andromedaLevelConfiguration().entity.player.mining.disableSpeedReductionWhenSwiming.usePermission || this.getBukkitEntity().hasPermission("andromeda.mining.bypass-swiming-reduction"))) { // Andromeda
++        if (this.isEyeInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(this)  && !this.getLevel().andromedaLevelConfiguration().entity.player.mining.disableSpeedReductionWhenSwimming.enabled && (!this.getLevel().andromedaLevelConfiguration().entity.player.mining.disableSpeedReductionWhenSwimming.usePermission || this.getBukkitEntity().hasPermission("andromeda.mining.bypass-swiming-reduction"))) { // Andromeda
              f /= 5.0F;
          }
  
@@ -56,7 +56,7 @@ index a33f2e7dd2f520a0f1c5bb6cb7de8c20f7d987fa..c619284677ae087721f0f4536d58f4ea
      // Andromeda end
  }
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index d02ffd26e816e564466e1aa58ca7a6a04668f443..1a63ea3f202314af76b9f57194018c2129bc95e9 100644
+index b83ed405add6e5e4a95203a84c30def491990064..900ee3acc1f5b119688eaa58c14a75eced20c93f 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 @@ -32,6 +32,27 @@ public class LevelConfigurations extends ConfigurationPart {
@@ -74,8 +74,8 @@ index d02ffd26e816e564466e1aa58ca7a6a04668f443..1a63ea3f202314af76b9f57194018c21
 +
 +                }
 +
-+                public DisableSpeedReductionWhenSwiming disableSpeedReductionWhenSwiming;
-+                public class DisableSpeedReductionWhenSwiming extends ConfigurationPart {
++                public DisableSpeedReductionWhenSwimming disableSpeedReductionWhenSwimming;
++                public class DisableSpeedReductionWhenSwimming extends ConfigurationPart {
 +
 +                    public boolean enabled = false;
 +                    public boolean usePermission = false;

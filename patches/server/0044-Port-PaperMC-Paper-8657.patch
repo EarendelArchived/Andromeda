@@ -55,12 +55,12 @@ index 88ce7d0c049cefdfa99a21ddecc5d16e9435a4f0..4cb6f7f54731feb43e2990b27b5c5060
                  worldserver.captureTreeGeneration = true;
                  // CraftBukkit end
 diff --git a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
-index 86b9a4e0a9736814baad9f7923104698b8e76194..40f5b174a80405508fdb4cb56b3ff9b9a2a6aea4 100644
+index 2fa13e6815fcff03a45f1885fbf87e2504376537..a95b4405a57da140409dbd42c78cbd88136d391a 100644
 --- a/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 +++ b/src/main/java/team/earendel/andromeda/configurations/LevelConfigurations.java
 @@ -146,6 +146,8 @@ public class LevelConfigurations extends ConfigurationPart {
  
-         public boolean fixSeveralIsuesWithEntityBreedEvent = true;
+         public boolean fixSeveralIssuesWithEntityBreedEvent = true;
  
 +        public boolean fixBlockDispenseEventBeingCalledWhenNothingActuallyHappens = true;
 +

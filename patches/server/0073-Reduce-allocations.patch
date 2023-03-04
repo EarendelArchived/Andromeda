@@ -498,10 +498,10 @@ index 0292690b9c99f66210a03817e512c65ca65bc749..122277d210e721b2db2e10c74b6ae603
          this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, false, false, (entityliving) -> {
              return entityliving instanceof Enemy && !(entityliving instanceof Creeper);
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Panda.java b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-index 519136a8a63332a280d7a53c0c6a76ea4265ebd1..e31010b6b4bfdbf67a4bd65d09a368a319bbfaef 100644
+index 13e05acd05e149cbbb441e6a1f7ee9d520984d84..f8e1c73a1a327bddd10498c01e402960c16b12b8 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Panda.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-@@ -333,7 +333,7 @@ public class Panda extends Animal {
+@@ -331,7 +331,7 @@ public class Panda extends Animal {
          this.goalSelector.addGoal(13, new FollowParentGoal(this, 1.25D));
          this.goalSelector.addGoal(14, new WaterAvoidingRandomStrollGoal(this, 1.0D));
          this.targetSelector.addGoal(0, new org.purpurmc.purpur.entity.ai.HasRider(this)); // Purpur
