@@ -381,8 +381,8 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>static boolean</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">UnsafeValues.</span><code><a href="../../UnsafeValues.html#isLegacyPlugin(org.bukkit.plugin.Plugin)" class="member-name-link">isLegacyPlugin</a><wbr>(<a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;plugin)</code></div>
 <div class="col-last odd-row-color">
-<div class="block"><span class="deprecated-label">Deprecated.</span></div>
-&nbsp;</div>
+<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
+</div>
 <div class="col-first even-row-color"><code>boolean</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">Chunk.</span><code><a href="../../Chunk.html#removePluginChunkTicket(org.bukkit.plugin.Plugin)" class="member-name-link">removePluginChunkTicket</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;plugin)</code></div>
 <div class="col-last even-row-color">
@@ -459,16 +459,6 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static <a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../command/Command.html" title="class in org.bukkit.command">Command</a>&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">PluginCommandYamlParser.</span><code><a href="../../command/PluginCommandYamlParser.html#parse(org.bukkit.plugin.Plugin)" class="member-name-link">parse</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;plugin)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-</div>
-<div class="caption"><span>Constructors in <a href="../../command/package-summary.html">org.bukkit.command</a> with parameters of type <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a></span></div>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier</div>
-<div class="table-header col-second">Constructor</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>protected </code></div>
-<div class="col-second even-row-color"><code><a href="../../command/PluginCommand.html#%3Cinit%3E(java.lang.String,org.bukkit.plugin.Plugin)" class="member-name-link">PluginCommand</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;owner)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -934,26 +924,10 @@ loadScripts(document, 'script');</script>
 <div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
 <div class="block">Disables the specified plugin</div>
 </div>
-<div class="col-first even-row-color"><code>default void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">PluginLoader.</span><code><a href="../PluginLoader.html#disablePlugin(org.bukkit.plugin.Plugin,boolean)" class="member-name-link">disablePlugin</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;plugin,
- boolean&nbsp;closeClassloader)</code></div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">PluginManager.</span><code><a href="../PluginManager.html#disablePlugin(org.bukkit.plugin.Plugin)" class="member-name-link">disablePlugin</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;plugin)</code></div>
 <div class="col-last even-row-color">
-<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
-<div class="deprecation-comment">Classloader is always closed by upstream now.</div>
-</div>
-</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">PluginManager.</span><code><a href="../PluginManager.html#disablePlugin(org.bukkit.plugin.Plugin)" class="member-name-link">disablePlugin</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;plugin)</code></div>
-<div class="col-last odd-row-color">
 <div class="block">Disables the specified plugin</div>
-</div>
-<div class="col-first even-row-color"><code>default void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">PluginManager.</span><code><a href="../PluginManager.html#disablePlugin(org.bukkit.plugin.Plugin,boolean)" class="member-name-link">disablePlugin</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;plugin,
- boolean&nbsp;closeClassloader)</code></div>
-<div class="col-last even-row-color">
-<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
-<div class="deprecation-comment">Classloader is always closed by upstream now.</div>
-</div>
 </div>
 <div class="col-first odd-row-color"><code>void</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SimplePluginManager.</span><code><a href="../SimplePluginManager.html#disablePlugin(org.bukkit.plugin.Plugin)" class="member-name-link">disablePlugin</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;plugin)</code></div>
@@ -997,6 +971,18 @@ loadScripts(document, 'script');</script>
 <div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
 <div class="block">Checks if the given plugin is enabled or not</div>
 </div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">PluginManager.</span><code><a href="../PluginManager.html#overridePermissionManager(org.bukkit.plugin.Plugin,io.papermc.paper.plugin.PermissionManager)" class="member-name-link">overridePermissionManager</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;plugin,
+ <a href="../../../../io/papermc/paper/plugin/PermissionManager.html" title="interface in io.papermc.paper.plugin">PermissionManager</a>&nbsp;permissionManager)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Sets the permission manager to be used for this server.</div>
+</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">SimplePluginManager.</span><code><a href="../SimplePluginManager.html#overridePermissionManager(org.bukkit.plugin.Plugin,io.papermc.paper.plugin.PermissionManager)" class="member-name-link">overridePermissionManager</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../Plugin.html" title="interface in org.bukkit.plugin">Plugin</a>&nbsp;plugin,
+ <a href="../../../../io/papermc/paper/plugin/PermissionManager.html" title="interface in io.papermc.paper.plugin">PermissionManager</a>&nbsp;permissionManager)</code></div>
+<div class="col-last even-row-color">
+<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
+&nbsp;</div>
 <div class="col-first odd-row-color"><code>&lt;T&gt;&nbsp;void</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ServicesManager.</span><code><a href="../ServicesManager.html#register(java.lang.Class,T,org.bukkit.plugin.Plugin,org.bukkit.plugin.ServicePriority)" class="member-name-link">register</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;service,
  T&nbsp;provider,

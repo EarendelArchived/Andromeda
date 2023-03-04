@@ -55,6 +55,10 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Package</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><a href="#io.papermc.paper.plugin.bootstrap">io.papermc.paper.plugin.bootstrap</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#io.papermc.paper.plugin.provider.classloader">io.papermc.paper.plugin.provider.classloader</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="#org.bukkit.plugin.java">org.bukkit.plugin.java</a></div>
 <div class="col-last even-row-color">
 <div class="block">Classes for handling <a href="../../Plugin.html" title="interface in org.bukkit.plugin"><code>plugins</code></a> written in
@@ -63,6 +67,49 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-uses">
 <ul class="block-list">
+<li>
+<section class="detail" id="io.papermc.paper.plugin.bootstrap">
+<h2>Uses of <a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a> in <a href="../../../../../io/papermc/paper/plugin/bootstrap/package-summary.html">io.papermc.paper.plugin.bootstrap</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../../io/papermc/paper/plugin/bootstrap/package-summary.html">io.papermc.paper.plugin.bootstrap</a> that return <a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>default <a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">PluginBootstrap.</span><code><a href="../../../../../io/papermc/paper/plugin/bootstrap/PluginBootstrap.html#createPlugin(io.papermc.paper.plugin.bootstrap.PluginProviderContext)" class="member-name-link">createPlugin</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../../../../../io/papermc/paper/plugin/bootstrap/PluginProviderContext.html" title="interface in io.papermc.paper.plugin.bootstrap">PluginProviderContext</a>&nbsp;context)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Called by the server to instantiate your main class.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="io.papermc.paper.plugin.provider.classloader">
+<h2>Uses of <a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a> in <a href="../../../../../io/papermc/paper/plugin/provider/classloader/package-summary.html">io.papermc.paper.plugin.provider.classloader</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../../io/papermc/paper/plugin/provider/classloader/package-summary.html">io.papermc.paper.plugin.provider.classloader</a> that return <a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code><a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/Nullable.html" title="class or interface in org.jetbrains.annotations" class="external-link">@Nullable</a> <a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ConfiguredPluginClassLoader.</span><code><a href="../../../../../io/papermc/paper/plugin/provider/classloader/ConfiguredPluginClassLoader.html#getPlugin()" class="member-name-link">getPlugin</a>()</code></div>
+<div class="col-last even-row-color">
+<div class="block">Gets the plugin held by this class loader.</div>
+</div>
+</div>
+<div class="caption"><span>Methods in <a href="../../../../../io/papermc/paper/plugin/provider/classloader/package-summary.html">io.papermc.paper.plugin.provider.classloader</a> with parameters of type <a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ConfiguredPluginClassLoader.</span><code><a href="../../../../../io/papermc/paper/plugin/provider/classloader/ConfiguredPluginClassLoader.html#init(org.bukkit.plugin.java.JavaPlugin)" class="member-name-link">init</a><wbr>(<a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a>&nbsp;plugin)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Initializes both this configured plugin class loader and the java plugin passed to link to each other.</div>
+</div>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="org.bukkit.plugin.java">
 <h2>Uses of <a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a> in <a href="../package-summary.html">org.bukkit.plugin.java</a></h2>
@@ -92,6 +139,18 @@ loadScripts(document, 'script');</script>
 <div class="block">This method provides fast access to the plugin that has provided the
  given class.</div>
 </div>
+</div>
+<div class="caption"><span>Methods in <a href="../package-summary.html">org.bukkit.plugin.java</a> with parameters of type <a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">PluginClassLoader.</span><code><a href="../PluginClassLoader.html#init(org.bukkit.plugin.java.JavaPlugin)" class="member-name-link">init</a><wbr>(<a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a>&nbsp;plugin)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">PluginClassLoader.</span><code><a href="../PluginClassLoader.html#initialize(org.bukkit.plugin.java.JavaPlugin)" class="member-name-link">initialize</a><wbr>(<a href="https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/org/jetbrains/annotations/NotNull.html" title="class or interface in org.jetbrains.annotations" class="external-link">@NotNull</a> <a href="../JavaPlugin.html" title="class in org.bukkit.plugin.java">JavaPlugin</a>&nbsp;javaPlugin)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
