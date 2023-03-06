@@ -7,6 +7,9 @@
 
 A Server Platform for Minecraft: Java Edition based on [Paper](https://github.com/PaperMC/Paper)
 
+## 🌠 We're moving!
+Andromeda will be moved to Plasma soon. Currently in the development stage, but we're going to provide more functionality and optimization soon. Stay tuned!
+
 ## ⚠️ Warning
 Andromeda is VERY UNSTABLE and can cause unexpected problems, so DO NOT USE it in production server.
 
