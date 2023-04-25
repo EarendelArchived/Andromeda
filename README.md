@@ -1,3 +1,6 @@
+# Moved
+Use [Plazma](https://github.com/PlazmaMC/Plazma) instead.
+
 <img src=".github/assets/logo.png" align="left" id="header" width="128px"></img>
 
 # Andromeda
